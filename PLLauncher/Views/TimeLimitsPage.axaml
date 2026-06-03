@@ -1,0 +1,113 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PLLauncher.Views.TimeLimitsPage"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <Grid RowDefinitions="Auto,Auto,*" Margin="32,28">
+        <!-- Title -->
+        <Grid Grid.Row="0" Margin="0,0,0,20" ColumnDefinitions="*,Auto">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="Time Limits" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="Set daily app usage limits for self-discipline" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+            </StackPanel>
+            <Button Grid.Column="1" Click="AddLimit_Click" CornerRadius="6"
+                    Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" Padding="16,8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                    <TextBlock Text="Add Limit" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Add Panel -->
+        <Border Grid.Row="1" x:Name="AddLimitPanel" IsVisible="False"
+                Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Margin="0,0,0,16">
+            <StackPanel Spacing="12">
+                <TextBlock Text="New Time Limit" FontWeight="SemiBold" FontSize="16" Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <!-- App Picker -->
+                <ComboBox x:Name="AppPickerCombo" HorizontalAlignment="Stretch"
+                          Background="{DynamicResource SurfaceBrush}"
+                          SelectionChanged="AppPickerCombo_SelectionChanged">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <!-- App Name + Process Name -->
+                <Grid ColumnDefinitions="*,*">
+                    <TextBox x:Name="AppNameBox" Grid.Column="0" Watermark="App Name"
+                             Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,8,0" />
+                    <TextBox x:Name="ProcessNameBox" Grid.Column="1" Watermark="Process Name"
+                             Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+                </Grid>
+                <StackPanel>
+                    <TextBlock Text="Daily Limit (minutes)" FontSize="12" Margin="0,0,0,4" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <NumericUpDown x:Name="DailyLimitBox" Value="120" Minimum="5" Maximum="1440" />
+                </StackPanel>
+                <Border Background="#331F1F00" CornerRadius="4" Padding="12">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="&#xE7BA;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="{DynamicResource WarningBrush}" VerticalAlignment="Center" />
+                        <TextBlock Text="Disabling a limit triggers cooldown (set in Settings). Set to 0 for instant unlock." FontSize="12"
+                                   Foreground="{DynamicResource WarningBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </Border>
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                    <Button Click="CancelLimit_Click" CornerRadius="6" Content="Cancel"
+                            Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <Button Click="SaveLimit_Click" CornerRadius="6" Content="Save Limit"
+                            Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Limits List -->
+        <ItemsControl Grid.Row="2" x:Name="LimitsList">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Margin="0,4">
+                        <StackPanel Spacing="12">
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                <TextBlock Text="{Binding AppName}" FontWeight="SemiBold" FontSize="16" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <Border Grid.Column="1" CornerRadius="4" Padding="8,4" Margin="0,0,8,0">
+                                    <TextBlock FontSize="11" FontWeight="SemiBold">
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0}">
+                                                <Binding Path="IsLocked" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </Border>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="4">
+                                    <Button Click="DisableLimit_Click" Tag="{Binding Id}" CornerRadius="6"
+                                            Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                                            Padding="8,4" FontSize="12" Content="Disable" />
+                                    <Button Click="DeleteLimit_Click" Tag="{Binding Id}"
+                                            Background="Transparent" BorderThickness="0" Padding="8">
+                                        <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="{DynamicResource ErrorBrush}" />
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                            <ProgressBar Value="{Binding UsagePercentage}" Minimum="0" Maximum="100" />
+                            <Grid ColumnDefinitions="Auto,Auto,*">
+                                <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}">
+                                    <Run Text="Used: " /><Run Text="{Binding UsedMinutesToday, StringFormat='{}{0:F0}'}" /><Run Text=" min" />
+                                </TextBlock>
+                                <TextBlock Grid.Column="1" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" Margin="16,0,0,0">
+                                    <Run Text="Limit: " /><Run Text="{Binding DailyLimitMinutes, StringFormat='{}{0:F0}'}" /><Run Text=" min" />
+                                </TextBlock>
+                                <TextBlock Grid.Column="2" FontSize="12" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Right">
+                                    <Run Text="Remaining: " /><Run Text="{Binding RemainingMinutes, StringFormat='{}{0:F0}'}" /><Run Text=" min" />
+                                </TextBlock>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

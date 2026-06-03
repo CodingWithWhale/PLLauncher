@@ -1,0 +1,169 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PLLauncher.Views.SettingsPage"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <ScrollViewer Padding="32,28">
+        <StackPanel Spacing="24" MaxWidth="700">
+            <StackPanel Spacing="4">
+                <TextBlock x:Name="SettingsTitle" Text="Settings" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock x:Name="SettingsSubtitle" Text="Configure PLLauncher preferences" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+            </StackPanel>
+
+            <!-- Language -->
+            <StackPanel Spacing="8">
+                <TextBlock x:Name="LanguageSectionTitle" Text="Language" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                    <Grid ColumnDefinitions="*,Auto">
+                        <StackPanel Spacing="2">
+                            <TextBlock x:Name="LanguageLabel" Text="Display language" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock Text="Applies after you save settings" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        </StackPanel>
+                        <ComboBox x:Name="LanguageCombo" Grid.Column="1" MinWidth="220"
+                                  Background="{DynamicResource SurfaceBrush}"
+                                  SelectionChanged="LanguageCombo_SelectionChanged">
+                            <ComboBoxItem Content="English" Tag="en-US" />
+                            <ComboBoxItem Content="Russian" Tag="ru-RU" />
+                            <ComboBoxItem Content="Chinese (Simplified)" Tag="zh-CN" />
+                            <ComboBoxItem Content="Spanish" Tag="es-ES" />
+                        </ComboBox>
+                    </Grid>
+                </Border>
+            </StackPanel>
+
+            <!-- General -->
+            <StackPanel Spacing="8">
+                <TextBlock x:Name="GeneralSectionTitle" Text="General" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2"><TextBlock Text="Launch on Startup" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="Start PLLauncher when Windows starts" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+                            <ToggleSwitch x:Name="StartupToggle" Grid.Column="1" IsChecked="True"
+                                          IsCheckedChanged="StartupToggle_Changed" />
+                        </Grid>
+                        <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2"><TextBlock Text="Minimize to System Tray" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="Keep running in background" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+                            <ToggleSwitch x:Name="TrayToggle" Grid.Column="1" IsChecked="True"
+                                          IsCheckedChanged="TrayToggle_Changed" />
+                        </Grid>
+                        <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2"><TextBlock Text="Show Notifications" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="Display Windows notifications" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+                            <ToggleSwitch x:Name="NotificationsToggle" Grid.Column="1" IsChecked="True"
+                                          IsCheckedChanged="NotificationsToggle_Changed" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Appearance -->
+            <StackPanel Spacing="8">
+                <TextBlock x:Name="AppearanceSectionTitle" Text="Appearance" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2"><TextBlock Text="Dark Mode" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="Use dark theme (turn off for light theme)" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+                            <ToggleSwitch x:Name="DarkModeToggle" Grid.Column="1" IsChecked="True"
+                                          IsCheckedChanged="DarkModeToggle_Changed" />
+                        </Grid>
+                        <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2"><TextBlock Text="Enable Animations" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="Smooth transitions and effects" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+                            <ToggleSwitch x:Name="AnimationsToggle" Grid.Column="1" IsChecked="True"
+                                          IsCheckedChanged="AnimationsToggle_Changed" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Performance -->
+            <StackPanel Spacing="8">
+                <TextBlock x:Name="PerformanceSectionTitle" Text="Performance" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="16">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2"><TextBlock Text="Performance Mode" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="Reduce background CPU usage" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+                            <ToggleSwitch x:Name="PerformanceToggle" Grid.Column="1"
+                                          IsCheckedChanged="PerformanceToggle_Changed" />
+                        </Grid>
+                        <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2"><TextBlock Text="Task Warning Time (min)" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="0 = no warning, else minutes before task to show popup" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+                            <NumericUpDown x:Name="WarningTimeBox" Grid.Column="1" Value="1" Minimum="0" Maximum="30"
+                                           ValueChanged="WarningTimeBox_Changed" />
+                        </Grid>
+                        <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2"><TextBlock Text="Time Limit Cooldown (hours)" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="0 = instant unlock, else hours apps stay locked" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+                            <NumericUpDown x:Name="CooldownBox" Grid.Column="1" Value="12" Minimum="0" Maximum="48"
+                                           ValueChanged="CooldownBox_Changed" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Data Management -->
+            <StackPanel Spacing="8">
+                <TextBlock x:Name="DataSectionTitle" Text="Data Management" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                    <StackPanel Spacing="12">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2"><TextBlock Text="Export Configuration" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="Save all data to JSON" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+                            <Button Grid.Column="1" Click="ExportConfig_Click" CornerRadius="6" Content="Export"
+                                    Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                        </Grid>
+                        <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2"><TextBlock Text="Import Configuration" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="Restore from exported file" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+                            <Button Grid.Column="1" Click="ImportConfig_Click" CornerRadius="6" Content="Import"
+                                    Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                        </Grid>
+                        <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2"><TextBlock Text="Reset All Data" FontWeight="Medium" Foreground="{DynamicResource ErrorBrush}" />
+                                <TextBlock Text="Delete everything permanently" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+                            <Button Grid.Column="1" Click="ResetSettings_Click" CornerRadius="6" Content="Reset"
+                                    Background="#33F44336" Foreground="{DynamicResource ErrorBrush}" BorderBrush="{DynamicResource ErrorBrush}" VerticalAlignment="Center" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
+                <TextBlock x:Name="UnsavedHint" IsVisible="False" FontSize="13" VerticalAlignment="Center"
+                           Foreground="{DynamicResource WarningBrush}" />
+                <Button x:Name="DiscardButton" Click="DiscardChanges_Click" CornerRadius="6" Padding="16,12"
+                        Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" IsVisible="False">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                        <TextBlock x:Name="DiscardButtonText" Text="Discard" FontSize="14" />
+                    </StackPanel>
+                </Button>
+                <Button Click="SaveSettings_Click" CornerRadius="6" Padding="32,12"
+                        Background="{DynamicResource AccentSecondaryBrush}" Foreground="White">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="16" />
+                        <TextBlock x:Name="SaveButtonText" Text="Apply &amp; Save" FontSize="14" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <TextBlock x:Name="StatusMsg" IsVisible="False" FontSize="13" Foreground="{DynamicResource SuccessBrush}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

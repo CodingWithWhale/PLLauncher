@@ -1,0 +1,98 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PLLauncher.Views.PomodoroPage"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="24,20">
+        <!-- Title -->
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,24">
+            <TextBlock Text="Pomodoro Timer" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock Text="Stay focused with timed work and break sessions" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+        </StackPanel>
+
+        <!-- Timer Display -->
+        <Border Grid.Row="1" Background="{DynamicResource CardBackgroundBrush}" CornerRadius="12" Padding="32"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" HorizontalAlignment="Center" Margin="0,0,0,24">
+            <StackPanel Spacing="16" HorizontalAlignment="Center">
+                <!-- Phase Label -->
+                <TextBlock x:Name="PhaseLabel" Text="Work" FontSize="18" FontWeight="SemiBold"
+                           Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" />
+                <!-- Timer -->
+                <TextBlock x:Name="TimerDisplay" Text="25:00" FontSize="72" FontWeight="Bold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Center"
+                           FontFamily="Consolas" />
+                <!-- Sessions -->
+                <TextBlock x:Name="SessionsLabel" Text="Sessions: 0" FontSize="13"
+                           Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" />
+            </StackPanel>
+        </Border>
+
+        <!-- Controls -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center" Margin="0,0,0,24">
+            <Button x:Name="StartBtn" Click="Start_Click" CornerRadius="6"
+                    Background="{DynamicResource SuccessBrush}" Foreground="White" Padding="20,10">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets" FontSize="16" />
+                    <TextBlock Text="Start" FontSize="14" />
+                </StackPanel>
+            </Button>
+            <Button x:Name="PauseBtn" Click="Pause_Click" CornerRadius="6" IsEnabled="False"
+                    Background="{DynamicResource WarningBrush}" Foreground="White" Padding="20,10">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="&#xE769;" FontFamily="Segoe MDL2 Assets" FontSize="16" />
+                    <TextBlock Text="Pause" FontSize="14" />
+                </StackPanel>
+            </Button>
+            <Button Click="Reset_Click" CornerRadius="6"
+                    Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" Padding="20,10">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="16" />
+                    <TextBlock Text="Reset" FontSize="14" />
+                </StackPanel>
+            </Button>
+            <Button Click="Skip_Click" CornerRadius="6"
+                    Background="{DynamicResource InfoBrush}" Foreground="White" Padding="20,10">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="&#xE753;" FontFamily="Segoe MDL2 Assets" FontSize="16" />
+                    <TextBlock Text="Skip" FontSize="14" />
+                </StackPanel>
+            </Button>
+        </StackPanel>
+
+        <!-- Settings -->
+        <Border Grid.Row="3" Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" MaxWidth="500" HorizontalAlignment="Center" Margin="0,0,0,16">
+            <StackPanel Spacing="12">
+                <TextBlock Text="Timer Settings" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <Grid ColumnDefinitions="*,*" Margin="0,0,0,0">
+                    <StackPanel Spacing="4" Margin="0,0,16,0">
+                        <TextBlock Text="Work (minutes)" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <NumericUpDown x:Name="WorkMinutesBox" Minimum="1" Maximum="120" Value="25"
+                                       HorizontalAlignment="Stretch" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Break (minutes)" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <NumericUpDown x:Name="BreakMinutesBox" Minimum="1" Maximum="60" Value="5"
+                                       HorizontalAlignment="Stretch" />
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Health Reminder -->
+        <Border Grid.Row="4" Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" MaxWidth="500" HorizontalAlignment="Center">
+            <StackPanel Spacing="12">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Text="Health Reminder" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <ToggleSwitch x:Name="HealthToggle" Grid.Column="1" IsChecked="False" />
+                </Grid>
+                <TextBlock Text="Periodically reminds you to stretch and move around" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Reminder interval (minutes)" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <NumericUpDown x:Name="HealthIntervalBox" Minimum="10" Maximum="240" Value="60" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

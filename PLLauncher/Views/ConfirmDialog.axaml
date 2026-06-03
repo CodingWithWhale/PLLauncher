@@ -1,0 +1,25 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PLLauncher.Views.ConfirmDialog"
+        Title="Confirm"
+        Width="400" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="{DynamicResource CardBackgroundBrush}">
+
+    <Border CornerRadius="8" Padding="20" Background="{DynamicResource CardBackgroundBrush}"
+            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+        <StackPanel Spacing="16">
+            <TextBlock x:Name="MessageText" TextWrapping="Wrap" FontSize="14"
+                       Foreground="{DynamicResource TextPrimaryBrush}" />
+            <Grid ColumnDefinitions="*,*">
+                <Button Grid.Column="0" x:Name="CancelBtn" Click="Cancel_Click" CornerRadius="6" Margin="0,0,8,0"
+                        Content="Cancel" HorizontalAlignment="Stretch"
+                        Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <Button Grid.Column="1" x:Name="ConfirmBtn" Click="Confirm_Click" CornerRadius="6"
+                        Content="Yes" HorizontalAlignment="Stretch"
+                        Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" />
+            </Grid>
+        </StackPanel>
+    </Border>
+</Window>

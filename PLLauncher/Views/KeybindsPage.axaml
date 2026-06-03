@@ -1,0 +1,114 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PLLauncher.Views.KeybindsPage"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Margin="32,28">
+        <!-- Title -->
+        <Grid Grid.Row="0" Margin="0,0,0,20" ColumnDefinitions="*,Auto">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="Keybinds" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="Create and manage global hotkeys" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+            </StackPanel>
+            <Button Grid.Column="1" Click="AddKeybind_Click" CornerRadius="6"
+                    Background="{DynamicResource AccentSecondaryBrush}" Foreground="White"
+                    Padding="16,8" FontWeight="SemiBold">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                    <TextBlock Text="Add Keybind" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Search -->
+        <TextBox Grid.Row="1" x:Name="SearchBox" Watermark="Search keybinds..."
+                 TextChanged="SearchBox_TextChanged" Margin="0,0,0,16" CornerRadius="6"
+                 Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+
+        <!-- Add Panel -->
+        <Border Grid.Row="2" x:Name="AddPanel" IsVisible="False"
+                Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Margin="0,0,0,16">
+            <StackPanel Spacing="12">
+                <TextBlock Text="New Keybind" FontWeight="SemiBold" FontSize="16" Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <!-- Name + Key Combo Row -->
+                <Grid ColumnDefinitions="*,*">
+                    <TextBox x:Name="NameBox" Grid.Column="0" Watermark="Name (e.g. Open Spotify)"
+                             Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,8,0" />
+                    <Border Grid.Column="1" x:Name="KeyComboBorder" CornerRadius="6" Padding="8,6"
+                            Background="{DynamicResource SurfaceBrush}" BorderThickness="1"
+                            BorderBrush="{DynamicResource BorderBrush}"
+                            PointerPressed="KeyComboBorder_PointerPressed"
+                            Focusable="True" KeyDown="KeyComboBorder_KeyDown">
+                        <TextBlock x:Name="KeyComboText" Text="Click to record keys..."
+                                   Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" />
+                    </Border>
+                </Grid>
+
+                <!-- Action Type -->
+                <ComboBox x:Name="ActionTypeCombo" HorizontalAlignment="Stretch"
+                          Background="{DynamicResource SurfaceBrush}"
+                          SelectionChanged="ActionTypeCombo_SelectionChanged">
+                    <ComboBoxItem Content="Open App" Tag="OpenApp" />
+                    <ComboBoxItem Content="Run Command" Tag="RunCommand" />
+                    <ComboBoxItem Content="System Action" Tag="SystemAction" />
+                    <ComboBoxItem Content="Open URL" Tag="OpenUrl" />
+                    <ComboBoxItem Content="Open Folder" Tag="OpenFolder" />
+                </ComboBox>
+
+                <!-- App Picker (shown when action is OpenApp) -->
+                <ComboBox x:Name="AppPickerCombo" IsVisible="False" HorizontalAlignment="Stretch"
+                          Background="{DynamicResource SurfaceBrush}"
+                          SelectionChanged="AppPickerCombo_SelectionChanged">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <!-- Target (manual entry fallback) -->
+                <TextBox x:Name="TargetBox" Watermark="App path, command, or action"
+                         Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <TextBlock x:Name="ConflictMsg" IsVisible="False" Foreground="{DynamicResource ErrorBrush}" FontSize="13" TextWrapping="Wrap" />
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                    <Button Click="CancelAdd_Click" CornerRadius="6" Content="Cancel"
+                            Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <Button Click="SaveKeybind_Click" CornerRadius="6" Content="Save Keybind"
+                            Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Keybinds List -->
+        <ItemsControl Grid.Row="3" x:Name="KeybindsList">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="12"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Margin="0,4">
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+                            <Border Background="{DynamicResource Surface2Brush}" CornerRadius="4" Padding="10,6">
+                                <TextBlock Text="{Binding KeyCombo}" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="{DynamicResource AccentBrush}" FontFamily="Consolas" />
+                            </Border>
+                            <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center" Margin="12,0,0,0">
+                                <TextBlock Text="{Binding Name}" FontWeight="Medium" FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock Text="{Binding Description}" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </StackPanel>
+                            <Border Grid.Column="2" Background="{DynamicResource Surface2Brush}" CornerRadius="4" Padding="8,4">
+                                <TextBlock Text="{Binding ActionType}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </Border>
+                            <ToggleSwitch Grid.Column="3" IsChecked="{Binding IsEnabled}" />
+                            <Button Grid.Column="4" Click="DeleteKeybind_Click" Tag="{Binding Id}"
+                                    Background="Transparent" BorderThickness="0" Padding="8">
+                                <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="{DynamicResource ErrorBrush}" />
+                            </Button>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

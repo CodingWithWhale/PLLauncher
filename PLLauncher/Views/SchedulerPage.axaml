@@ -1,0 +1,244 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PLLauncher.Views.SchedulerPage"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <Grid RowDefinitions="Auto,Auto,*" Margin="24,20">
+        <!-- Title -->
+        <Grid Grid.Row="0" Margin="0,0,0,16" ColumnDefinitions="*,Auto,Auto">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="Scheduler" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="Schedule actions, reminders, and plan ahead" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+            </StackPanel>
+            <Button Grid.Column="1" Click="AddReminder_Click" CornerRadius="6" Margin="0,0,8,0"
+                    Background="{DynamicResource WarningBrush}" Foreground="White" Padding="16,8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="&#xE7BA;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                    <TextBlock Text="Add Reminder" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="2" Click="AddSchedule_Click" CornerRadius="6"
+                    Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" Padding="16,8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                    <TextBlock Text="Add Schedule" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Add Panel (centered, max width so it doesn't stretch off-screen) -->
+        <Border Grid.Row="1" x:Name="AddSchedulePanel" IsVisible="False"
+                Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Margin="0,0,0,12"
+                MaxWidth="700" HorizontalAlignment="Center">
+            <StackPanel Spacing="10">
+                <!-- Panel Title (changes based on item type) -->
+                <TextBlock x:Name="AddPanelTitle" Text="New Schedule" FontWeight="SemiBold" FontSize="16"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <TextBox x:Name="ScheduleNameBox" Watermark="Name (e.g. Team standup meeting)"
+                         Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <!-- Reminder-specific fields (only visible when adding a reminder) -->
+                <StackPanel x:Name="ReminderFieldsPanel" IsVisible="False" Spacing="10">
+                    <TextBox x:Name="ReminderMessageBox" Watermark="Message (what do you need to remember?)"
+                             Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                             Height="70" AcceptsReturn="True" TextWrapping="Wrap" />
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Priority" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <RadioButton x:Name="UrgencyMeh" GroupName="Urgency" Content="🟢 Low" IsChecked="True"
+                                         Foreground="{DynamicResource TextPrimaryBrush}" Tag="Meh" />
+                            <RadioButton x:Name="UrgencyDoIt" GroupName="Urgency" Content="🟡 Medium"
+                                         Foreground="{DynamicResource TextPrimaryBrush}" Tag="DoIt" />
+                            <RadioButton x:Name="UrgencyUrgent" GroupName="Urgency" Content="🔴 High"
+                                         Foreground="{DynamicResource TextPrimaryBrush}" Tag="Urgent" />
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Schedule action fields (hidden for reminders) -->
+                <StackPanel x:Name="ActionFieldsPanel" Spacing="10">
+                    <Grid ColumnDefinitions="*,*">
+                        <ComboBox x:Name="ActionTypeCombo" Grid.Column="0" HorizontalAlignment="Stretch"
+                                  Background="{DynamicResource SurfaceBrush}"
+                                  SelectionChanged="ActionTypeCombo_SelectionChanged">
+                            <ComboBoxItem Content="Open App" Tag="OpenApp" />
+                            <ComboBoxItem Content="Close App" Tag="CloseApp" />
+                            <ComboBoxItem Content="Run Command" Tag="RunCommand" />
+                            <ComboBoxItem Content="Shutdown" Tag="Shutdown" />
+                            <ComboBoxItem Content="Restart" Tag="Restart" />
+                            <ComboBoxItem Content="Sleep" Tag="Sleep" />
+                            <ComboBoxItem Content="Lock PC" Tag="LockPC" />
+                        </ComboBox>
+                        <ComboBox x:Name="RecurrenceCombo" Grid.Column="1" HorizontalAlignment="Stretch"
+                                  Background="{DynamicResource SurfaceBrush}"
+                                  SelectionChanged="RecurrenceCombo_SelectionChanged">
+                            <ComboBoxItem Content="Once" Tag="Once" />
+                            <ComboBoxItem Content="Daily" Tag="Daily" />
+                            <ComboBoxItem Content="Weekdays" Tag="Weekday" />
+                            <ComboBoxItem Content="Weekly" Tag="Weekly" />
+                            <ComboBoxItem Content="Custom" Tag="Custom" />
+                        </ComboBox>
+                    </Grid>
+
+                    <!-- Custom Days Panel (only visible when "Custom" recurrence is selected) -->
+                    <StackPanel x:Name="CustomDaysPanel" IsVisible="False" Spacing="8">
+                        <TextBlock Text="Select days" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <CheckBox x:Name="DayMon" Content="Mon" />
+                            <CheckBox x:Name="DayTue" Content="Tue" />
+                            <CheckBox x:Name="DayWed" Content="Wed" />
+                            <CheckBox x:Name="DayThu" Content="Thu" />
+                            <CheckBox x:Name="DayFri" Content="Fri" />
+                            <CheckBox x:Name="DaySat" Content="Sat" />
+                            <CheckBox x:Name="DaySun" Content="Sun" />
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- App Picker + Target -->
+                    <Grid ColumnDefinitions="*,*">
+                        <StackPanel Grid.Column="1" VerticalAlignment="Bottom">
+                            <ComboBox x:Name="AppPickerCombo" IsVisible="False" HorizontalAlignment="Stretch"
+                                      Background="{DynamicResource SurfaceBrush}"
+                                      SelectionChanged="AppPickerCombo_SelectionChanged">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding DisplayName}" />
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+                            <TextBox x:Name="ActionTargetBox" Watermark="Target (app path or command)"
+                                     Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+
+                <!-- Date + Time (shared by both schedules and reminders) -->
+                <Grid ColumnDefinitions="*,*">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="Date" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <CalendarDatePicker x:Name="ScheduleDatePicker" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Spacing="4">
+                        <TextBlock Text="Time" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TimePicker x:Name="ScheduleTimePicker" />
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                    <Button Click="CancelSchedule_Click" CornerRadius="6" Content="Cancel"
+                            Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <Button x:Name="CreateButton" Click="SaveSchedule_Click" CornerRadius="6" Content="Create Schedule"
+                            Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Main Content: Calendar (left) + Day view (right of calendar) + All schedules list (far right) -->
+        <Grid Grid.Row="2" ColumnDefinitions="Auto,Auto,*">
+            <!-- Calendar (left column) -->
+            <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="12"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Margin="0,0,12,0"
+                    VerticalAlignment="Top">
+                <Calendar x:Name="CalendarControl"
+                          SelectedDatesChanged="Calendar_SelectionChanged" />
+            </Border>
+
+            <!-- Day View (right of calendar) — shows items for selected day -->
+            <Border Grid.Column="1" Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="12"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Margin="0,0,12,0"
+                    VerticalAlignment="Top" MinWidth="240" MaxWidth="300">
+                <StackPanel Spacing="8">
+                    <TextBlock x:Name="SelectedDateLabel" Text="Select a day" FontSize="14" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <ScrollViewer MaxHeight="400">
+                        <ItemsControl x:Name="DayItemsList">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="6" Padding="10"
+                                            Margin="0,2">
+                                        <Grid ColumnDefinitions="Auto,*,Auto">
+                                            <TextBlock Text="{Binding Time, StringFormat='{}{0:hh\\:mm}'}" FontSize="12"
+                                                       Foreground="{DynamicResource AccentBrush}" FontFamily="Consolas"
+                                                       VerticalAlignment="Center" />
+                                            <StackPanel Grid.Column="1" Spacing="1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Name}" FontSize="12"
+                                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                                                <TextBlock FontSize="10" Foreground="{DynamicResource TextSecondaryBrush}">
+                                                    <TextBlock.Text>
+                                                        <MultiBinding StringFormat="{}{0}">
+                                                            <Binding Path="Urgency" />
+                                                        </MultiBinding>
+                                                    </TextBlock.Text>
+                                                </TextBlock>
+                                            </StackPanel>
+                                            <!-- Reminder badge -->
+                                            <Border Grid.Column="2" CornerRadius="4" Padding="6,1"
+                                                    IsVisible="{Binding IsReminder}" Background="#33FF9800">
+                                                <TextBlock Text="&#xE7BA;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                                                           Foreground="{DynamicResource WarningBrush}" />
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                    <!-- Empty state -->
+                    <TextBlock x:Name="DayEmptyLabel" Text="Nothing planned for this day." FontSize="12"
+                               Foreground="{DynamicResource TextSecondaryBrush}" IsVisible="True" />
+                </StackPanel>
+            </Border>
+
+            <!-- All Schedules List (far right) -->
+            <ScrollViewer Grid.Column="2">
+                <ItemsControl x:Name="SchedulesList">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="12"
+                                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Margin="0,4">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+                                    <!-- Time or Date badge -->
+                                    <Border Background="{DynamicResource Surface2Brush}" CornerRadius="4" Padding="10,6">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Time, StringFormat='{}{0:hh\\:mm}'}" FontSize="13"
+                                                       FontWeight="SemiBold" Foreground="{DynamicResource AccentBrush}"
+                                                       FontFamily="Consolas" HorizontalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+                                    <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center" Margin="12,0,0,0">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <TextBlock Text="{Binding Name}" FontWeight="Medium" FontSize="14"
+                                                       Foreground="{DynamicResource TextPrimaryBrush}" />
+                                            <!-- Reminder badge -->
+                                            <Border Background="#33FF9800" CornerRadius="4" Padding="6,1"
+                                                    IsVisible="{Binding IsReminder}">
+                                                <TextBlock Text="Reminder" FontSize="10" Foreground="{DynamicResource WarningBrush}"
+                                                           FontWeight="SemiBold" />
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}">
+                                            <Run Text="{Binding ActionType}" /> - <Run Text="{Binding Recurrence}" />
+                                        </TextBlock>
+                                        <!-- Show scheduled date if set -->
+                                        <TextBlock FontSize="11" Foreground="{DynamicResource TextTertiaryBrush}"
+                                                   Text="{Binding ScheduledDate, StringFormat='Date: {0:MMM d, yyyy}'}" />
+                                    </StackPanel>
+                                    <Border Grid.Column="2" Background="{DynamicResource Surface2Brush}" CornerRadius="4" Padding="8,4">
+                                        <TextBlock Text="{Binding Recurrence}" FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                    </Border>
+                                    <ToggleSwitch Grid.Column="3" IsChecked="{Binding IsEnabled}" />
+                                    <Button Grid.Column="4" Click="DeleteSchedule_Click" Tag="{Binding Id}"
+                                            Background="Transparent" BorderThickness="0" Padding="8">
+                                        <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="{DynamicResource ErrorBrush}" />
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</UserControl>

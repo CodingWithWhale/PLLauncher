@@ -1,0 +1,26 @@
+=== Build & Run ===
+cd "C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher"
+dotnet build
+dotnet run
+
+=== Standalone .exe ===
+.\publish.ps1
+Output: dist\publish\PLLauncher.exe (single-file self-contained)
+
+=== Installer (requires Inno Setup 6) ===
+Install Inno Setup from https://jrsoftware.org/isdl.php
+Then run: .\publish.ps1
+Output: dist\PLLauncher_Setup_1.0.0.exe
+
+=== GitHub Setup Required ===
+1. Create a repo at github.com/YOUR_USERNAME/PLLauncher
+2. Edit App.axaml.cs: change GitHubOwner and GitHubRepo constants (lines 30-31)
+3. Create an update.json in your repo's root (template provided):
+   - Set "version" to the latest release tag (e.g. "1.1.0")
+   - Set "downloadUrl" to the direct URL of the installer asset
+4. For each release:
+   a. Create a GitHub Release with tag "v1.0.0", "v1.1.0", etc.
+   b. Upload the installer .exe as a release asset
+   c. Update update.json with the new version and download URL
+   d. Commit update.json to the main branch
+5. The app fetches update.json on startup and notifies if newer

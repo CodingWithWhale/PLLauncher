@@ -1,0 +1,130 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PLLauncher.Views.TasksPage"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <Grid RowDefinitions="Auto,Auto,*" Margin="32,28">
+        <!-- Title -->
+        <Grid Grid.Row="0" Margin="0,0,0,20" ColumnDefinitions="*,Auto,Auto">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="Tasks" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="Schedule system actions and automate workflows" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+            </StackPanel>
+            <Button Grid.Column="1" x:Name="AntiSleepBtn" Click="ToggleAntiSleep_Click" Margin="0,0,8,0"
+                    CornerRadius="6" Background="{DynamicResource Surface2Brush}"
+                    Foreground="{DynamicResource TextPrimaryBrush}" Padding="12,8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="&#xE917;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                    <TextBlock x:Name="AntiSleepBtnText" Text="Anti-Sleep" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="2" Click="AddTask_Click" CornerRadius="6"
+                    Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" Padding="16,8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                    <TextBlock Text="Add Task" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Add Panel -->
+        <Border Grid.Row="1" x:Name="AddTaskPanel" IsVisible="False"
+                Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Margin="0,0,0,16">
+            <StackPanel Spacing="12">
+                <TextBlock Text="New Task" FontWeight="SemiBold" FontSize="16" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBox x:Name="TaskNameBox" Watermark="Task Name (e.g. Shutdown in 1 hour)"
+                         Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <Grid ColumnDefinitions="*,*">
+                    <ComboBox x:Name="TaskTypeCombo" Grid.Column="0" HorizontalAlignment="Stretch"
+                              Background="{DynamicResource SurfaceBrush}"
+                              SelectionChanged="TaskTypeCombo_SelectionChanged">
+                        <ComboBoxItem Content="Shutdown" Tag="Shutdown" />
+                        <ComboBoxItem Content="Restart" Tag="Restart" />
+                        <ComboBoxItem Content="Sleep" Tag="Sleep" />
+                        <ComboBoxItem Content="Hibernate" Tag="Hibernate" />
+                        <ComboBoxItem Content="Lock PC" Tag="LockPC" />
+                        <ComboBoxItem Content="Open App" Tag="OpenApp" />
+                        <ComboBoxItem Content="Close App" Tag="CloseApp" />
+                        <ComboBoxItem Content="Run Command" Tag="RunCommand" />
+                        <ComboBoxItem Content="Anti-Sleep" Tag="AntiSleep" />
+                    </ComboBox>
+                    <ComboBox x:Name="ScheduleTypeCombo" Grid.Column="1" HorizontalAlignment="Stretch"
+                              Background="{DynamicResource SurfaceBrush}"
+                              SelectionChanged="ScheduleTypeCombo_SelectionChanged">
+                        <ComboBoxItem Content="After delay" Tag="Delayed" />
+                        <ComboBoxItem Content="At specific time" Tag="SpecificTime" />
+                    </ComboBox>
+                </Grid>
+
+                <!-- Delay input (shown for "After delay" schedule type) -->
+                <StackPanel x:Name="DelayPanel">
+                    <TextBlock Text="Delay (minutes)" FontSize="12" Margin="0,0,0,4" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <NumericUpDown x:Name="DelayBox" Value="60" Minimum="1" Maximum="1440" />
+                </StackPanel>
+
+                <!-- Time picker (shown for "At specific time" schedule type) -->
+                <StackPanel x:Name="TimePickerPanel" IsVisible="False">
+                    <TextBlock Text="Scheduled Time" FontSize="12" Margin="0,0,0,4" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TimePicker x:Name="TimePicker" />
+                </StackPanel>
+
+                <!-- App Picker for OpenApp/CloseApp -->
+                <ComboBox x:Name="AppPickerCombo" IsVisible="False" HorizontalAlignment="Stretch"
+                          Background="{DynamicResource SurfaceBrush}"
+                          SelectionChanged="AppPickerCombo_SelectionChanged">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DisplayName}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBox x:Name="TargetAppBox" Watermark="Target app (optional)"
+                         Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                         IsVisible="False" />
+
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                    <Button Click="CancelAddTask_Click" CornerRadius="6" Content="Cancel"
+                            Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <Button Click="SaveTask_Click" CornerRadius="6" Content="Create Task"
+                            Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Tasks List -->
+        <ItemsControl Grid.Row="2" x:Name="TasksList">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="12"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Margin="0,4">
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+                            <Border Background="{DynamicResource Surface2Brush}" CornerRadius="20" Width="40" Height="40">
+                                <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                           Foreground="{DynamicResource WarningBrush}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Name}" FontWeight="Medium" FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}">
+                                    <Run Text="{Binding TaskType}" /> at <Run Text="{Binding ScheduledTime, StringFormat='{}{0:HH:mm}'}" />
+                                </TextBlock>
+                            </StackPanel>
+                            <Border Grid.Column="2" Background="{DynamicResource InfoBrush}" Opacity="0.2" CornerRadius="4" Padding="8,4">
+                                <TextBlock Text="{Binding Status}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource InfoBrush}" />
+                            </Border>
+                            <Button Grid.Column="3" Click="DelayTask_Click" Tag="{Binding Id}" CornerRadius="6"
+                                    Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                                    Padding="8,4" FontSize="12" Content="Delay 10m" />
+                            <Button Grid.Column="4" Click="CancelTask_Click" Tag="{Binding Id}"
+                                    Background="Transparent" BorderThickness="0" Padding="8">
+                                <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="{DynamicResource ErrorBrush}" />
+                            </Button>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

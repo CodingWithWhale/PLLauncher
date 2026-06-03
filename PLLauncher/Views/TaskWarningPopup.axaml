@@ -1,0 +1,73 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PLLauncher.Views.TaskWarningPopup"
+        Title="Task Warning"
+        Width="380" SizeToContent="Height"
+        WindowStartupLocation="Manual"
+        Topmost="True"
+        ShowInTaskbar="True"
+        CanResize="False"
+        Background="{DynamicResource CardBackgroundBrush}"
+        ExtendClientAreaToDecorationsHint="True"
+        TransparencyLevelHint="AcrylicBlur">
+
+    <Border CornerRadius="8" Padding="20" Background="{DynamicResource CardBackgroundBrush}"
+            BorderBrush="{DynamicResource WarningBrush}" BorderThickness="1">
+        <StackPanel Spacing="16">
+            <!-- Header -->
+            <StackPanel Spacing="8">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Border Width="36" Height="36" CornerRadius="8" Background="#33FF9800">
+                        <TextBlock Text="&#xE7BA;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                   Foreground="{DynamicResource WarningBrush}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel Spacing="2" VerticalAlignment="Center">
+                        <TextBlock Text="Task Warning" FontSize="16" FontWeight="Bold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock x:Name="TimeRemainingText" Text="Coming up soon"
+                                   FontSize="12" Foreground="{DynamicResource WarningBrush}" />
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Task Details -->
+            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="6" Padding="12">
+                <StackPanel Spacing="6">
+                    <TextBlock x:Name="TaskNameText" Text="Task Name" FontSize="14" FontWeight="SemiBold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Border Background="#33FF9800" CornerRadius="4" Padding="6,2">
+                            <TextBlock x:Name="TaskTypeText" Text="Shutdown" FontSize="11"
+                                       Foreground="{DynamicResource WarningBrush}" FontWeight="SemiBold" />
+                        </Border>
+                        <TextBlock x:Name="TaskTimeText" Text="at 16:00" FontSize="12"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Action Buttons -->
+            <Grid ColumnDefinitions="*,*">
+                <Button Grid.Column="0" Click="Snooze_Click" CornerRadius="6" Padding="12,10"
+                        Background="{DynamicResource AccentSecondaryBrush}" Foreground="White"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="&#xE923;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Text="Snooze 10 min" FontSize="13" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+                <Button Grid.Column="1" Click="Discard_Click" CornerRadius="6" Padding="12,10"
+                        Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                   VerticalAlignment="Center" />
+                        <TextBlock Text="Discard" FontSize="13" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </StackPanel>
+    </Border>
+</Window>

@@ -1,0 +1,131 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="PLLauncher.Views.SetupsPage"
+             Background="{DynamicResource BackgroundBrush}">
+
+    <Grid RowDefinitions="Auto,Auto,*" Margin="24,20">
+        <!-- Title -->
+        <Grid Grid.Row="0" Margin="0,0,0,16" ColumnDefinitions="*,Auto">
+            <StackPanel Grid.Column="0" Spacing="4">
+                <TextBlock Text="Setups" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock Text="Create groups of apps and launch them together" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+            </StackPanel>
+            <Button Grid.Column="1" Click="AddGroup_Click" CornerRadius="6"
+                    Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" Padding="16,8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                    <TextBlock Text="New Setup" />
+                </StackPanel>
+            </Button>
+        </Grid>
+
+        <!-- Add Group Panel (dedicated row — avoids button jump) -->
+        <Border Grid.Row="1" x:Name="AddGroupPanel" IsVisible="False"
+                Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Margin="0,0,0,16"
+                MaxWidth="520" HorizontalAlignment="Left">
+            <StackPanel Spacing="12">
+                <TextBlock Text="New Setup" FontWeight="SemiBold" FontSize="16" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBox x:Name="GroupNameBox" Watermark="Name (e.g. Work, Gaming, School)"
+                         Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Icon" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <ComboBox x:Name="GroupIconCombo" HorizontalAlignment="Stretch"
+                              Background="{DynamicResource SurfaceBrush}" SelectedIndex="0" />
+                </StackPanel>
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Apps to launch" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <StackPanel x:Name="NewGroupAppsPanel" Spacing="8" />
+                    <Button Click="AddAnotherAppField_Click" HorizontalAlignment="Left" CornerRadius="6"
+                            Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                            Padding="10,6" Content="+ Add another app" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                    <Button Click="CancelGroup_Click" CornerRadius="6" Content="Cancel"
+                            Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <Button Click="SaveGroup_Click" CornerRadius="6" Content="Create"
+                            Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Groups List -->
+        <ScrollViewer Grid.Row="2">
+            <ItemsControl x:Name="GroupsList">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Margin="0,4">
+                            <StackPanel Spacing="12">
+                                <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+                                    <TextBlock Text="{Binding Icon}" FontSize="24" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="18" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Margin="12,0,0,0" />
+                                    <Button Grid.Column="2" Click="LaunchGroup_Click" CornerRadius="6" Margin="0,0,8,0"
+                                            Background="{DynamicResource SuccessBrush}" Foreground="White" Padding="12,6">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets" FontSize="12" />
+                                            <TextBlock Text="Launch" FontSize="12" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="3" Click="ScheduleLaunch_Click" CornerRadius="6" Margin="0,0,8,0"
+                                            Background="{DynamicResource InfoBrush}" Foreground="White" Padding="12,6">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="12" />
+                                            <TextBlock Text="Schedule" FontSize="12" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Grid.Column="4" Click="DeleteGroup_Click" Tag="{Binding Id}"
+                                            Background="Transparent" BorderThickness="0" Padding="8">
+                                        <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="{DynamicResource ErrorBrush}" />
+                                    </Button>
+                                </Grid>
+
+                                <ItemsControl ItemsSource="{Binding AppPaths}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{DynamicResource SurfaceBrush}" CornerRadius="4" Padding="8,4" Margin="0,2">
+                                                <Grid ColumnDefinitions="Auto,*,Auto">
+                                                    <TextBlock Text="&#xECAA;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                                               Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                                    <TextBlock Grid.Column="1" Text="{Binding}" FontSize="12"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}" Margin="8,0,0,0"
+                                                               TextTrimming="CharacterEllipsis" />
+                                                    <Button Grid.Column="2" Click="RemoveApp_Click" Tag="{Binding}"
+                                                            Background="Transparent" BorderThickness="0" Padding="4">
+                                                        <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="10"
+                                                                   Foreground="{DynamicResource TextTertiaryBrush}" />
+                                                    </Button>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <Grid ColumnDefinitions="*,Auto">
+                                    <ComboBox HorizontalAlignment="Stretch"
+                                              Background="{DynamicResource SurfaceBrush}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding DisplayName}" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <Button Grid.Column="1" Click="AddApp_Click" Tag="{Binding Id}" CornerRadius="6" Margin="8,0,0,0"
+                                            Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" Padding="12,6" Content="Add" />
+                                </Grid>
+
+                                <Grid ColumnDefinitions="Auto,Auto,Auto" Margin="0,4,0,0">
+                                    <TextBlock Text="Launch in:" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                    <NumericUpDown x:Name="DelayMinutesBox" Grid.Column="1" Minimum="1" Maximum="1440" Value="5"
+                                                   Margin="8,0,8,0" Width="100" />
+                                    <TextBlock Grid.Column="2" Text="minutes" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

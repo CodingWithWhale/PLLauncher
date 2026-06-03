@@ -1,3 +1,4 @@
+using Avalonia.Controls;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -99,6 +100,24 @@ public class UpdateService
         _notificationService.ShowNotification(
             "Update Available",
             $"PLLauncher v{update.Version} is available (you have v{CurrentVersion}).");
+    }
+
+    public async Task<bool> PromptUpdateAsync(Window? owner)
+    {
+        var update = await CheckForUpdatesAsync();
+        if (update == null) return false;
+
+        var loc = LocalizationService.Instance;
+        var confirmed = await Helpers.DialogHelper.ShowConfirmAsync(
+            owner,
+            $"PLLauncher v{update.Version} is available (you have v{CurrentVersion}). Download and install?",
+            "Update Available",
+            "Update",
+            "Later");
+
+        if (!confirmed) return true; // true = update available but user declined (don't show again this session)
+
+        return await DownloadAndInstallAsync(update.DownloadUrl);
     }
 
     private static Version? ParseVersion(string versionString)

@@ -6,6 +6,7 @@ using Avalonia.Styling;
 using PLLauncher.Services;
 using PLLauncher.ViewModels;
 using System;
+using System.Threading.Tasks;
 
 namespace PLLauncher;
 
@@ -251,8 +252,17 @@ public partial class App : Application
             SetTheme(SettingsViewModel.DarkMode);
             LocalizationService.Instance.LoadFromSettings(SettingsViewModel.Language);
 
-            // Check for updates on startup
-            _ = UpdateService.CheckOnStartupAsync();
+            // Check for updates on startup (show dialog after window is visible)
+            if (Avalonia.Application.Current?.ApplicationLifetime
+                is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
+                && desktop.MainWindow is MainWindow mainWindow)
+            {
+                mainWindow.Opened += async (_, _) =>
+                {
+                    await Task.Delay(2000); // brief delay so user sees the window first
+                    await UpdateService.PromptUpdateAsync(mainWindow);
+                };
+            }
         }
         catch (Exception ex)
         {

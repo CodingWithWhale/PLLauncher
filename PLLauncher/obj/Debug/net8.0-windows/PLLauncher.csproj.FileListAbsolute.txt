@@ -127,3 +127,4 @@ D:\PLLancher Version\v15\PLLauncher\PLLauncher\obj\Debug\net8.0-windows\PLLaunch
 D:\PLLancher Version\v15\PLLauncher\PLLauncher\obj\Debug\net8.0-windows\PLLauncher.genruntimeconfig.cache
 D:\PLLancher Version\v15\PLLauncher\PLLauncher\obj\Debug\net8.0-windows\ref\PLLauncher.dll
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Debug\net8.0-windows\icon.ico
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Debug\net8.0-windows\PLLauncher.sourcelink.json

@@ -110,7 +110,19 @@ public class AppUsageTrackingService : IDisposable
         try
         {
             var loaded = await _dataService.LoadAppUsageAsync();
-            _records = loaded.ToDictionary(r => $"{r.ProcessName}|{r.Date:yyyy-MM-dd}", r => r);
+            var today = DateTime.Today;
+            _records = new(StringComparer.OrdinalIgnoreCase);
+            foreach (var r in loaded)
+            {
+                // Normalize Date to remove any time component that may have shifted
+                // during JSON roundtrip with timezone offset
+                r.Date = r.Date.Date;
+                // Discard records older than 60 days
+                if (r.Date < today.AddDays(-60)) continue;
+                var key = $"{r.ProcessName}|{r.Date:yyyy-MM-dd}";
+                if (!_records.ContainsKey(key))
+                    _records[key] = r;
+            }
         }
         catch { _records = new(); }
     }
@@ -211,8 +223,10 @@ public class AppUsageTrackingService : IDisposable
 
     public List<AppUsageSummary> GetUsageSummaries(DateTime from, DateTime to)
     {
+        var fromDate = from.Date;
+        var toDate = to.Date;
         var records = _records.Values
-            .Where(r => r.Date >= from.Date && r.Date <= to.Date)
+            .Where(r => r.Date >= fromDate && r.Date < toDate.AddDays(1))
             .Where(r => !IsNoiseProcess(r.ProcessName))
             .GroupBy(r => r.ProcessName, StringComparer.OrdinalIgnoreCase)
             .Select(g => new AppUsageSummary

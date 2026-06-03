@@ -1,5 +1,7 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using PLLauncher.Helpers;
 using PLLauncher.Services;
 using System;
 
@@ -80,10 +82,33 @@ public partial class SettingsPage : UserControl
         SettingsSubtitle.Text = loc.Get("settings.subtitle");
         LanguageSectionTitle.Text = loc.Get("settings.language");
         LanguageLabel.Text = loc.Get("settings.language");
+        LanguageDesc.Text = loc.Get("settings.language_desc");
         GeneralSectionTitle.Text = loc.Get("settings.general");
+        StartupLabel.Text = loc.Get("settings.startup_label");
+        StartupDesc.Text = loc.Get("settings.startup_desc");
+        TrayLabel.Text = loc.Get("settings.tray_label");
+        TrayDesc.Text = loc.Get("settings.tray_desc");
+        NotificationsLabel.Text = loc.Get("settings.notifications_label");
+        NotificationsDesc.Text = loc.Get("settings.notifications_desc");
         AppearanceSectionTitle.Text = loc.Get("settings.appearance");
+        DarkModeLabel.Text = loc.Get("settings.darkmode_label");
+        DarkModeDesc.Text = loc.Get("settings.darkmode_desc");
+        AnimationsLabel.Text = loc.Get("settings.animations_label");
+        AnimationsDesc.Text = loc.Get("settings.animations_desc");
         PerformanceSectionTitle.Text = loc.Get("settings.performance");
+        PerformanceLabel.Text = loc.Get("settings.performance_label");
+        PerformanceDesc.Text = loc.Get("settings.performance_desc");
+        WarningLabel.Text = loc.Get("settings.warning_label");
+        WarningDesc.Text = loc.Get("settings.warning_desc");
+        CooldownLabel.Text = loc.Get("settings.cooldown_label");
+        CooldownDesc.Text = loc.Get("settings.cooldown_desc");
         DataSectionTitle.Text = loc.Get("settings.data");
+        ExportLabel.Text = loc.Get("settings.export_label");
+        ExportDesc.Text = loc.Get("settings.export_desc");
+        ImportLabel.Text = loc.Get("settings.import_label");
+        ImportDesc.Text = loc.Get("settings.import_desc");
+        ResetLabel.Text = loc.Get("settings.reset_label");
+        ResetDesc.Text = loc.Get("settings.reset_desc");
         SaveButtonText.Text = loc.Get("settings.save");
         DiscardButtonText.Text = loc.Get("settings.discard");
         if (UnsavedHint.IsVisible)
@@ -95,6 +120,7 @@ public partial class SettingsPage : UserControl
         UnsavedHint.Text = LocalizationService.Instance.Get("settings.unsaved");
         UnsavedHint.IsVisible = unsaved;
         DiscardButton.IsVisible = unsaved;
+        BottomBar.IsVisible = unsaved;
     }
 
     private void OnSettingChanged()
@@ -140,6 +166,10 @@ public partial class SettingsPage : UserControl
 
     private async void SaveSettings_Click(object? s, RoutedEventArgs e)
     {
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        if (!await DialogHelper.ShowConfirmAsync(owner, "Apply settings?", "Save changes to settings?"))
+            return;
+
         try
         {
             var vm = App.SettingsViewModel;

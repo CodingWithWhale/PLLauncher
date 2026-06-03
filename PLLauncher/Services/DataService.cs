@@ -11,9 +11,21 @@ namespace PLLauncher.Services;
 
 public class DataService
 {
-    private static readonly string AppDataPath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "PLLauncher");
+    public static readonly string AppDataPath = GetDataPath();
+
+    private static string GetDataPath()
+    {
+        try
+        {
+            using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\PLLauncher");
+            if (key?.GetValue("DataDir") is string dir && !string.IsNullOrWhiteSpace(dir))
+                return dir;
+        }
+        catch { }
+        return Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "PLLauncher");
+    }
 
     private static readonly JsonSerializerOptions JsonOptions = new()
     {

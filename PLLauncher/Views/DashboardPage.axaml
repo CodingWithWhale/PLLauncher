@@ -9,7 +9,7 @@
             <StackPanel Spacing="4">
                 <TextBlock x:Name="GreetingText" Text="Good morning" FontSize="28" FontWeight="Bold"
                            Foreground="{DynamicResource TextPrimaryBrush}" />
-                <TextBlock Text="Here's your productivity overview" FontSize="14"
+                <TextBlock x:Name="SubtitleText" Text="Here's your productivity overview" FontSize="14"
                            Foreground="{DynamicResource TextSecondaryBrush}" />
             </StackPanel>
 
@@ -20,7 +20,7 @@
                     <StackPanel Spacing="8">
                         <TextBlock Text="&#xE92E;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="{DynamicResource AccentBrush}" />
                         <TextBlock x:Name="HotkeyCount" Text="0" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                        <TextBlock Text="Active Hotkeys" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock x:Name="HotkeysLabel" Text="Active Hotkeys" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
                 </Border>
                 <Border Margin="4,0" Classes="CardBorder" Background="{DynamicResource CardBackgroundBrush}"
@@ -28,7 +28,7 @@
                     <StackPanel Spacing="8">
                         <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="{DynamicResource WarningBrush}" />
                         <TextBlock x:Name="TaskCount" Text="0" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                        <TextBlock Text="Active Tasks" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock x:Name="TasksLabel" Text="Active Tasks" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
                 </Border>
                 <Border Margin="4,0" Classes="CardBorder" Background="{DynamicResource CardBackgroundBrush}"
@@ -36,7 +36,7 @@
                     <StackPanel Spacing="8">
                         <TextBlock Text="&#xE917;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="{DynamicResource ErrorBrush}" />
                         <TextBlock x:Name="LimitCount" Text="0" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                        <TextBlock Text="Time Limits" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock x:Name="LimitsLabel" Text="Time Limits" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
                 </Border>
                 <Border Margin="8,0,0,0" Classes="CardBorder" Background="{DynamicResource CardBackgroundBrush}"
@@ -44,14 +44,14 @@
                     <StackPanel Spacing="8">
                         <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="{DynamicResource SuccessBrush}" />
                         <TextBlock x:Name="ScheduleCount" Text="0" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                        <TextBlock Text="Schedules" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock x:Name="SchedulesLabel" Text="Schedules" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
                 </Border>
             </UniformGrid>
 
             <!-- Quick Actions -->
             <StackPanel Spacing="12">
-                <TextBlock Text="Quick Actions" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock x:Name="QuickActionsLabel" Text="Quick Actions" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
                 <UniformGrid Columns="3">
                     <Button x:Name="AntiSleepBtn" Margin="0,0,8,0" Click="ToggleAntiSleep_Click"
                             HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
@@ -69,7 +69,7 @@
                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="16">
                         <StackPanel Spacing="6" HorizontalAlignment="Center">
                             <TextBlock Text="&#xE7E8;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="{DynamicResource ErrorBrush}" HorizontalAlignment="Center" />
-                            <TextBlock Text="Shutdown 1h" FontSize="12" HorizontalAlignment="Center" />
+                            <TextBlock x:Name="ShutdownText" Text="Shutdown 1h" FontSize="12" HorizontalAlignment="Center" />
                         </StackPanel>
                     </Button>
                     <Button Margin="8,0,0,0" Click="QuickLock_Click" HorizontalAlignment="Stretch"
@@ -78,7 +78,7 @@
                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="16">
                         <StackPanel Spacing="6" HorizontalAlignment="Center">
                             <TextBlock Text="&#xE72E;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="{DynamicResource WarningBrush}" HorizontalAlignment="Center" />
-                            <TextBlock Text="Lock PC" FontSize="12" HorizontalAlignment="Center" />
+                            <TextBlock x:Name="LockText" Text="Lock PC" FontSize="12" HorizontalAlignment="Center" />
                         </StackPanel>
                     </Button>
                 </UniformGrid>
@@ -90,7 +90,7 @@
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" />
                     <StackPanel Spacing="2">
-                        <TextBlock Text="System Status" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock x:Name="StatusLabel" Text="System Status" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
                         <TextBlock x:Name="SystemStatusText" Text="All systems operational" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
                 </StackPanel>

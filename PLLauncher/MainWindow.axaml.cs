@@ -25,6 +25,7 @@ public partial class MainWindow : Window
         InitializeComponent();
         _isInitialized = true;
         ApplyLocalization();
+        LocalizationService.Instance.LanguageChanged += (_, _) => ApplyLocalization();
         NavigateToPage("Dashboard");
 
         var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;

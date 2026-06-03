@@ -61,12 +61,13 @@ public partial class DashboardViewModel : ObservableObject
 
     private void UpdateGreeting()
     {
+        var loc = LocalizationService.Instance;
         Greeting = DateTime.Now.Hour switch
         {
-            >= 5 and < 12 => "Good morning",
-            >= 12 and < 17 => "Good afternoon",
-            >= 17 and < 21 => "Good evening",
-            _ => "Good night"
+            >= 5 and < 12 => loc.Get("dashboard.greeting_morning"),
+            >= 12 and < 17 => loc.Get("dashboard.greeting_afternoon"),
+            >= 17 and < 21 => loc.Get("dashboard.greeting_evening"),
+            _ => loc.Get("dashboard.greeting_night")
         };
     }
 }

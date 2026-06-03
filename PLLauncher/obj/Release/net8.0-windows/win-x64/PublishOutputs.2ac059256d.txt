@@ -1,0 +1,2 @@
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\dist\publish\icon.ico
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\dist\publish\PLLauncher.exe

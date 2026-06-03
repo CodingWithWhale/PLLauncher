@@ -13,12 +13,29 @@ public partial class DashboardPage : UserControl
     {
         InitializeComponent();
         this.Loaded += OnLoaded;
+        LocalizationService.Instance.LanguageChanged += (_, _) => ApplyLocalizedText();
     }
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)
     {
         try { await RefreshAsync(); }
         catch (Exception ex) { Console.WriteLine($"Dashboard load error: {ex.Message}"); }
+    }
+
+    private void ApplyLocalizedText()
+    {
+        var loc = LocalizationService.Instance;
+        SubtitleText.Text = loc.Get("dashboard.subtitle");
+        HotkeysLabel.Text = loc.Get("dashboard.active_hotkeys");
+        TasksLabel.Text = loc.Get("dashboard.active_tasks");
+        LimitsLabel.Text = loc.Get("dashboard.time_limits");
+        SchedulesLabel.Text = loc.Get("dashboard.schedules");
+        QuickActionsLabel.Text = loc.Get("dashboard.quick_actions");
+        AntiSleepText.Text = loc.Get("dashboard.anti_sleep");
+        ShutdownText.Text = loc.Get("dashboard.shutdown_1h");
+        LockText.Text = loc.Get("dashboard.lock_pc");
+        StatusLabel.Text = loc.Get("dashboard.system_status");
+        SystemStatusText.Text = loc.Get("dashboard.system_status_ok");
     }
 
     private Window? GetOwnerWindow()
@@ -28,13 +45,14 @@ public partial class DashboardPage : UserControl
     {
         var vm = App.DashboardViewModel;
         await vm.RefreshCommand.ExecuteAsync(null);
+        ApplyLocalizedText();
         GreetingText.Text = vm.Greeting;
         HotkeyCount.Text = vm.ActiveHotkeyCount.ToString();
         TaskCount.Text = vm.ActiveTaskCount.ToString();
         LimitCount.Text = vm.ActiveTimeLimitsCount.ToString();
         ScheduleCount.Text = vm.ActiveScheduleCount.ToString();
         SystemStatusText.Text = vm.SystemStatus;
-        AntiSleepText.Text = vm.IsAntiSleepActive ? "Stop Anti-Sleep" : "Anti-Sleep";
+        AntiSleepText.Text = vm.IsAntiSleepActive ? "Stop Anti-Sleep" : LocalizationService.Instance.Get("dashboard.anti_sleep");
     }
 
     private async void ToggleAntiSleep_Click(object? sender, RoutedEventArgs e)

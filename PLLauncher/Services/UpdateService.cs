@@ -88,7 +88,7 @@ public class UpdateService
 
             // Launch installer via cmd wrapper: wait for app to exit, install silently, then restart
             var installDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
-            var args = $"/c timeout /t 1 /nobreak >nul & \"{installerPath}\" /SILENT & start \"\" \"{installDir}\\PLLauncher.exe\"";
+            var args = $"/c timeout /t 3 /nobreak >nul & \"{installerPath}\" /SILENT & start \"\" \"{installDir}\\PLLauncher.exe\"";
             Process.Start(new ProcessStartInfo
             {
                 FileName = "cmd.exe",

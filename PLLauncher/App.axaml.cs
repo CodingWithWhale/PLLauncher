@@ -95,17 +95,31 @@ public partial class App : Application
 
         if (!createdNew)
         {
-            // Another instance is running — signal it to show its window, then exit
+            // Mutex already exists — could be another instance or an abandoned mutex from a crash
             try
             {
-                using var signal = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
-                signal.Set();
+                // Try to acquire it (non-blocking) — if abandoned, we get the exception but now own it
+                _singleInstanceMutex.WaitOne(0);
+                // Acquired successfully (mutex was free) — keep ownership and proceed
             }
-            catch { }
+            catch (AbandonedMutexException)
+            {
+                // Mutex was abandoned in a crash — we now own it, proceed as first instance
+            }
+            catch
+            {
+                // Another instance is actively holding the mutex — signal it to show its window, then exit
+                try
+                {
+                    using var signal = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
+                    signal.Set();
+                }
+                catch { }
 
-            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
-                lifetime.Shutdown(0);
-            return;
+                if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
+                    lifetime.Shutdown(0);
+                return;
+            }
         }
 
         // First instance — create the show-window event for other instances to signal

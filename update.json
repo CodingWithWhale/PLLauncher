@@ -1,5 +1,5 @@
 {
-  "version": "2.2.2",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.2.2/PLLauncher_Setup_2.2.2.exe",
-  "changelog": "Single-instance enforcement: prevents duplicate windows and tray icons when launching a second instance."
+  "version": "2.3.1",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.3.1/PLLauncher_Setup_2.3.1.exe",
+  "changelog": "Fixed auto-update: update check now runs before the window opens; normalized version comparison for consistent results."
 }

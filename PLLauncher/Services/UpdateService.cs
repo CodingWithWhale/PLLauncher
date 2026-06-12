@@ -37,7 +37,8 @@ public class UpdateService
         _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("PLLauncher/1.0");
     }
 
-    public Version CurrentVersion => Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0, 0);
+    public Version CurrentVersion => NormalizeVersion(
+        Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0, 0));
 
     public async Task<UpdateInfo?> CheckForUpdatesAsync()
     {
@@ -55,6 +56,15 @@ public class UpdateService
         {
             return null;
         }
+    }
+
+    private static Version NormalizeVersion(Version v)
+    {
+        var major = v.Major;
+        var minor = v.Minor;
+        var build = v.Build >= 0 ? v.Build : 0;
+        var revision = v.Revision >= 0 ? v.Revision : 0;
+        return new Version(major, minor, build, revision);
     }
 
     public async Task<bool> DownloadAndInstallAsync(string downloadUrl)
@@ -124,7 +134,7 @@ public class UpdateService
     {
         var v = versionString.TrimStart('v', 'V', ' ');
         if (Version.TryParse(v, out var version))
-            return version;
+            return NormalizeVersion(version);
         return null;
     }
 

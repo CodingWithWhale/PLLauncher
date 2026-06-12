@@ -162,6 +162,13 @@ public partial class App : Application
                 Console.WriteLine($"Service start error: {ex.Message}");
             }
 
+            // Wire up update check BEFORE the window opens (Opened fires only once)
+            desktop.MainWindow.Opened += async (_, _) =>
+            {
+                await Task.Delay(2000);
+                await UpdateService.PromptUpdateAsync(desktop.MainWindow);
+            };
+
             // Wire up tray icon events
             SystemTrayService.ShowWindowRequested += (_, _) =>
             {
@@ -325,18 +332,6 @@ public partial class App : Application
             SetTheme(SettingsViewModel.DarkMode);
             LocalizationService.Instance.LoadFromSettings(SettingsViewModel.Language);
             SystemTrayService.SetAutoStart(SettingsViewModel.LaunchOnStartup);
-
-            // Check for updates on startup (show dialog after window is visible)
-            if (Avalonia.Application.Current?.ApplicationLifetime
-                is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
-                && desktop.MainWindow is MainWindow mainWindow)
-            {
-                mainWindow.Opened += async (_, _) =>
-                {
-                    await Task.Delay(2000); // brief delay so user sees the window first
-                    await UpdateService.PromptUpdateAsync(mainWindow);
-                };
-            }
         }
         catch (Exception ex)
         {

@@ -7,12 +7,20 @@ using Avalonia.Styling;
 using PLLauncher.Services;
 using PLLauncher.ViewModels;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace PLLauncher;
 
 public partial class App : Application
 {
+    // Single-instance enforcement
+    private static Mutex? _singleInstanceMutex;
+    private static EventWaitHandle? _showWindowEvent;
+    private const string AppGuid = "{B8A3C8E0-4C1A-4F3A-9E2D-7A1B2C3D4E5F}";
+    private static readonly string MutexName = $"Global\\PLLauncher-{AppGuid}";
+    private static readonly string ShowWindowEventName = $"Global\\PLLauncher-Show-{AppGuid}";
+
     // Services (singleton instances)
     public static DataService DataService { get; } = new();
     public static NotificationService NotificationService { get; } = new();
@@ -81,6 +89,28 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
+        // Single-instance check: try to own the mutex
+        bool createdNew;
+        _singleInstanceMutex = new Mutex(true, MutexName, out createdNew);
+
+        if (!createdNew)
+        {
+            // Another instance is running — signal it to show its window, then exit
+            try
+            {
+                using var signal = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
+                signal.Set();
+            }
+            catch { }
+
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
+                lifetime.Shutdown(0);
+            return;
+        }
+
+        // First instance — create the show-window event for other instances to signal
+        _showWindowEvent = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
+
         try
         {
             // Initialize services with dependencies
@@ -147,11 +177,37 @@ public partial class App : Application
                 desktop.Shutdown();
             };
 
+            // Listen for signals from other instances to show the window
+            _ = ListenForShowWindowSignalAsync();
+
             // Handle application exit
             desktop.ShutdownRequested += OnShutdownRequested;
         }
 
         base.OnFrameworkInitializationCompleted();
+    }
+
+    private static async Task ListenForShowWindowSignalAsync()
+    {
+        while (true)
+        {
+            try
+            {
+                await Task.Run(() => _showWindowEvent?.WaitOne());
+
+                if (Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
+                    && desktop.MainWindow is MainWindow window)
+                {
+                    window.Show();
+                    window.WindowState = WindowState.Normal;
+                    window.Activate();
+                }
+            }
+            catch
+            {
+                break;
+            }
+        }
     }
 
     /// <summary>
@@ -302,6 +358,10 @@ public partial class App : Application
             PomodoroService.Dispose();
             HealthReminderService.Dispose();
             UpdateService.Dispose();
+
+            _showWindowEvent?.Dispose();
+            _singleInstanceMutex?.ReleaseMutex();
+            _singleInstanceMutex?.Dispose();
         }
         catch { }
     }

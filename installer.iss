@@ -2,7 +2,7 @@
 ; Requires Inno Setup 6+ (https://jrsoftware.org/isdl.php)
 
 #define MyAppName "PLLauncher"
-#define MyAppVersion "2.2.1"
+#define MyAppVersion "2.2.2"
 #define MyAppPublisher "PLLauncher"
 #define MyAppURL "https://github.com/CodingWithWhale/PLLauncher"
 #define MyAppExeName "PLLauncher.exe"

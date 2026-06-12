@@ -1,5 +1,5 @@
 {
-  "version": "2.5.0",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.5.0/PLLauncher_Setup_2.5.0.exe",
-  "changelog": "Auto-update now properly closes the app, installs silently, and relaunches the new version."
+  "version": "2.5.1",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.5.1/PLLauncher_Setup_2.5.1.exe",
+  "changelog": "Time limit enforcement: re-launch attempts are blocked with a notification, cooldown system, and midnight auto-reset."
 }

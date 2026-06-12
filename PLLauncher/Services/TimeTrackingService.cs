@@ -32,6 +32,8 @@ public class TimeTrackingService : IDisposable
     {
         if (_isRunning) return;
         _isRunning = true; _cts = new();
+
+        // Tracking loop: every 10 seconds, count foreground usage
         _ = Task.Run(async () =>
         {
             while (!_cts.IsCancellationRequested)
@@ -41,9 +43,45 @@ public class TimeTrackingService : IDisposable
                 catch { }
             }
         }, _cts.Token);
+
+        // Enforcement loop: every 2 seconds, catch re-launch attempts
+        _ = Task.Run(async () =>
+        {
+            while (!_cts.IsCancellationRequested)
+            {
+                try { EnforceLockedProcesses(); await Task.Delay(2000, _cts.Token); }
+                catch (OperationCanceledException) { break; }
+                catch { }
+            }
+        }, _cts.Token);
     }
 
+    // Tracks which locked processes we've already notified about (per re-launch attempt)
+    private readonly Dictionary<string, DateTime> _lastNotificationTime = new(StringComparer.OrdinalIgnoreCase);
+    private static readonly TimeSpan NotificationCooldown = TimeSpan.FromSeconds(10);
+
     public void Stop() { _isRunning = false; _cts?.Cancel(); _cts?.Dispose(); _cts = null; }
+
+    private void EnforceLockedProcesses()
+    {
+        foreach (var l in _timeLimits.Where(l => l.IsLocked))
+        {
+            if (string.IsNullOrWhiteSpace(l.ProcessName)) continue;
+
+            if (!_processMonitor.IsProcessRunning(l.ProcessName)) continue;
+
+            _processMonitor.TerminateProcess(l.ProcessName);
+
+            var now = DateTime.Now;
+            if (_lastNotificationTime.TryGetValue(l.ProcessName, out var last) &&
+                (now - last) < NotificationCooldown)
+                continue;
+
+            _lastNotificationTime[l.ProcessName] = now;
+            _notificationService.ShowNotification("Time Limit Reached",
+                $"You've hit your time limit for today.");
+        }
+    }
     public void AddTimeLimit(TimeLimitItem limit) => _timeLimits.Add(limit);
 
     public void RemoveTimeLimit(string limitId)
@@ -108,8 +146,14 @@ public class TimeTrackingService : IDisposable
 
         foreach (var l in _timeLimits)
         {
-            if (l.LastResetDate < DateTime.Today) { l.UsedMinutesToday = 0; l.IsLocked = false; l.LastResetDate = DateTime.Today;
-                if (l.IsEnabled) _processMonitor.UnlockApp(l.ProcessName); }
+            if (l.LastResetDate < DateTime.Today)
+            {
+                l.UsedMinutesToday = 0; l.IsLocked = false;
+                l.IsInCooldown = false; l.CooldownEndAt = null;
+                l.LastResetDate = DateTime.Today;
+                _lastNotificationTime.Clear();
+                if (l.IsEnabled) _processMonitor.UnlockApp(l.ProcessName);
+            }
         }
 
         bool dirty = false;
@@ -120,13 +164,22 @@ public class TimeTrackingService : IDisposable
                 l.UsedMinutesToday += 10.0 / 60.0;
                 dirty = true;
                 UsageUpdated?.Invoke(this, l);
-                if (l.RemainingMinutes <= 0)
+                if (l.RemainingMinutes <= 0 && !l.IsLocked)
                 {
                     l.IsLocked = true; l.LockedAt = DateTime.Now;
                     _processMonitor.LockApp(l.ProcessName);
                     AppLocked?.Invoke(this, l); LimitReached?.Invoke(this, l);
                     _notificationService.ShowNotification("Time Limit Reached",
                         $"'{l.AppName}' locked. Daily limit of {l.DailyLimitMinutes} min reached.");
+
+                    // Start cooldown automatically
+                    double cooldownHours = App.SettingsViewModel.TimeLimitCooldownHours;
+                    if (cooldownHours <= 0) cooldownHours = 10.0 / 60.0; // default 10 min
+                    l.CooldownHours = cooldownHours;
+                    l.IsInCooldown = true;
+                    l.CooldownEndAt = DateTime.Now.AddHours(cooldownHours);
+                    CooldownStarted?.Invoke(this, l);
+                    _ = MonitorCooldownAsync(l);
                 }
                 else if (l.RemainingMinutes <= 5 && l.RemainingMinutes > 4.8)
                     _notificationService.ShowNotification("Time Limit Warning", $"'{l.AppName}' will lock in ~5 min.");

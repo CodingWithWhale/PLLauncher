@@ -1,5 +1,5 @@
 {
-  "version": "2.3.1",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.3.1/PLLauncher_Setup_2.3.1.exe",
-  "changelog": "Fixed auto-update: update check now runs before the window opens; normalized version comparison for consistent results."
+  "version": "2.4.1",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.4.1/PLLauncher_Setup_2.4.1.exe",
+  "changelog": "Live update: App Usage page now refreshes automatically every minute."
 }

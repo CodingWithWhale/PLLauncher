@@ -1,5 +1,5 @@
 {
-  "version": "2.5.1",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.5.1/PLLauncher_Setup_2.5.1.exe",
-  "changelog": "Time limit enforcement: re-launch attempts are blocked with a notification, cooldown system, and midnight auto-reset."
+  "version": "2.6.1",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.1/PLLauncher_Setup_2.6.1.exe",
+  "changelog": "Fixed time limit tracking: now uses actual elapsed time instead of fixed increments for accurate 1-minute limits."
 }

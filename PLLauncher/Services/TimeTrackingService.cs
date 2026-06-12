@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,14 +34,25 @@ public class TimeTrackingService : IDisposable
         if (_isRunning) return;
         _isRunning = true; _cts = new();
 
-        // Tracking loop: every 10 seconds, count foreground usage
+        // Tracking loop: every ~10 seconds, count foreground usage based on actual elapsed time
         _ = Task.Run(async () =>
         {
+            var sw = new Stopwatch();
+            sw.Start();
+            var lastTickElapsed = TimeSpan.Zero;
             while (!_cts.IsCancellationRequested)
             {
-                try { await TrackUsageAsync(); await Task.Delay(10000, _cts.Token); }
+                var now = sw.Elapsed;
+                var elapsedSinceLastTick = now - lastTickElapsed;
+                lastTickElapsed = now;
+                try { await TrackUsageAsync(elapsedSinceLastTick); }
                 catch (OperationCanceledException) { break; }
                 catch { }
+                var toWait = TimeSpan.FromSeconds(10) - (sw.Elapsed - now);
+                if (toWait > TimeSpan.Zero)
+                    try { await Task.Delay(toWait, _cts.Token); }
+                    catch (OperationCanceledException) { break; }
+                    catch { }
             }
         }, _cts.Token);
 
@@ -140,7 +152,7 @@ public class TimeTrackingService : IDisposable
             if (l.LastResetDate < DateTime.Today) { l.UsedMinutesToday = 0; l.IsLocked = false; l.LastResetDate = DateTime.Today; }
     }
 
-    private async Task TrackUsageAsync()
+    private async Task TrackUsageAsync(TimeSpan elapsedSinceLastTick)
     {
         var foregroundProcess = _processMonitor.GetForegroundProcessName();
 
@@ -156,12 +168,14 @@ public class TimeTrackingService : IDisposable
             }
         }
 
+        double incrementMinutes = elapsedSinceLastTick.TotalMinutes;
+
         bool dirty = false;
         foreach (var l in _timeLimits.Where(l => l.IsEnabled && !l.IsLocked))
         {
             if (string.Equals(foregroundProcess, l.ProcessName, StringComparison.OrdinalIgnoreCase))
             {
-                l.UsedMinutesToday += 10.0 / 60.0;
+                l.UsedMinutesToday += incrementMinutes;
                 dirty = true;
                 UsageUpdated?.Invoke(this, l);
                 if (l.RemainingMinutes <= 0 && !l.IsLocked)

@@ -10,6 +10,7 @@ namespace PLLauncher.ViewModels;
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly DataService _dataService;
+    private readonly SystemTrayService _systemTrayService;
     private AppSettings _settings = new();
 
     [ObservableProperty] private bool _launchOnStartup = true;
@@ -24,7 +25,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private string _language = "en-US";
     [ObservableProperty] private string _statusMessage = string.Empty;
 
-    public SettingsViewModel(DataService ds) => _dataService = ds;
+    public SettingsViewModel(DataService ds, SystemTrayService sts) { _dataService = ds; _systemTrayService = sts; }
 
     [RelayCommand]
     private async Task LoadSettingsAsync()
@@ -46,6 +47,7 @@ public partial class SettingsViewModel : ObservableObject
         _settings.TimeLimitCooldownHours = TimeLimitCooldownHours; _settings.EnableSoundEffects = EnableSoundEffects;
         _settings.EnableAnimations = EnableAnimations; _settings.Language = Language;
         await _dataService.SaveSettingsAsync(_settings);
+        _systemTrayService.SetAutoStart(LaunchOnStartup);
         StatusMessage = "Settings saved successfully!";
     }
 

@@ -12,8 +12,11 @@ public class TimeTrackingService : IDisposable
     private readonly List<TimeLimitItem> _timeLimits = new();
     private readonly NotificationService _notificationService;
     private readonly ProcessMonitorService _processMonitor;
+    private readonly DataService _dataService;
     private CancellationTokenSource? _cts;
     private bool _isRunning;
+    private DateTime _lastSaveTime = DateTime.MinValue;
+    private static readonly TimeSpan SaveInterval = TimeSpan.FromSeconds(30);
 
     public event EventHandler<TimeLimitItem>? LimitReached;
     public event EventHandler<TimeLimitItem>? AppLocked;
@@ -22,8 +25,8 @@ public class TimeTrackingService : IDisposable
 
     public IReadOnlyList<TimeLimitItem> TimeLimits => _timeLimits.AsReadOnly();
 
-    public TimeTrackingService(NotificationService ns, ProcessMonitorService pm)
-    { _notificationService = ns; _processMonitor = pm; }
+    public TimeTrackingService(NotificationService ns, ProcessMonitorService pm, DataService ds)
+    { _notificationService = ns; _processMonitor = pm; _dataService = ds; }
 
     public void Start()
     {
@@ -101,16 +104,21 @@ public class TimeTrackingService : IDisposable
 
     private async Task TrackUsageAsync()
     {
+        var foregroundProcess = _processMonitor.GetForegroundProcessName();
+
         foreach (var l in _timeLimits)
         {
             if (l.LastResetDate < DateTime.Today) { l.UsedMinutesToday = 0; l.IsLocked = false; l.LastResetDate = DateTime.Today;
                 if (l.IsEnabled) _processMonitor.UnlockApp(l.ProcessName); }
         }
+
+        bool dirty = false;
         foreach (var l in _timeLimits.Where(l => l.IsEnabled && !l.IsLocked))
         {
-            if (_processMonitor.IsProcessRunning(l.ProcessName))
+            if (string.Equals(foregroundProcess, l.ProcessName, StringComparison.OrdinalIgnoreCase))
             {
                 l.UsedMinutesToday += 10.0 / 60.0;
+                dirty = true;
                 UsageUpdated?.Invoke(this, l);
                 if (l.RemainingMinutes <= 0)
                 {
@@ -126,6 +134,18 @@ public class TimeTrackingService : IDisposable
                     _notificationService.ShowNotification("Time Limit Warning", $"'{l.AppName}' will lock in <1 min!");
             }
         }
+
+        if (dirty && DateTime.Now - _lastSaveTime >= SaveInterval)
+        {
+            _lastSaveTime = DateTime.Now;
+            await SaveLimitsAsync();
+        }
+    }
+
+    private async Task SaveLimitsAsync()
+    {
+        try { await _dataService.SaveTimeLimitsAsync(_timeLimits.ToList()); }
+        catch { }
     }
 
     private async Task MonitorCooldownAsync(TimeLimitItem l)
@@ -147,5 +167,10 @@ public class TimeTrackingService : IDisposable
     public double GetRemainingTime(string processName)
         => _timeLimits.FirstOrDefault(l => l.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase))?.RemainingMinutes ?? double.MaxValue;
 
-    public void Dispose() { Stop(); GC.SuppressFinalize(this); }
+    public void Dispose()
+    {
+        Stop();
+        _ = SaveLimitsAsync();
+        GC.SuppressFinalize(this);
+    }
 }

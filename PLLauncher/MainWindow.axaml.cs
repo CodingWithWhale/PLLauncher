@@ -55,6 +55,17 @@ public partial class MainWindow : Window
         }
     }
 
+    protected override void OnClosing(WindowClosingEventArgs e)
+    {
+        if (e.CloseReason == WindowCloseReason.WindowClosing && App.SettingsViewModel.MinimizeToTray)
+        {
+            e.Cancel = true;
+            Hide();
+            return;
+        }
+        base.OnClosing(e);
+    }
+
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);

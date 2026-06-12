@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using PLLauncher.Helpers;
 
 namespace PLLauncher.Services;
 
@@ -19,6 +20,20 @@ public class ProcessMonitorService : IDisposable
             return running;
         }
         catch { return false; }
+    }
+
+    public string? GetForegroundProcessName()
+    {
+        try
+        {
+            var hwnd = NativeMethods.GetForegroundWindow();
+            if (hwnd == IntPtr.Zero) return null;
+            NativeMethods.GetWindowThreadProcessId(hwnd, out var pid);
+            if (pid == 0) return null;
+            using var process = Process.GetProcessById((int)pid);
+            return process.ProcessName;
+        }
+        catch { return null; }
     }
 
     public List<ProcessInfo> GetRunningProcesses()

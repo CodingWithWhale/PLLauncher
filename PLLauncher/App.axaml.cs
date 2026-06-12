@@ -1,4 +1,5 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
@@ -84,9 +85,10 @@ public partial class App : Application
         {
             // Initialize services with dependencies
             TaskSchedulerService = new TaskSchedulerService(NotificationService);
-            TimeTrackingService = new TimeTrackingService(NotificationService, ProcessMonitorService);
+            TimeTrackingService = new TimeTrackingService(NotificationService, ProcessMonitorService, DataService);
             ScheduleService = new ScheduleService(NotificationService, ProcessMonitorService);
             SystemTrayService = new SystemTrayService();
+            SystemTrayService.Initialize();
             AppUsageTrackingService = new AppUsageTrackingService(DataService, InstalledAppsService);
             PomodoroService = new PomodoroService();
             HealthReminderService = new HealthReminderService(NotificationService);
@@ -102,7 +104,7 @@ public partial class App : Application
             SchedulerViewModel = new SchedulerViewModel(DataService, ScheduleService);
             SetupsViewModel = new SetupsViewModel(DataService, ProcessMonitorService);
             AppUsageViewModel = new AppUsageViewModel(AppUsageTrackingService);
-            SettingsViewModel = new SettingsViewModel(DataService);
+            SettingsViewModel = new SettingsViewModel(DataService, SystemTrayService);
         }
         catch (Exception ex)
         {
@@ -129,6 +131,21 @@ public partial class App : Application
             {
                 Console.WriteLine($"Service start error: {ex.Message}");
             }
+
+            // Wire up tray icon events
+            SystemTrayService.ShowWindowRequested += (_, _) =>
+            {
+                if (desktop.MainWindow is MainWindow window)
+                {
+                    window.Show();
+                    window.WindowState = WindowState.Normal;
+                    window.Activate();
+                }
+            };
+            SystemTrayService.ExitRequested += (_, _) =>
+            {
+                desktop.Shutdown();
+            };
 
             // Handle application exit
             desktop.ShutdownRequested += OnShutdownRequested;
@@ -247,10 +264,11 @@ public partial class App : Application
             await SchedulerViewModel.LoadSchedulesCommand.ExecuteAsync(null);
             await SettingsViewModel.LoadSettingsCommand.ExecuteAsync(null);
 
-            // Apply saved theme, language & animations settings
+            // Apply saved settings on startup
             AnimationsEnabled = SettingsViewModel.EnableAnimations;
             SetTheme(SettingsViewModel.DarkMode);
             LocalizationService.Instance.LoadFromSettings(SettingsViewModel.Language);
+            SystemTrayService.SetAutoStart(SettingsViewModel.LaunchOnStartup);
 
             // Check for updates on startup (show dialog after window is visible)
             if (Avalonia.Application.Current?.ApplicationLifetime

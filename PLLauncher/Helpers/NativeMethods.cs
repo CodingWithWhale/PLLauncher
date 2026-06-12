@@ -69,6 +69,10 @@ public static class NativeMethods
     [DllImport("kernel32.dll", SetLastError = true)]
     public static extern bool CloseHandle(IntPtr hObject);
 
+    [DllImport("advapi32.dll", SetLastError = true)]
+    public static extern bool LookupPrivilegeValue(
+        string? lpSystemName, string lpName, out LUID lpLuid);
+
     // === Set Suspend State ===
     [DllImport("powrprof.dll", SetLastError = true)]
     public static extern bool SetSuspendState(bool hibernate, bool forceCritical, bool disableWakeEvent);
@@ -141,10 +145,17 @@ public static class NativeMethods
     }
 
     [StructLayout(LayoutKind.Sequential)]
+    public struct LUID
+    {
+        public uint LowPart;
+        public int HighPart;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
     public struct TOKEN_PRIVILEGES
     {
         public uint PrivilegeCount;
-        public long Luid;
+        public LUID Luid;
         public uint Attributes;
     }
 
@@ -232,16 +243,25 @@ public static class NativeMethods
     public static bool EnableShutdownPrivilege()
     {
         var tokenHandle = IntPtr.Zero;
-        var privileges = new TOKEN_PRIVILEGES
-        {
-            PrivilegeCount = 1,
-            Attributes = 2 // SE_PRIVILEGE_ENABLED
-        };
 
         if (!OpenProcessToken(GetCurrentProcess(), 0x0028, ref tokenHandle))
             return false;
 
-        var result = AdjustTokenPrivileges(tokenHandle, false, ref privileges, 0, IntPtr.Zero, IntPtr.Zero);
+        if (!LookupPrivilegeValue(null, "SeShutdownPrivilege", out var luid))
+        {
+            CloseHandle(tokenHandle);
+            return false;
+        }
+
+        var privileges = new TOKEN_PRIVILEGES
+        {
+            PrivilegeCount = 1,
+            Luid = luid,
+            Attributes = 2 // SE_PRIVILEGE_ENABLED
+        };
+
+        var result = AdjustTokenPrivileges(tokenHandle, false, ref privileges,
+            Marshal.SizeOf<TOKEN_PRIVILEGES>(), IntPtr.Zero, IntPtr.Zero);
         CloseHandle(tokenHandle);
         return result;
     }

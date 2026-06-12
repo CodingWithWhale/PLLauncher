@@ -3,124 +3,132 @@
              x:Class="PLLauncher.Views.AppUsagePage"
              Background="{DynamicResource BackgroundBrush}">
 
-    <ScrollViewer Padding="32,28">
-        <StackPanel Spacing="24" MaxWidth="800">
-            <!-- Title -->
-            <StackPanel Spacing="4">
-                <TextBlock Text="App Usage" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                <TextBlock Text="See which apps you use the most" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
-            </StackPanel>
+    <Grid RowDefinitions="Auto,Auto,Auto,Auto,*" Margin="32,28" MaxWidth="840">
+        <!-- Title -->
+        <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,16">
+            <TextBlock Text="App Usage" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock Text="See which apps you use the most" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+        </StackPanel>
 
-            <!-- Time Filter Buttons -->
-            <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="12"
-                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
-                <StackPanel Spacing="12">
-                    <TextBlock Text="Time Period" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                    <WrapPanel Orientation="Horizontal" ItemWidth="110">
-                        <RadioButton x:Name="FilterToday" GroupName="TimeFilter" Content="Today" IsChecked="True"
-                                     Foreground="{DynamicResource TextPrimaryBrush}" Click="Filter_Click" Tag="Today" />
-                        <RadioButton x:Name="FilterYesterday" GroupName="TimeFilter" Content="Yesterday"
-                                     Foreground="{DynamicResource TextPrimaryBrush}" Click="Filter_Click" Tag="Yesterday" />
-                        <RadioButton x:Name="FilterThisWeek" GroupName="TimeFilter" Content="This Week"
-                                     Foreground="{DynamicResource TextPrimaryBrush}" Click="Filter_Click" Tag="ThisWeek" />
-                        <RadioButton x:Name="FilterThisMonth" GroupName="TimeFilter" Content="This Month"
-                                     Foreground="{DynamicResource TextPrimaryBrush}" Click="Filter_Click" Tag="ThisMonth" />
-                        <RadioButton x:Name="FilterThisYear" GroupName="TimeFilter" Content="This Year"
-                                     Foreground="{DynamicResource TextPrimaryBrush}" Click="Filter_Click" Tag="ThisYear" />
-                        <RadioButton x:Name="FilterCustom" GroupName="TimeFilter" Content="Custom"
-                                     Foreground="{DynamicResource TextPrimaryBrush}" Click="Filter_Click" Tag="Custom" />
-                    </WrapPanel>
+        <!-- Time Filter Buttons -->
+        <Border Grid.Row="1" Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="12"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Margin="0,0,0,16">
+            <StackPanel Spacing="12">
+                <TextBlock Text="Time Period" FontSize="14" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <WrapPanel Orientation="Horizontal" ItemWidth="110">
+                    <RadioButton x:Name="FilterToday" GroupName="TimeFilter" Content="Today" IsChecked="True"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" Click="Filter_Click" Tag="Today" />
+                    <RadioButton x:Name="FilterYesterday" GroupName="TimeFilter" Content="Yesterday"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" Click="Filter_Click" Tag="Yesterday" />
+                    <RadioButton x:Name="FilterThisWeek" GroupName="TimeFilter" Content="This Week"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" Click="Filter_Click" Tag="ThisWeek" />
+                    <RadioButton x:Name="FilterThisMonth" GroupName="TimeFilter" Content="This Month"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" Click="Filter_Click" Tag="ThisMonth" />
+                    <RadioButton x:Name="FilterThisYear" GroupName="TimeFilter" Content="This Year"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" Click="Filter_Click" Tag="ThisYear" />
+                    <RadioButton x:Name="FilterCustom" GroupName="TimeFilter" Content="Custom"
+                                 Foreground="{DynamicResource TextPrimaryBrush}" Click="Filter_Click" Tag="Custom" />
+                </WrapPanel>
 
-                    <!-- Custom Date Pickers (only visible when Custom is selected) -->
-                    <StackPanel x:Name="CustomDatePanel" IsVisible="False" Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
-                        <StackPanel Spacing="4">
-                            <TextBlock Text="From" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
-                            <CalendarDatePicker x:Name="CustomFromDate" SelectedDate="{Binding CustomFromDate}" />
-                        </StackPanel>
-                        <StackPanel Spacing="4">
-                            <TextBlock Text="To" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
-                            <CalendarDatePicker x:Name="CustomToDate" SelectedDate="{Binding CustomToDate}" />
-                        </StackPanel>
-                        <Button Click="ApplyCustomFilter_Click" Content="Apply" CornerRadius="6"
-                                Background="{DynamicResource AccentSecondaryBrush}" Foreground="White"
-                                Padding="16,8" VerticalAlignment="Bottom" />
+                <!-- Custom Date Pickers (only visible when Custom is selected) -->
+                <StackPanel x:Name="CustomDatePanel" IsVisible="False" Orientation="Horizontal" Spacing="12" Margin="0,4,0,0">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="From" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <CalendarDatePicker x:Name="CustomFromDate" SelectedDate="{Binding CustomFromDate}" />
                     </StackPanel>
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="To" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <CalendarDatePicker x:Name="CustomToDate" SelectedDate="{Binding CustomToDate}" />
+                    </StackPanel>
+                    <Button Click="ApplyCustomFilter_Click" Content="Apply" CornerRadius="6"
+                            Background="{DynamicResource AccentSecondaryBrush}" Foreground="White"
+                            Padding="16,8" VerticalAlignment="Bottom" />
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Summary Stats -->
+        <Grid Grid.Row="2" ColumnDefinitions="*,*,*" Margin="0,0,12,16">
+            <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                    <TextBlock Text="Total Time" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock x:Name="TotalTimeText" Text="0 min" FontSize="22" FontWeight="Bold"
+                               Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" />
                 </StackPanel>
             </Border>
+            <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                    <TextBlock Text="Apps Used" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock x:Name="TotalAppsText" Text="0" FontSize="22" FontWeight="Bold"
+                               Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+            <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                <StackPanel Spacing="4" HorizontalAlignment="Center">
+                    <TextBlock Text="Sessions" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock x:Name="TotalSessionsText" Text="0" FontSize="22" FontWeight="Bold"
+                               Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+        </Grid>
 
-            <!-- Summary Stats -->
-            <Grid ColumnDefinitions="*,*,*" Margin="0,0,12,0">
-                <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
-                    <StackPanel Spacing="4" HorizontalAlignment="Center">
-                        <TextBlock Text="Total Time" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
-                                   HorizontalAlignment="Center" />
-                        <TextBlock x:Name="TotalTimeText" Text="0 min" FontSize="22" FontWeight="Bold"
-                                   Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" />
-                    </StackPanel>
-                </Border>
-                <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
-                    <StackPanel Spacing="4" HorizontalAlignment="Center">
-                        <TextBlock Text="Apps Used" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
-                                   HorizontalAlignment="Center" />
-                        <TextBlock x:Name="TotalAppsText" Text="0" FontSize="22" FontWeight="Bold"
-                                   Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" />
-                    </StackPanel>
-                </Border>
-                <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
-                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
-                    <StackPanel Spacing="4" HorizontalAlignment="Center">
-                        <TextBlock Text="Sessions" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}"
-                                   HorizontalAlignment="Center" />
-                        <TextBlock x:Name="TotalSessionsText" Text="0" FontSize="22" FontWeight="Bold"
-                                   Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" />
-                    </StackPanel>
-                </Border>
-            </Grid>
+        <!-- Period Description -->
+        <TextBlock Grid.Row="3" x:Name="PeriodDesc" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,8" />
 
-            <!-- Period Description -->
-            <TextBlock x:Name="PeriodDesc" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+        <!-- Top Apps List -->
+        <ListBox Grid.Row="4" x:Name="TopAppsList" BorderThickness="0" Background="Transparent"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListBox.Styles>
+                <Style Selector="ListBoxItem">
+                    <Setter Property="IsHitTestVisible" Value="False" />
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+                <Style Selector="ListBoxItem:selected, ListBoxItem:pointerover">
+                    <Setter Property="Background" Value="Transparent" />
+                </Style>
+            </ListBox.Styles>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Margin="0,4">
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Border Width="36" Height="36" CornerRadius="8"
+                                    Background="{DynamicResource Surface2Brush}">
+                                <TextBlock Text="&#xECAA;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                           Foreground="{DynamicResource AccentBrush}"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center" Margin="12,0,0,0">
+                                <TextBlock Text="{Binding DisplayName}" FontWeight="Medium" FontSize="14"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <ProgressBar Value="{Binding UsageBarPercent}" Minimum="0" Maximum="100"
+                                             Height="6" />
+                                <TextBlock FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}">
+                                    <Run Text="{Binding TotalSessions}" /> sessions
+                                </TextBlock>
+                            </StackPanel>
+                            <TextBlock Grid.Column="2" Text="{Binding FormattedTime}" FontSize="16" FontWeight="SemiBold"
+                                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
 
-            <!-- Top Apps List -->
-            <ItemsControl x:Name="TopAppsList">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
-                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Margin="0,4">
-                            <Grid ColumnDefinitions="Auto,*,Auto">
-                                <Border Width="36" Height="36" CornerRadius="8"
-                                        Background="{DynamicResource Surface2Brush}">
-                                    <TextBlock Text="&#xECAA;" FontFamily="Segoe MDL2 Assets" FontSize="16"
-                                               Foreground="{DynamicResource AccentBrush}"
-                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                </Border>
-                                <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center" Margin="12,0,0,0">
-                                    <TextBlock Text="{Binding DisplayName}" FontWeight="Medium" FontSize="14"
-                                               Foreground="{DynamicResource TextPrimaryBrush}" />
-                                    <ProgressBar Value="{Binding UsageBarPercent}" Minimum="0" Maximum="100"
-                                                 Height="6" />
-                                    <TextBlock FontSize="11" Foreground="{DynamicResource TextSecondaryBrush}">
-                                        <Run Text="{Binding TotalSessions}" /> sessions
-                                    </TextBlock>
-                                </StackPanel>
-                                <TextBlock Grid.Column="2" Text="{Binding FormattedTime}" FontSize="16" FontWeight="SemiBold"
-                                           Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-
-            <!-- Empty State -->
-            <StackPanel x:Name="EmptyState" IsVisible="True" Spacing="8" HorizontalAlignment="Center" Margin="0,40,0,0">
-                <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="36"
-                           Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Center" />
-                <TextBlock Text="No usage data yet" FontSize="16" FontWeight="Medium"
-                           Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" />
-                <TextBlock Text="Usage tracking starts as soon as PLLauncher is running" FontSize="13"
-                           Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Center" />
-            </StackPanel>
+        <!-- Empty State -->
+        <StackPanel Grid.Row="4" x:Name="EmptyState" IsVisible="True" Spacing="8" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="36"
+                       Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Center" />
+            <TextBlock Text="No usage data yet" FontSize="16" FontWeight="Medium"
+                       Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Center" />
+            <TextBlock Text="Usage tracking starts as soon as PLLauncher is running" FontSize="13"
+                       Foreground="{DynamicResource TextTertiaryBrush}" HorizontalAlignment="Center" />
         </StackPanel>
-    </ScrollViewer>
+    </Grid>
 </UserControl>

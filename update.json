@@ -1,5 +1,5 @@
 {
-  "version": "2.6.4",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.4/PLLauncher_Setup_2.6.4.exe",
-  "changelog": "Added diagnostic logging for time limit tracking to debug Discord lock issues."
+  "version": "2.6.5",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.5/PLLauncher_Setup_2.6.5.exe",
+  "changelog": "Fixed time limit lock not triggering: process names like 'Discord.exe' are now normalized to 'Discord' so they match GetForegroundProcessName()."
 }

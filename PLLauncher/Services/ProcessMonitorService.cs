@@ -10,11 +10,18 @@ public class ProcessMonitorService : IDisposable
 {
     private readonly HashSet<string> _lockedProcesses = new(StringComparer.OrdinalIgnoreCase);
 
+    private static string NormalizeName(string name)
+    {
+        if (name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            return name[..^4];
+        return name;
+    }
+
     public bool IsProcessRunning(string processName)
     {
         try
         {
-            var procs = Process.GetProcessesByName(processName);
+            var procs = Process.GetProcessesByName(NormalizeName(processName));
             var running = procs.Length > 0;
             foreach (var p in procs) p.Dispose();
             return running;
@@ -53,15 +60,15 @@ public class ProcessMonitorService : IDisposable
         return result;
     }
 
-    public void LockApp(string processName) { _lockedProcesses.Add(processName); TerminateProcess(processName); }
-    public void UnlockApp(string processName) { _lockedProcesses.Remove(processName); }
-    public bool IsProcessLocked(string processName) => _lockedProcesses.Contains(processName);
+    public void LockApp(string processName) { processName = NormalizeName(processName); _lockedProcesses.Add(processName); TerminateProcess(processName); }
+    public void UnlockApp(string processName) { _lockedProcesses.Remove(NormalizeName(processName)); }
+    public bool IsProcessLocked(string processName) => _lockedProcesses.Contains(NormalizeName(processName));
 
     public void TerminateProcess(string processName)
     {
         try
         {
-            foreach (var p in Process.GetProcessesByName(processName))
+            foreach (var p in Process.GetProcessesByName(NormalizeName(processName)))
             { try { p.CloseMainWindow(); if (!p.WaitForExit(3000)) p.Kill(); } catch { } finally { p.Dispose(); } }
         }
         catch { }

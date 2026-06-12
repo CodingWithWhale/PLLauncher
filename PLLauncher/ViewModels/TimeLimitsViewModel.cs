@@ -31,11 +31,19 @@ public partial class TimeLimitsViewModel : ObservableObject
     { var limits = await _dataService.LoadTimeLimitsAsync(); _timeTrackingService.LoadLimits(limits);
       TimeLimits = new(limits); }
 
+    private static string NormalizeProcessName(string name)
+    {
+        if (name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            return name[..^4];
+        return name;
+    }
+
     [RelayCommand]
     private async Task AddTimeLimitAsync()
     {
         if (string.IsNullOrWhiteSpace(NewAppName) || string.IsNullOrWhiteSpace(NewProcessName)) return;
-        var limit = new TimeLimitItem { AppName = NewAppName, ProcessName = NewProcessName,
+        var processName = NormalizeProcessName(NewProcessName.Trim());
+        var limit = new TimeLimitItem { AppName = NewAppName, ProcessName = processName,
             DailyLimitMinutes = NewDailyLimitMinutes, IsEnabled = true, LastResetDate = DateTime.Today };
         _timeTrackingService.AddTimeLimit(limit);
         TimeLimits.Add(limit);

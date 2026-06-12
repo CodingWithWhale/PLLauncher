@@ -145,11 +145,22 @@ public class TimeTrackingService : IDisposable
             if (!l.IsLocked) _processMonitor.UnlockApp(l.ProcessName); }
     }
 
+    public static string NormalizeProcessName(string name)
+    {
+        if (name.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+            return name[..^4];
+        return name;
+    }
+
     public void LoadLimits(IEnumerable<TimeLimitItem> limits)
     {
-        _timeLimits.Clear(); _timeLimits.AddRange(limits);
-        foreach (var l in _timeLimits)
+        _timeLimits.Clear();
+        foreach (var l in limits)
+        {
+            l.ProcessName = NormalizeProcessName(l.ProcessName);
             if (l.LastResetDate < DateTime.Today) { l.UsedMinutesToday = 0; l.IsLocked = false; l.LastResetDate = DateTime.Today; }
+            _timeLimits.Add(l);
+        }
         Console.WriteLine($"[TimeTrack] Limits loaded: {string.Join(", ", _timeLimits.Select(l => $"{l.AppName}({l.ProcessName})"))}");
     }
 

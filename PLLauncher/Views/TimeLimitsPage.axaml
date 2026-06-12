@@ -46,7 +46,7 @@
                 </Grid>
                 <StackPanel>
                     <TextBlock Text="Daily Limit (minutes)" FontSize="12" Margin="0,0,0,4" Foreground="{DynamicResource TextSecondaryBrush}" />
-                    <NumericUpDown x:Name="DailyLimitBox" Value="120" Minimum="5" Maximum="1440" />
+                    <NumericUpDown x:Name="DailyLimitBox" Value="120" Minimum="1" Maximum="1440" Increment="1" />
                 </StackPanel>
                 <Border Background="#331F1F00" CornerRadius="4" Padding="12">
                     <StackPanel Orientation="Horizontal" Spacing="8">

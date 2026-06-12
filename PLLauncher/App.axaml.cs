@@ -150,6 +150,11 @@ public partial class App : Application
 
             try
             {
+                // Load time limits synchronously before tracking starts
+                var savedLimits = Task.Run(() => DataService.LoadTimeLimitsAsync()).GetAwaiter().GetResult();
+                TimeTrackingService.LoadLimits(savedLimits);
+                TimeLimitsViewModel.TimeLimits = new(savedLimits);
+
                 // Start background services
                 TaskSchedulerService?.Start();
                 TimeTrackingService?.Start();
@@ -324,7 +329,7 @@ public partial class App : Application
             await DashboardViewModel.RefreshCommand.ExecuteAsync(null);
             await KeybindsViewModel.LoadKeybindsCommand.ExecuteAsync(null);
             await TasksViewModel.LoadTasksCommand.ExecuteAsync(null);
-            await TimeLimitsViewModel.LoadTimeLimitsCommand.ExecuteAsync(null);
+            // Time limits already loaded synchronously before tracking starts
             await SchedulerViewModel.LoadSchedulesCommand.ExecuteAsync(null);
             await SettingsViewModel.LoadSettingsCommand.ExecuteAsync(null);
 

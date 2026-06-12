@@ -86,13 +86,17 @@ public class UpdateService
                 await response.Content.CopyToAsync(fs);
             }
 
-            var startInfo = new ProcessStartInfo
+            // Launch installer via cmd wrapper: wait for app to exit, install silently, then restart
+            var installDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
+            var args = $"/c timeout /t 3 /nobreak >nul & \"{installerPath}\" /SILENT & start \"\" \"{installDir}\\PLLauncher.exe\"";
+            Process.Start(new ProcessStartInfo
             {
-                FileName = installerPath,
+                FileName = "cmd.exe",
+                Arguments = args,
                 UseShellExecute = true,
-                Arguments = "/SILENT"
-            };
-            Process.Start(startInfo);
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true
+            });
 
             return true;
         }

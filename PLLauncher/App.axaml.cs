@@ -166,7 +166,8 @@ public partial class App : Application
             desktop.MainWindow.Opened += async (_, _) =>
             {
                 await Task.Delay(2000);
-                await UpdateService.PromptUpdateAsync(desktop.MainWindow);
+                if (await UpdateService.PromptUpdateAsync(desktop.MainWindow))
+                    desktop.Shutdown();
             };
 
             // Wire up tray icon events

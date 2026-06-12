@@ -2,7 +2,7 @@
 ; Requires Inno Setup 6+ (https://jrsoftware.org/isdl.php)
 
 #define MyAppName "PLLauncher"
-#define MyAppVersion "2.4.1"
+#define MyAppVersion "2.5.0"
 #define MyAppPublisher "PLLauncher"
 #define MyAppURL "https://github.com/CodingWithWhale/PLLauncher"
 #define MyAppExeName "PLLauncher.exe"
@@ -29,6 +29,7 @@ SolidCompression=yes
 WizardStyle=modern
 PrivilegesRequired=admin
 AlwaysShowDirOnReadyPage=yes
+CloseApplications=force
 DisableProgramGroupPage=yes
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -49,7 +50,7 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDi
 Root: HKCU; Subkey: "Software\PLLauncher"; ValueType: string; ValueName: "DataDir"; ValueData: "{code:GetDataDir}"; Flags: uninsdeletekey
 
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: nowait postinstall
 
 [Code]
 var

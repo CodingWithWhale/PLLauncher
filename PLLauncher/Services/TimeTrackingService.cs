@@ -150,11 +150,13 @@ public class TimeTrackingService : IDisposable
         _timeLimits.Clear(); _timeLimits.AddRange(limits);
         foreach (var l in _timeLimits)
             if (l.LastResetDate < DateTime.Today) { l.UsedMinutesToday = 0; l.IsLocked = false; l.LastResetDate = DateTime.Today; }
+        Console.WriteLine($"[TimeTrack] Limits loaded: {string.Join(", ", _timeLimits.Select(l => $"{l.AppName}({l.ProcessName})"))}");
     }
 
     private async Task TrackUsageAsync(TimeSpan elapsedSinceLastTick)
     {
         var foregroundProcess = _processMonitor.GetForegroundProcessName();
+        Console.WriteLine($"[TimeTrack] FG={foregroundProcess ?? "(null)"}, elapsed={elapsedSinceLastTick.TotalSeconds:F1}s");
 
         foreach (var l in _timeLimits)
         {
@@ -175,6 +177,7 @@ public class TimeTrackingService : IDisposable
         {
             if (string.Equals(foregroundProcess, l.ProcessName, StringComparison.OrdinalIgnoreCase))
             {
+                Console.WriteLine($"[TimeTrack] MATCH {l.AppName}: +{incrementMinutes:F4}min (now={l.UsedMinutesToday + incrementMinutes:F2}, limit={l.DailyLimitMinutes})");
                 l.UsedMinutesToday += incrementMinutes;
                 dirty = true;
                 UsageUpdated?.Invoke(this, l);

@@ -166,6 +166,7 @@ public partial class App : Application
             {
                 // Load time limits synchronously before tracking starts
                 var savedLimits = Task.Run(() => DataService.LoadTimeLimitsAsync()).GetAwaiter().GetResult();
+                Console.WriteLine($"[App] Loaded {savedLimits.Count} time limits from disk");
                 TimeTrackingService.LoadLimits(savedLimits);
                 TimeLimitsViewModel.TimeLimits = new(savedLimits);
 

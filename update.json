@@ -1,5 +1,5 @@
 {
-  "version": "2.6.3",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.3/PLLauncher_Setup_2.6.3.exe",
-  "changelog": "Fixed: app not opening after crash during update — single-instance mutex now recovers from abandoned state."
+  "version": "2.6.4",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.4/PLLauncher_Setup_2.6.4.exe",
+  "changelog": "Added diagnostic logging for time limit tracking to debug Discord lock issues."
 }

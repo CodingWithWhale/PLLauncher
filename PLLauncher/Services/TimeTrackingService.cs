@@ -113,7 +113,7 @@ public class TimeTrackingService : IDisposable
 
             _lastNotificationTime[l.ProcessName] = now;
             _notificationService.ShowNotification("Time Limit Reached",
-                $"You've hit your time limit for today.");
+                $"You've reached your limit for {l.AppName}.");
         }
     }
     public void AddTimeLimit(TimeLimitItem limit) { lock (_timeLimitsLock) { _timeLimits.Add(limit); } }
@@ -231,7 +231,7 @@ public class TimeTrackingService : IDisposable
                     _processMonitor.LockApp(l.ProcessName);
                     AppLocked?.Invoke(this, l); LimitReached?.Invoke(this, l);
                     _notificationService.ShowNotification("Time Limit Reached",
-                        $"'{l.AppName}' locked. Daily limit of {l.DailyLimitMinutes} min reached.");
+                        $"You've reached your limit for {l.AppName}.");
 
                     // Start cooldown automatically
                     double cooldownHours = App.SettingsViewModel.TimeLimitCooldownHours;

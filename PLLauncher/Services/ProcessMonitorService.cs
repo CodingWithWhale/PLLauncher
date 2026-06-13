@@ -50,8 +50,13 @@ public class ProcessMonitorService : IDisposable
         {
             foreach (var process in Process.GetProcesses())
             {
-                try { result.Add(new() { ProcessName = process.ProcessName, Id = process.Id,
-                    MainWindowTitle = process.MainWindowTitle }); }
+                try
+                {
+                    var title = process.MainWindowTitle;
+                    if (string.IsNullOrEmpty(title)) continue;
+                    result.Add(new() { ProcessName = process.ProcessName, Id = process.Id,
+                        MainWindowTitle = title });
+                }
                 catch { }
                 finally { process.Dispose(); }
             }
@@ -84,8 +89,18 @@ public class ProcessMonitorService : IDisposable
             }
         }
         catch { }
-        // Fallback: taskkill for stubborn/system processes
-        try { Process.Start("taskkill", $"/F /T /IM {NormalizeName(processName)}.exe"); } catch { }
+        // Fallback: taskkill for stubborn/system processes (hidden window, no PowerShell flash)
+        try
+        {
+            var psi = new ProcessStartInfo("taskkill", $"/F /T /IM {NormalizeName(processName)}.exe")
+            {
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                UseShellExecute = false
+            };
+            Process.Start(psi);
+        }
+        catch { }
     }
 
     public void EnforceLockedProcesses()

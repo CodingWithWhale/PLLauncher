@@ -1,7 +1,5 @@
 {
-{
-  "version": "2.6.11",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.11/PLLauncher_Setup_2.6.11.exe",
-  "changelog": "Bug 2 fix: Added _isShuttingDown flag so OnClosing no longer cancels close and hides to tray when Exit is clicked — the process actually exits, and re-launch starts fresh with a visible window. Bug 1 fix: TerminateProcess now uses Kill(entireProcessTree) and taskkill /F /T as fallback; dead EnforceLockedProcesses is now called from the enforcement loop."
-}
+  "version": "2.6.12",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.12/PLLauncher_Setup_2.6.12.exe",
+  "changelog": "v2.6.12: Hide taskkill PowerShell flash; filter running processes by MainWindowTitle; wire up live usage bar in Time Limits; add Windows toast notifications; include app name in block notifications; fix update flow shutdown; fix update.json JSON syntax."
 }

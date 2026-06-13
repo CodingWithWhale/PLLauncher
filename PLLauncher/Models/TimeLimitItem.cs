@@ -15,9 +15,13 @@ public partial class TimeLimitItem : ObservableObject
     private string _processName = string.Empty;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(UsagePercentage))]
+    [NotifyPropertyChangedFor(nameof(RemainingMinutes))]
     private double _dailyLimitMinutes = 120;
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(UsagePercentage))]
+    [NotifyPropertyChangedFor(nameof(RemainingMinutes))]
     private double _usedMinutesToday = 0;
 
     [ObservableProperty]

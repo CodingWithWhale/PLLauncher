@@ -4,6 +4,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Styling;
+using PLLauncher.Helpers;
 using PLLauncher.Services;
 using PLLauncher.ViewModels;
 using System;
@@ -140,6 +141,10 @@ public partial class App : Application
             HealthReminderService = new HealthReminderService(NotificationService);
             UpdateService = new UpdateService(NotificationService, GitHubOwner, GitHubRepo);
 
+            // Wire up notifications to show actual Windows toast balloons
+            NotificationService.NotificationRequested += (_, e) =>
+                ToastHelper.Show(e.Title, e.Message, e.Type);
+
             // Initialize ViewModels
             DashboardViewModel = new DashboardViewModel(
                 DataService, HotkeyService, TaskSchedulerService, TimeTrackingService, ScheduleService);
@@ -189,7 +194,10 @@ public partial class App : Application
             {
                 await Task.Delay(2000);
                 if (await UpdateService.PromptUpdateAsync(desktop.MainWindow))
+                {
+                    _isShuttingDown = true;
                     desktop.Shutdown();
+                }
             };
 
             // Wire up tray icon events

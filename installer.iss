@@ -2,7 +2,7 @@
 ; Requires Inno Setup 6+ (https://jrsoftware.org/isdl.php)
 
 #define MyAppName "PLLauncher"
-#define MyAppVersion "2.6.5"
+#define MyAppVersion "2.6.10"
 #define MyAppPublisher "PLLauncher"
 #define MyAppURL "https://github.com/CodingWithWhale/PLLauncher"
 #define MyAppExeName "PLLauncher.exe"
@@ -42,6 +42,12 @@ Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription
 Source: "dist\publish\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dist\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
+[UninstallDelete]
+; Force-delete the app directory and any runtime-created files
+Type: filesandordirs; Name: "{app}"
+; Force-delete the data directory as a fallback if [Code] step fails
+Type: filesandordirs; Name: "{localappdata}\{#MyAppName}"
+
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: starticon
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; WorkingDir: "{app}"; Tasks: desktopicon
@@ -55,6 +61,7 @@ Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: no
 [Code]
 var
   DataDirPage: TInputDirWizardPage;
+  SavedDataDir: String;
 
 function GetDataDir(Param: string): string;
 begin
@@ -78,17 +85,29 @@ end;
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var
   AppDataDir: String;
+  ResultCode: Integer;
 begin
+  // Save data dir BEFORE registry is deleted by uninsdeletekey
+  if CurUninstallStep = usUninstall then
+  begin
+    if RegQueryStringValue(HKCU, 'Software\PLLauncher', 'DataDir', AppDataDir) then
+      SavedDataDir := AppDataDir;
+  end;
+
   if CurUninstallStep = usPostUninstall then
   begin
-    try
-      RegQueryStringValue(HKCU, 'Software\PLLauncher', 'DataDir', AppDataDir);
-    except
-      AppDataDir := '';
-    end;
+    AppDataDir := SavedDataDir;
     if (AppDataDir = '') or not DirExists(AppDataDir) then
       AppDataDir := ExpandConstant('{localappdata}\PLLauncher');
     if DirExists(AppDataDir) then
-      DelTree(AppDataDir, True, True, True);
+    begin
+      if not DelTree(AppDataDir, True, True, True) then
+      begin
+        // DelTree failed (files in use) — schedule deletion on next reboot
+        Exec('cmd.exe', '/c rmdir /s /q "' + AppDataDir + '"', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+        if DirExists(AppDataDir) then
+          Exec('cmd.exe', '/c ping -n 5 127.0.0.1 >nul & rmdir /s /q "' + AppDataDir + '"', '', SW_HIDE, ewNoWait, ResultCode);
+      end;
+    end;
   end;
 end;

@@ -11,6 +11,7 @@ namespace PLLauncher.Services;
 public class TimeTrackingService : IDisposable
 {
     private readonly List<TimeLimitItem> _timeLimits = new();
+    private readonly object _timeLimitsLock = new();
     private readonly NotificationService _notificationService;
     private readonly ProcessMonitorService _processMonitor;
     private readonly DataService _dataService;
@@ -24,7 +25,10 @@ public class TimeTrackingService : IDisposable
     public event EventHandler<TimeLimitItem>? CooldownStarted;
     public event EventHandler<TimeLimitItem>? UsageUpdated;
 
-    public IReadOnlyList<TimeLimitItem> TimeLimits => _timeLimits.AsReadOnly();
+    public IReadOnlyList<TimeLimitItem> TimeLimits
+    {
+        get { lock (_timeLimitsLock) { return _timeLimits.ToList().AsReadOnly(); } }
+    }
 
     public TimeTrackingService(NotificationService ns, ProcessMonitorService pm, DataService ds)
     { _notificationService = ns; _processMonitor = pm; _dataService = ds; }
@@ -56,12 +60,12 @@ public class TimeTrackingService : IDisposable
             }
         }, _cts.Token);
 
-        // Enforcement loop: every 2 seconds, catch re-launch attempts
+        // Enforcement loop: every 1 second, catch re-launch attempts and re-check limits
         _ = Task.Run(async () =>
         {
             while (!_cts.IsCancellationRequested)
             {
-                try { EnforceLockedProcesses(); await Task.Delay(2000, _cts.Token); }
+                try { EnforceLockedProcesses(); await Task.Delay(1000, _cts.Token); }
                 catch (OperationCanceledException) { break; }
                 catch { }
             }
@@ -76,11 +80,25 @@ public class TimeTrackingService : IDisposable
 
     private void EnforceLockedProcesses()
     {
-        foreach (var l in _timeLimits.Where(l => l.IsLocked))
+        List<TimeLimitItem> active;
+        lock (_timeLimitsLock) { active = _timeLimits.ToList(); }
+
+        foreach (var l in active)
         {
             if (string.IsNullOrWhiteSpace(l.ProcessName)) continue;
-
             if (!_processMonitor.IsProcessRunning(l.ProcessName)) continue;
+
+            // If not yet locked but time is up, lock now
+            if (!l.IsLocked && l.IsEnabled && l.RemainingMinutes <= 0)
+            {
+                l.IsLocked = true;
+                l.LockedAt = DateTime.Now;
+                _processMonitor.LockApp(l.ProcessName);
+                AppLocked?.Invoke(this, l);
+                LimitReached?.Invoke(this, l);
+            }
+
+            if (!l.IsLocked) continue;
 
             _processMonitor.TerminateProcess(l.ProcessName);
 
@@ -94,17 +112,19 @@ public class TimeTrackingService : IDisposable
                 $"You've hit your time limit for today.");
         }
     }
-    public void AddTimeLimit(TimeLimitItem limit) => _timeLimits.Add(limit);
+    public void AddTimeLimit(TimeLimitItem limit) { lock (_timeLimitsLock) { _timeLimits.Add(limit); } }
 
     public void RemoveTimeLimit(string limitId)
     {
-        var l = _timeLimits.FirstOrDefault(l => l.Id == limitId);
-        if (l != null) { if (l.IsLocked) _processMonitor.UnlockApp(l.ProcessName); _timeLimits.Remove(l); }
+        TimeLimitItem? l;
+        lock (_timeLimitsLock) { l = _timeLimits.FirstOrDefault(x => x.Id == limitId); }
+        if (l != null) { if (l.IsLocked) _processMonitor.UnlockApp(l.ProcessName); lock (_timeLimitsLock) { _timeLimits.Remove(l); } }
     }
 
     public void DisableTimeLimit(string limitId)
     {
-        var l = _timeLimits.FirstOrDefault(l => l.Id == limitId);
+        TimeLimitItem? l;
+        lock (_timeLimitsLock) { l = _timeLimits.FirstOrDefault(x => x.Id == limitId); }
         if (l == null) return;
         l.IsEnabled = false;
 
@@ -140,7 +160,8 @@ public class TimeTrackingService : IDisposable
 
     public void EnableTimeLimit(string limitId)
     {
-        var l = _timeLimits.FirstOrDefault(l => l.Id == limitId);
+        TimeLimitItem? l;
+        lock (_timeLimitsLock) { l = _timeLimits.FirstOrDefault(x => x.Id == limitId); }
         if (l != null) { l.IsEnabled = true; l.IsInCooldown = false; l.CooldownEndAt = null;
             if (!l.IsLocked) _processMonitor.UnlockApp(l.ProcessName); }
     }
@@ -154,14 +175,17 @@ public class TimeTrackingService : IDisposable
 
     public void LoadLimits(IEnumerable<TimeLimitItem> limits)
     {
-        _timeLimits.Clear();
-        foreach (var l in limits)
+        lock (_timeLimitsLock)
         {
-            l.ProcessName = NormalizeProcessName(l.ProcessName);
-            if (l.LastResetDate < DateTime.Today) { l.UsedMinutesToday = 0; l.IsLocked = false; l.LastResetDate = DateTime.Today; }
-            _timeLimits.Add(l);
+            _timeLimits.Clear();
+            foreach (var l in limits)
+            {
+                l.ProcessName = NormalizeProcessName(l.ProcessName);
+                if (l.LastResetDate < DateTime.Today) { l.UsedMinutesToday = 0; l.IsLocked = false; l.LastResetDate = DateTime.Today; }
+                _timeLimits.Add(l);
+            }
+            Console.WriteLine($"[TimeTrack] Limits loaded: {string.Join(", ", _timeLimits.Select(x => $"{x.AppName}({x.ProcessName})"))}");
         }
-        Console.WriteLine($"[TimeTrack] Limits loaded: {string.Join(", ", _timeLimits.Select(l => $"{l.AppName}({l.ProcessName})"))}");
     }
 
     private async Task TrackUsageAsync(TimeSpan elapsedSinceLastTick)
@@ -169,7 +193,10 @@ public class TimeTrackingService : IDisposable
         var foregroundProcess = _processMonitor.GetForegroundProcessName();
         Console.WriteLine($"[TimeTrack] FG={foregroundProcess ?? "(null)"}, elapsed={elapsedSinceLastTick.TotalSeconds:F1}s");
 
-        foreach (var l in _timeLimits)
+        List<TimeLimitItem> snapshot;
+        lock (_timeLimitsLock) { snapshot = _timeLimits.ToList(); }
+
+        foreach (var l in snapshot)
         {
             if (l.LastResetDate < DateTime.Today)
             {
@@ -184,16 +211,18 @@ public class TimeTrackingService : IDisposable
         double incrementMinutes = elapsedSinceLastTick.TotalMinutes;
 
         bool dirty = false;
-        foreach (var l in _timeLimits.Where(l => l.IsEnabled && !l.IsLocked))
+        foreach (var l in snapshot.Where(l => l.IsEnabled && !l.IsLocked))
         {
             if (string.Equals(foregroundProcess, l.ProcessName, StringComparison.OrdinalIgnoreCase))
             {
-                Console.WriteLine($"[TimeTrack] MATCH {l.AppName}: +{incrementMinutes:F4}min (now={l.UsedMinutesToday + incrementMinutes:F2}, limit={l.DailyLimitMinutes})");
-                l.UsedMinutesToday += incrementMinutes;
+                double newTotal = l.UsedMinutesToday + incrementMinutes;
+                Console.WriteLine($"[TimeTrack] MATCH {l.AppName}: +{incrementMinutes:F4}min (now={newTotal:F2}, limit={l.DailyLimitMinutes})");
+                l.UsedMinutesToday = newTotal;
                 dirty = true;
                 UsageUpdated?.Invoke(this, l);
                 if (l.RemainingMinutes <= 0 && !l.IsLocked)
                 {
+                    Console.WriteLine($"[TimeTrack] LOCK {l.AppName}: UsedMinutesToday={l.UsedMinutesToday:F2}, DailyLimit={l.DailyLimitMinutes}, Remaining={l.RemainingMinutes:F3}");
                     l.IsLocked = true; l.LockedAt = DateTime.Now;
                     _processMonitor.LockApp(l.ProcessName);
                     AppLocked?.Invoke(this, l); LimitReached?.Invoke(this, l);
@@ -225,7 +254,12 @@ public class TimeTrackingService : IDisposable
 
     private async Task SaveLimitsAsync()
     {
-        try { await _dataService.SaveTimeLimitsAsync(_timeLimits.ToList()); }
+        try
+        {
+            List<TimeLimitItem> snapshot;
+            lock (_timeLimitsLock) { snapshot = _timeLimits.ToList(); }
+            await _dataService.SaveTimeLimitsAsync(snapshot);
+        }
         catch { }
     }
 
@@ -246,7 +280,12 @@ public class TimeTrackingService : IDisposable
     }
 
     public double GetRemainingTime(string processName)
-        => _timeLimits.FirstOrDefault(l => l.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase))?.RemainingMinutes ?? double.MaxValue;
+    {
+        lock (_timeLimitsLock)
+        {
+            return _timeLimits.FirstOrDefault(l => l.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase))?.RemainingMinutes ?? double.MaxValue;
+        }
+    }
 
     public void Dispose()
     {

@@ -63,6 +63,7 @@ public partial class MainWindow : Window
             Hide();
             return;
         }
+        // For ApplicationExit/OwnerWindow closing, proceed normally
         base.OnClosing(e);
     }
 

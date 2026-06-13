@@ -7,6 +7,7 @@ using Avalonia.Styling;
 using PLLauncher.Services;
 using PLLauncher.ViewModels;
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,10 +17,10 @@ public partial class App : Application
 {
     // Single-instance enforcement
     private static Mutex? _singleInstanceMutex;
-    private static EventWaitHandle? _showWindowEvent;
     private const string AppGuid = "{B8A3C8E0-4C1A-4F3A-9E2D-7A1B2C3D4E5F}";
-    private static readonly string MutexName = $"Global\\PLLauncher-{AppGuid}";
-    private static readonly string ShowWindowEventName = $"Global\\PLLauncher-Show-{AppGuid}";
+    private static readonly string MutexName = $"PLLauncher-{AppGuid}";
+    private static readonly string SignalFileName = $"PLLauncher-signal-{AppGuid}.tmp";
+    private static string SignalFilePath => Path.Combine(Path.GetTempPath(), SignalFileName);
 
     // Services (singleton instances)
     public static DataService DataService { get; } = new();
@@ -90,40 +91,40 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         // Single-instance check: try to own the mutex
-        bool createdNew;
-        _singleInstanceMutex = new Mutex(true, MutexName, out createdNew);
-
-        if (!createdNew)
+        try
         {
-            // Mutex already exists — could be another instance or an abandoned mutex from a crash
-            try
+            bool createdNew;
+            _singleInstanceMutex = new Mutex(true, MutexName, out createdNew);
+
+            if (!createdNew)
             {
-                // Try to acquire it (non-blocking) — if abandoned, we get the exception but now own it
-                _singleInstanceMutex.WaitOne(0);
-                // Acquired successfully (mutex was free) — keep ownership and proceed
-            }
-            catch (AbandonedMutexException)
-            {
-                // Mutex was abandoned in a crash — we now own it, proceed as first instance
-            }
-            catch
-            {
-                // Another instance is actively holding the mutex — signal it to show its window, then exit
                 try
                 {
-                    using var signal = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
-                    signal.Set();
-                }
-                catch { }
+                    // Try to acquire the mutex (non-blocking)
+                    if (_singleInstanceMutex.WaitOne(0))
+                    {
+                        // Previous instance exited — we own it now.
+                    }
+                    else
+                    {
+                        // Mutex held by another running instance — signal it, then exit
+                        try { File.WriteAllText(SignalFilePath, DateTime.Now.ToString("O")); } catch { }
 
-                if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
-                    lifetime.Shutdown(0);
-                return;
+                        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
+                            lifetime.Shutdown(0);
+                        return;
+                    }
+                }
+                catch (AbandonedMutexException)
+                {
+                    // Crash-abandoned mutex — we now own it, proceed as first instance
+                }
             }
         }
-
-        // First instance — create the show-window event for other instances to signal
-        _showWindowEvent = new EventWaitHandle(false, EventResetMode.AutoReset, ShowWindowEventName);
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[App] Mutex error: {ex.Message}");
+        }
 
         try
         {
@@ -165,7 +166,7 @@ public partial class App : Application
             try
             {
                 // Load time limits synchronously before tracking starts
-                var savedLimits = Task.Run(() => DataService.LoadTimeLimitsAsync()).GetAwaiter().GetResult();
+                var savedLimits = Task.Run(() => DataService.LoadTimeLimitsAsync()).GetAwaiter().GetResult() ?? new();
                 Console.WriteLine($"[App] Loaded {savedLimits.Count} time limits from disk");
                 TimeTrackingService.LoadLimits(savedLimits);
                 TimeLimitsViewModel.TimeLimits = new(savedLimits);
@@ -191,22 +192,14 @@ public partial class App : Application
             };
 
             // Wire up tray icon events
-            SystemTrayService.ShowWindowRequested += (_, _) =>
-            {
-                if (desktop.MainWindow is MainWindow window)
-                {
-                    window.Show();
-                    window.WindowState = WindowState.Normal;
-                    window.Activate();
-                }
-            };
+            SystemTrayService.ShowWindowRequested += (_, _) => EnsureWindowVisible(desktop);
             SystemTrayService.ExitRequested += (_, _) =>
             {
                 desktop.Shutdown();
             };
 
             // Listen for signals from other instances to show the window
-            _ = ListenForShowWindowSignalAsync();
+            _ = ListenForShowWindowSignalAsync(desktop);
 
             // Handle application exit
             desktop.ShutdownRequested += OnShutdownRequested;
@@ -215,26 +208,48 @@ public partial class App : Application
         base.OnFrameworkInitializationCompleted();
     }
 
-    private static async Task ListenForShowWindowSignalAsync()
+    private static void EnsureWindowVisible(IClassicDesktopStyleApplicationLifetime desktop)
+    {
+        try
+        {
+            if (desktop.MainWindow is not MainWindow)
+            {
+                desktop.MainWindow?.Close();
+                desktop.MainWindow = new MainWindow();
+            }
+            var w = (MainWindow)desktop.MainWindow;
+            w.Show();
+            w.WindowState = WindowState.Normal;
+            w.Activate();
+        }
+        catch
+        {
+            desktop.MainWindow?.Close();
+            desktop.MainWindow = new MainWindow();
+            desktop.MainWindow.Show();
+        }
+    }
+
+    private static async Task ListenForShowWindowSignalAsync(IClassicDesktopStyleApplicationLifetime desktop)
     {
         while (true)
         {
             try
             {
-                await Task.Run(() => _showWindowEvent?.WaitOne());
-
-                if (Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
-                    && desktop.MainWindow is MainWindow window)
+                if (!File.Exists(SignalFilePath))
                 {
-                    window.Show();
-                    window.WindowState = WindowState.Normal;
-                    window.Activate();
+                    await Task.Delay(1000);
+                    continue;
                 }
             }
             catch
             {
-                break;
+                await Task.Delay(1000);
+                continue;
             }
+
+            try { File.Delete(SignalFilePath); } catch { }
+            EnsureWindowVisible(desktop);
         }
     }
 
@@ -375,7 +390,7 @@ public partial class App : Application
             HealthReminderService.Dispose();
             UpdateService.Dispose();
 
-            _showWindowEvent?.Dispose();
+            try { if (File.Exists(SignalFilePath)) File.Delete(SignalFilePath); } catch { }
             _singleInstanceMutex?.ReleaseMutex();
             _singleInstanceMutex?.Dispose();
         }

@@ -89,16 +89,24 @@ public class ProcessMonitorService : IDisposable
             }
         }
         catch { }
-        // Fallback: taskkill for stubborn/system processes (hidden window, no PowerShell flash)
+        // Fallback: Win32 TerminateProcess for stubborn/system processes (completely silent)
         try
         {
-            var psi = new ProcessStartInfo("taskkill", $"/F /T /IM {NormalizeName(processName)}.exe")
+            var name = NormalizeName(processName);
+            foreach (var p in Process.GetProcessesByName(name))
             {
-                CreateNoWindow = true,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                UseShellExecute = false
-            };
-            Process.Start(psi);
+                try
+                {
+                    var hProcess = NativeMethods.OpenProcess(NativeMethods.PROCESS_TERMINATE | NativeMethods.SYNCHRONIZE, false, (uint)p.Id);
+                    if (hProcess != IntPtr.Zero)
+                    {
+                        NativeMethods.TerminateProcess(hProcess, 1);
+                        NativeMethods.CloseHandle(hProcess);
+                    }
+                }
+                catch { }
+                finally { p.Dispose(); }
+            }
         }
         catch { }
     }

@@ -69,6 +69,15 @@ public static class NativeMethods
     [DllImport("kernel32.dll", SetLastError = true)]
     public static extern bool CloseHandle(IntPtr hObject);
 
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern IntPtr OpenProcess(uint dwDesiredAccess, bool bInheritHandle, uint dwProcessId);
+
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool TerminateProcess(IntPtr hProcess, uint uExitCode);
+
+    public const uint PROCESS_TERMINATE = 0x0001;
+    public const uint SYNCHRONIZE = 0x00100000;
+
     [DllImport("advapi32.dll", SetLastError = true)]
     public static extern bool LookupPrivilegeValue(
         string? lpSystemName, string lpName, out LUID lpLuid);

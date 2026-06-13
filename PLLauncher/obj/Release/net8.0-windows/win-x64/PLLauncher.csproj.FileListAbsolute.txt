@@ -226,3 +226,6 @@ C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\n
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.csproj.Up2Date
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.genruntimeconfig.cache
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\ref\PLLauncher.dll
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\PLLauncher.pdb
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.sourcelink.json
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\Avalonia\PLLauncher.pdb

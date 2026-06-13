@@ -196,7 +196,11 @@ public partial class App : Application
                 if (await UpdateService.PromptUpdateAsync(desktop.MainWindow))
                 {
                     _isShuttingDown = true;
-                    desktop.Shutdown();
+                    try { File.Delete(SignalFilePath); } catch { }
+                    try { _singleInstanceMutex?.ReleaseMutex(); _singleInstanceMutex?.Dispose(); } catch { }
+                    _singleInstanceMutex = null;
+                    desktop.MainWindow?.Close();
+                    _ = Task.Delay(2000).ContinueWith(_ => Environment.Exit(0));
                 }
             };
 
@@ -205,7 +209,12 @@ public partial class App : Application
             SystemTrayService.ExitRequested += (_, _) =>
             {
                 _isShuttingDown = true;
-                desktop.Shutdown();
+                try { File.Delete(SignalFilePath); } catch { }
+                try { _singleInstanceMutex?.ReleaseMutex(); _singleInstanceMutex?.Dispose(); } catch { }
+                _singleInstanceMutex = null;
+                desktop.MainWindow?.Close();
+                // Force exit if desktop.Shutdown() doesn't complete
+                _ = Task.Delay(2000).ContinueWith(_ => Environment.Exit(0));
             };
 
             // Listen for signals from other instances to show the window
@@ -242,7 +251,7 @@ public partial class App : Application
 
     private static async Task ListenForShowWindowSignalAsync(IClassicDesktopStyleApplicationLifetime desktop)
     {
-        while (true)
+        while (!_isShuttingDown)
         {
             try
             {

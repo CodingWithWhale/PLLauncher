@@ -1,2 +1,6 @@
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\dist\publish\PLLauncher.pdb
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\dist\publish\icon.ico
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\dist\publish\av_libglesv2.dll
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\dist\publish\libHarfBuzzSharp.dll
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\dist\publish\libSkiaSharp.dll
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\dist\publish\PLLauncher.exe

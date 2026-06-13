@@ -68,10 +68,24 @@ public class ProcessMonitorService : IDisposable
     {
         try
         {
-            foreach (var p in Process.GetProcessesByName(NormalizeName(processName)))
-            { try { p.CloseMainWindow(); if (!p.WaitForExit(3000)) p.Kill(); } catch { } finally { p.Dispose(); } }
+            var name = NormalizeName(processName);
+            foreach (var p in Process.GetProcessesByName(name))
+            {
+                try
+                {
+                    p.CloseMainWindow();
+                    if (!p.WaitForExit(2000))
+                        p.Kill();
+                    if (!p.WaitForExit(1000))
+                        p.Kill(entireProcessTree: true);
+                }
+                catch { }
+                finally { p.Dispose(); }
+            }
         }
         catch { }
+        // Fallback: taskkill for stubborn/system processes
+        try { Process.Start("taskkill", $"/F /T /IM {NormalizeName(processName)}.exe"); } catch { }
     }
 
     public void EnforceLockedProcesses()

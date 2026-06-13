@@ -17,6 +17,7 @@ public partial class App : Application
 {
     // Single-instance enforcement
     private static Mutex? _singleInstanceMutex;
+    internal static bool _isShuttingDown;
     private const string AppGuid = "{B8A3C8E0-4C1A-4F3A-9E2D-7A1B2C3D4E5F}";
     private static readonly string MutexName = $"PLLauncher-{AppGuid}";
     private static readonly string SignalFileName = $"PLLauncher-signal-{AppGuid}.tmp";
@@ -195,6 +196,7 @@ public partial class App : Application
             SystemTrayService.ShowWindowRequested += (_, _) => EnsureWindowVisible(desktop);
             SystemTrayService.ExitRequested += (_, _) =>
             {
+                _isShuttingDown = true;
                 desktop.Shutdown();
             };
 

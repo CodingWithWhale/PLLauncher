@@ -80,6 +80,9 @@ public class TimeTrackingService : IDisposable
 
     private void EnforceLockedProcesses()
     {
+        // Also enforce via ProcessMonitorService (terminates processes in _lockedProcesses)
+        _processMonitor.EnforceLockedProcesses();
+
         List<TimeLimitItem> active;
         lock (_timeLimitsLock) { active = _timeLimits.ToList(); }
 
@@ -91,6 +94,7 @@ public class TimeTrackingService : IDisposable
             // If not yet locked but time is up, lock now
             if (!l.IsLocked && l.IsEnabled && l.RemainingMinutes <= 0)
             {
+                Console.WriteLine($"[TimeTrack] ENFORCE locking {l.AppName} ({l.ProcessName}): Used={l.UsedMinutesToday:F2}, Limit={l.DailyLimitMinutes}, Remaining={l.RemainingMinutes:F3}");
                 l.IsLocked = true;
                 l.LockedAt = DateTime.Now;
                 _processMonitor.LockApp(l.ProcessName);

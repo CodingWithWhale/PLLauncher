@@ -57,13 +57,13 @@ public partial class MainWindow : Window
 
     protected override void OnClosing(WindowClosingEventArgs e)
     {
-        if (e.CloseReason == WindowCloseReason.WindowClosing && App.SettingsViewModel.MinimizeToTray)
+        if (!App._isShuttingDown && e.CloseReason == WindowCloseReason.WindowClosing && App.SettingsViewModel.MinimizeToTray)
         {
             e.Cancel = true;
             Hide();
             return;
         }
-        // For ApplicationExit/OwnerWindow closing, proceed normally
+        // For ApplicationExit/real shutdown, proceed with closing
         base.OnClosing(e);
     }
 

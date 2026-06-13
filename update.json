@@ -1,5 +1,5 @@
 {
-  "version": "2.6.13",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.13/PLLauncher_Setup_2.6.13.exe",
-  "changelog": "v2.6.13: Replace taskkill with silent Win32 TerminateProcess (no window at all); fix Exit handler to release mutex and force exit; stop signal listener during shutdown."
+  "version": "2.6.14",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.14/PLLauncher_Setup_2.6.14.exe",
+  "changelog": "v2.6.14: Fix abandoned-mutex hang after Task Manager kill — use initiallyOwned=false so constructor never throws, store mutex properly on AbandonedMutexException."
 }

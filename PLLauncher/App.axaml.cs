@@ -93,17 +93,21 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         // Single-instance check: try to own the mutex
+        // Do NOT use initiallyOwned=true on the constructor — if the previous instance
+        // was killed via Task Manager, the constructor itself throws AbandonedMutexException,
+        // the assignment never completes, _singleInstanceMutex stays null, and on the next
+        // launch the still-owned (but unreleasable) mutex causes a permanent hang.
         try
         {
             bool createdNew;
-            _singleInstanceMutex = new Mutex(true, MutexName, out createdNew);
+            var mutex = new Mutex(false, MutexName, out createdNew);
 
             if (!createdNew)
             {
+                // Mutex already exists — try to acquire ownership
                 try
                 {
-                    // Try to acquire the mutex (non-blocking)
-                    if (_singleInstanceMutex.WaitOne(0))
+                    if (mutex.WaitOne(0))
                     {
                         // Previous instance exited — we own it now.
                     }
@@ -117,11 +121,20 @@ public partial class App : Application
                         return;
                     }
                 }
-                catch (AbandonedMutexException)
+                catch (AbandonedMutexException amex)
                 {
-                    // Crash-abandoned mutex — we now own it, proceed as first instance
+                    // Crash-abandoned mutex — WaitOne still grants ownership.
+                    // Store the mutex from the exception so we can release it later.
+                    mutex = amex.Mutex ?? mutex;
                 }
             }
+            else
+            {
+                // We created the mutex — acquire it manually (initiallyOwned was false)
+                mutex.WaitOne();
+            }
+
+            _singleInstanceMutex = mutex;
         }
         catch (Exception ex)
         {

@@ -1,5 +1,5 @@
 {
-  "version": "2.6.27",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.27/PLLauncher_Setup_2.6.27.exe",
-  "changelog": "v2.6.27: Fixed localization for all pages (titles, subtitles, buttons now translate on language switch). Added Refresh button to App Usage page. Auto-update fix: update.json is now committed and pushed to main for proper version detection."
+  "version": "2.6.28",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.28/PLLauncher_Setup_2.6.28.exe",
+  "changelog": "v2.6.28: Self-contained publish (bundles .NET 8 runtime, no install required). Fixes 'You must install .NET' error on machines without .NET 8."
 }

@@ -10,15 +10,7 @@
                 <TextBlock Text="Tasks" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
                 <TextBlock Text="Schedule system actions and automate workflows" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
             </StackPanel>
-            <Button Grid.Column="1" x:Name="AntiSleepBtn" Click="ToggleAntiSleep_Click" Margin="0,0,8,0"
-                    CornerRadius="6" Background="{DynamicResource Surface2Brush}"
-                    Foreground="{DynamicResource TextPrimaryBrush}" Padding="12,8">
-                <StackPanel Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="&#xE917;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
-                    <TextBlock x:Name="AntiSleepBtnText" Text="Anti-Sleep" />
-                </StackPanel>
-            </Button>
-            <Button Grid.Column="2" Click="AddTask_Click" CornerRadius="6"
+            <Button Grid.Column="1" Click="AddTask_Click" CornerRadius="6"
                     Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" Padding="16,8">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
@@ -47,7 +39,6 @@
                         <ComboBoxItem Content="Open App" Tag="OpenApp" />
                         <ComboBoxItem Content="Close App" Tag="CloseApp" />
                         <ComboBoxItem Content="Run Command" Tag="RunCommand" />
-                        <ComboBoxItem Content="Anti-Sleep" Tag="AntiSleep" />
                     </ComboBox>
                     <ComboBox x:Name="ScheduleTypeCombo" Grid.Column="1" HorizontalAlignment="Stretch"
                               Background="{DynamicResource SurfaceBrush}"

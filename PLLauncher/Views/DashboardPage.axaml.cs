@@ -31,11 +31,9 @@ public partial class DashboardPage : UserControl
         LimitsLabel.Text = loc.Get("dashboard.time_limits");
         SchedulesLabel.Text = loc.Get("dashboard.schedules");
         QuickActionsLabel.Text = loc.Get("dashboard.quick_actions");
-        AntiSleepText.Text = loc.Get("dashboard.anti_sleep");
         ShutdownText.Text = loc.Get("dashboard.shutdown_1h");
         LockText.Text = loc.Get("dashboard.lock_pc");
-        StatusLabel.Text = loc.Get("dashboard.system_status");
-        SystemStatusText.Text = loc.Get("dashboard.system_status_ok");
+        NextTaskTitle.Text = loc.Get("dashboard.next_task");
     }
 
     private Window? GetOwnerWindow()
@@ -51,32 +49,7 @@ public partial class DashboardPage : UserControl
         TaskCount.Text = vm.ActiveTaskCount.ToString();
         LimitCount.Text = vm.ActiveTimeLimitsCount.ToString();
         ScheduleCount.Text = vm.ActiveScheduleCount.ToString();
-        SystemStatusText.Text = vm.SystemStatus;
-        AntiSleepText.Text = vm.IsAntiSleepActive ? "Stop Anti-Sleep" : LocalizationService.Instance.Get("dashboard.anti_sleep");
-    }
-
-    private async void ToggleAntiSleep_Click(object? sender, RoutedEventArgs e)
-    {
-        var vm = App.DashboardViewModel;
-        if (vm.IsAntiSleepActive)
-        {
-            vm.ToggleAntiSleepCommand.Execute(null);
-            AntiSleepText.Text = "Anti-Sleep";
-            await RefreshAsync();
-            return;
-        }
-
-        var loc = LocalizationService.Instance;
-        var confirmed = await DialogHelper.ShowConfirmAsync(
-            GetOwnerWindow(),
-            loc.Get("confirm.antisleep"),
-            loc.Get("confirm.title"));
-
-        if (!confirmed) return;
-
-        vm.ToggleAntiSleepCommand.Execute(null);
-        AntiSleepText.Text = vm.IsAntiSleepActive ? "Stop Anti-Sleep" : "Anti-Sleep";
-        await RefreshAsync();
+        NextTaskInfo.Text = vm.NextTaskInfo;
     }
 
     private async void QuickShutdown_Click(object? sender, RoutedEventArgs e)

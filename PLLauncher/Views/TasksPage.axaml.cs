@@ -25,7 +25,6 @@ public partial class TasksPage : UserControl
         {
             await App.TasksViewModel.LoadTasksCommand.ExecuteAsync(null);
             RefreshList();
-            AntiSleepBtnText.Text = App.TasksViewModel.IsAntiSleepActive ? "Stop Anti-Sleep" : "Anti-Sleep";
         }
         catch (Exception ex) { Console.WriteLine($"Tasks load error: {ex.Message}"); }
     }
@@ -133,7 +132,7 @@ public partial class TasksPage : UserControl
         { "Shutdown" => TaskType.Shutdown, "Restart" => TaskType.Restart, "Sleep" => TaskType.Sleep,
           "Hibernate" => TaskType.Hibernate, "LockPC" => TaskType.LockPC, "OpenApp" => TaskType.OpenApp,
           "CloseApp" => TaskType.CloseApp, "RunCommand" => TaskType.RunCommand,
-          "AntiSleep" => TaskType.AntiSleep, _ => TaskType.Shutdown };
+          _ => TaskType.Shutdown };
 
         var scheduleTag = (ScheduleTypeCombo.SelectedItem as ComboBoxItem)?.Tag?.ToString();
         vm.NewScheduleType = scheduleTag == "SpecificTime"
@@ -159,7 +158,6 @@ public partial class TasksPage : UserControl
         await vm.AddTaskCommand.ExecuteAsync(null);
         AddTaskPanel.IsVisible = false;
         RefreshList();
-        AntiSleepBtnText.Text = vm.IsAntiSleepActive ? "Stop Anti-Sleep" : "Anti-Sleep";
     }
 
     private async void CancelTask_Click(object? s, RoutedEventArgs e)
@@ -180,9 +178,4 @@ public partial class TasksPage : UserControl
         }
     }
 
-    private void ToggleAntiSleep_Click(object? s, RoutedEventArgs e)
-    {
-        App.TasksViewModel.ToggleAntiSleepCommand.Execute(null);
-        AntiSleepBtnText.Text = App.TasksViewModel.IsAntiSleepActive ? "Stop Anti-Sleep" : "Anti-Sleep";
-    }
 }

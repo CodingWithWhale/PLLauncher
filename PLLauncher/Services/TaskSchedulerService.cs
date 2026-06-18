@@ -17,11 +17,6 @@ public class TaskSchedulerService : IDisposable
     private CancellationTokenSource? _cts;
     private bool _isRunning;
 
-    // Anti-sleep state
-    private bool _antiSleepSystemActive;
-    private NativeMethods.POINT _antiSleepLastCursorPos;
-    private DateTime _ignoreMovementUntil = DateTime.MinValue;
-
     // Track which tasks have already triggered a warning popup (so we don't spam)
     private readonly HashSet<string> _warnedTasks = new();
 
@@ -30,7 +25,6 @@ public class TaskSchedulerService : IDisposable
     public event EventHandler<TaskItem>? TaskWarning;
 
     public IReadOnlyList<TaskItem> ActiveTasks => _activeTasks.AsReadOnly();
-    public bool IsAntiSleepActive => _activeTasks.Any(t => t.IsAntiSleep && t.Status == AppTaskStatus.Running);
 
     public TaskSchedulerService(NotificationService notificationService)
         => _notificationService = notificationService;
@@ -99,49 +93,6 @@ public class TaskSchedulerService : IDisposable
         AddTask(task); return task;
     }
 
-    public TaskItem CreateAntiSleepTask()
-    {
-        var task = new TaskItem { Name = "Anti-Sleep Mode", TaskType = TaskType.AntiSleep,
-            ScheduleType = TaskScheduleType.Delayed, ScheduledTime = DateTime.Now.AddHours(8),
-            IsAntiSleep = true, AntiSleepIntervalSeconds = 60, Status = AppTaskStatus.Running };
-        AddTask(task);
-
-        // Use SetThreadExecutionState to actually prevent Windows from sleeping
-        // ES_CONTINUOUS | ES_SYSTEM_REQUIRED | ES_DISPLAY_REQUIRED
-        // This tells Windows: keep system awake, keep display on, persist until we clear it
-        NativeMethods.SetThreadExecutionState(
-            NativeMethods.ES_CONTINUOUS | NativeMethods.ES_SYSTEM_REQUIRED | NativeMethods.ES_DISPLAY_REQUIRED);
-        _antiSleepSystemActive = true;
-
-        NativeMethods.GetCursorPos(out _antiSleepLastCursorPos);
-        _ignoreMovementUntil = DateTime.Now.AddMilliseconds(500);
-        task.AntiSleepIntervalSeconds = 15;
-
-        _notificationService.ShowNotification("Anti-Sleep Mode",
-            "Anti-sleep activated. Move your mouse to stop it.");
-        return task;
-    }
-
-    public void StopAntiSleep()
-    {
-        var t = _activeTasks.FirstOrDefault(t => t.IsAntiSleep);
-        if (t != null)
-        {
-            t.Status = AppTaskStatus.Cancelled;
-            _activeTasks.Remove(t);
-
-            // Clear the execution state to allow Windows to sleep again
-            // ES_CONTINUOUS alone resets the state
-            if (_antiSleepSystemActive)
-            {
-                NativeMethods.SetThreadExecutionState(NativeMethods.ES_CONTINUOUS);
-                _antiSleepSystemActive = false;
-            }
-
-            _notificationService.ShowNotification("Anti-Sleep Mode", "Anti-sleep mode deactivated.");
-        }
-    }
-
     private async Task ProcessTasksAsync()
     {
         var now = DateTime.Now;
@@ -151,20 +102,6 @@ public class TaskSchedulerService : IDisposable
         foreach (var task in _activeTasks.ToList())
         {
             if (task.Status != AppTaskStatus.Pending && task.Status != AppTaskStatus.Running) continue;
-
-            if (task.IsAntiSleep)
-            {
-                if (task.Status == AppTaskStatus.Running)
-                {
-                    if (CheckUserMovedMouse())
-                    {
-                        StopAntiSleep();
-                        continue;
-                    }
-                    ProcessAntiSleep(task);
-                }
-                continue;
-            }
 
             var remaining = task.ScheduledTime - now;
 
@@ -273,52 +210,8 @@ public class TaskSchedulerService : IDisposable
         _activeTasks.Remove(task);
     }
 
-    private bool CheckUserMovedMouse()
-    {
-        if (DateTime.Now < _ignoreMovementUntil) return false;
-
-        try
-        {
-            NativeMethods.GetCursorPos(out var pos);
-            var dx = Math.Abs(pos.X - _antiSleepLastCursorPos.X);
-            var dy = Math.Abs(pos.Y - _antiSleepLastCursorPos.Y);
-            return dx > 4 || dy > 4;
-        }
-        catch { return false; }
-    }
-
-    private void ProcessAntiSleep(TaskItem task)
-    {
-        if ((DateTime.Now - (task.LastExecutedAt ?? DateTime.MinValue)).TotalSeconds < task.AntiSleepIntervalSeconds)
-            return;
-
-        NativeMethods.SetThreadExecutionState(
-            NativeMethods.ES_CONTINUOUS | NativeMethods.ES_SYSTEM_REQUIRED | NativeMethods.ES_DISPLAY_REQUIRED);
-
-        try
-        {
-            NativeMethods.GetCursorPos(out var pos);
-            NativeMethods.SetCursorPos(pos.X + 2, pos.Y);
-            Thread.Sleep(40);
-            NativeMethods.SetCursorPos(pos.X, pos.Y + 2);
-            Thread.Sleep(40);
-            NativeMethods.SetCursorPos(pos.X, pos.Y);
-            _antiSleepLastCursorPos = pos;
-            _ignoreMovementUntil = DateTime.Now.AddMilliseconds(500);
-        }
-        catch { }
-
-        task.LastExecutedAt = DateTime.Now;
-    }
-
     public void Dispose()
     {
-        // Make sure to clear anti-sleep state on exit
-        if (_antiSleepSystemActive)
-        {
-            NativeMethods.SetThreadExecutionState(NativeMethods.ES_CONTINUOUS);
-            _antiSleepSystemActive = false;
-        }
         Stop();
         GC.SuppressFinalize(this);
     }

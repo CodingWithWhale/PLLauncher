@@ -20,12 +20,11 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private int _activeTaskCount;
     [ObservableProperty] private int _activeScheduleCount;
     [ObservableProperty] private int _activeTimeLimitsCount;
-    [ObservableProperty] private bool _isAntiSleepActive;
     [ObservableProperty] private ObservableCollection<KeybindItem> _recentKeybinds = new();
     [ObservableProperty] private ObservableCollection<TaskItem> _runningTasks = new();
     [ObservableProperty] private ObservableCollection<TimeLimitItem> _activeTimeLimits = new();
     [ObservableProperty] private ObservableCollection<ScheduleItem> _upcomingSchedules = new();
-    [ObservableProperty] private string _systemStatus = "All systems operational";
+    [ObservableProperty] private string _nextTaskInfo = "No upcoming tasks";
     [ObservableProperty] private string _greeting = string.Empty;
 
     public DashboardViewModel(DataService ds, HotkeyService hs, TaskSchedulerService ts, TimeTrackingService tt, ScheduleService ss)
@@ -42,21 +41,38 @@ public partial class DashboardViewModel : ObservableObject
         ActiveTaskCount = _taskSchedulerService.ActiveTasks.Count;
         ActiveScheduleCount = schedules.Count(s => s.IsEnabled);
         ActiveTimeLimitsCount = limits.Count(l => l.IsEnabled);
-        IsAntiSleepActive = _taskSchedulerService.IsAntiSleepActive;
         RecentKeybinds = new(keybinds.Take(5));
         RunningTasks = new(_taskSchedulerService.ActiveTasks);
         ActiveTimeLimits = new(limits.Where(l => l.IsEnabled).Take(5));
         UpcomingSchedules = new(schedules.Where(s => s.IsEnabled).Take(5));
         UpdateGreeting();
-        SystemStatus = IsAntiSleepActive ? "Anti-sleep mode active" : "All systems operational";
+        UpdateNextTask();
     }
 
-    [RelayCommand]
-    private void ToggleAntiSleep()
+    private void UpdateNextTask()
     {
-        if (IsAntiSleepActive) _taskSchedulerService.StopAntiSleep();
-        else _taskSchedulerService.CreateAntiSleepTask();
-        IsAntiSleepActive = _taskSchedulerService.IsAntiSleepActive;
+        var next = _taskSchedulerService.ActiveTasks
+            .Where(t => t.Status == Models.TaskStatus.Pending)
+            .OrderBy(t => t.ScheduledTime)
+            .FirstOrDefault();
+
+        if (next == null)
+        {
+            NextTaskInfo = "No upcoming tasks";
+            return;
+        }
+
+        var remaining = next.ScheduledTime - DateTime.Now;
+        if (remaining.TotalSeconds <= 0)
+        {
+            NextTaskInfo = $"{next.TaskType} - now";
+            return;
+        }
+
+        var timeStr = remaining.TotalHours >= 1
+            ? $"in {remaining.Hours}h {remaining.Minutes}m"
+            : $"in {Math.Max(1, (int)remaining.TotalMinutes)}m";
+        NextTaskInfo = $"{next.TaskType} {timeStr}";
     }
 
     private void UpdateGreeting()

@@ -52,18 +52,8 @@
             <!-- Quick Actions -->
             <StackPanel Spacing="12">
                 <TextBlock x:Name="QuickActionsLabel" Text="Quick Actions" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                <UniformGrid Columns="3">
-                    <Button x:Name="AntiSleepBtn" Margin="0,0,8,0" Click="ToggleAntiSleep_Click"
-                            HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                            CornerRadius="8" Background="{DynamicResource Surface2Brush}"
-                            Foreground="{DynamicResource TextPrimaryBrush}" BorderBrush="{DynamicResource BorderBrush}"
-                            BorderThickness="1" Padding="16">
-                        <StackPanel Spacing="6" HorizontalAlignment="Center">
-                            <TextBlock Text="&#xE917;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="{DynamicResource AccentBrush}" HorizontalAlignment="Center" />
-                            <TextBlock x:Name="AntiSleepText" Text="Anti-Sleep" FontSize="12" HorizontalAlignment="Center" />
-                        </StackPanel>
-                    </Button>
-                    <Button Margin="4,0" Click="QuickShutdown_Click" HorizontalAlignment="Stretch"
+                <UniformGrid Columns="2">
+                    <Button Margin="0,0,8,0" Click="QuickShutdown_Click" HorizontalAlignment="Stretch"
                             HorizontalContentAlignment="Center" CornerRadius="8"
                             Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}"
                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Padding="16">
@@ -84,14 +74,14 @@
                 </UniformGrid>
             </StackPanel>
 
-            <!-- System Status -->
+            <!-- Next Scheduled Task -->
             <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
                 <StackPanel Orientation="Horizontal" Spacing="12">
-                    <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="{DynamicResource SuccessBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
                     <StackPanel Spacing="2">
-                        <TextBlock x:Name="StatusLabel" Text="System Status" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                        <TextBlock x:Name="SystemStatusText" Text="All systems operational" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock x:Name="NextTaskTitle" Text="Next Task" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                        <TextBlock x:Name="NextTaskInfo" Text="No upcoming tasks" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
                 </StackPanel>
             </Border>

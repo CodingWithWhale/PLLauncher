@@ -86,21 +86,6 @@ public static class NativeMethods
     [DllImport("powrprof.dll", SetLastError = true)]
     public static extern bool SetSuspendState(bool hibernate, bool forceCritical, bool disableWakeEvent);
 
-    // === Prevent Sleep (Anti-Sleep) ===
-    public const uint ES_CONTINUOUS = 0x80000000;
-    public const uint ES_SYSTEM_REQUIRED = 0x00000001;
-    public const uint ES_DISPLAY_REQUIRED = 0x00000002;
-
-    [DllImport("kernel32.dll", SetLastError = true)]
-    public static extern uint SetThreadExecutionState(uint esFlags);
-
-    // === Mouse Move (Anti-Sleep) ===
-    [DllImport("user32.dll")]
-    public static extern bool SetCursorPos(int X, int Y);
-
-    [DllImport("user32.dll")]
-    public static extern bool GetCursorPos(out POINT lpPoint);
-
     [DllImport("user32.dll")]
     public static extern IntPtr GetForegroundWindow();
 
@@ -146,13 +131,6 @@ public static class NativeMethods
     }
 
     // === Structs ===
-    [StructLayout(LayoutKind.Sequential)]
-    public struct POINT
-    {
-        public int X;
-        public int Y;
-    }
-
     [StructLayout(LayoutKind.Sequential)]
     public struct LUID
     {

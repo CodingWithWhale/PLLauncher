@@ -44,11 +44,6 @@ public partial class TaskItem : ObservableObject
     [ObservableProperty]
     private string _description = string.Empty;
 
-    [ObservableProperty]
-    private bool _isAntiSleep = false;
-
-    [ObservableProperty]
-    private int _antiSleepIntervalSeconds = 60;
 }
 
 public enum TaskType
@@ -60,7 +55,6 @@ public enum TaskType
     OpenApp,
     CloseApp,
     RunCommand,
-    AntiSleep,
     Hibernate
 }
 

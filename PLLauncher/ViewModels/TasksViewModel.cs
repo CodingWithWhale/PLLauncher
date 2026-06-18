@@ -23,7 +23,6 @@ public partial class TasksViewModel : ObservableObject
     [ObservableProperty] private double _newDelayMinutes = 60;
     [ObservableProperty] private DateTime _newScheduledTime = DateTime.Now.AddHours(1);
     [ObservableProperty] private string _newTargetApp = string.Empty;
-    [ObservableProperty] private bool _isAntiSleepActive;
 
     public TasksViewModel(DataService ds, TaskSchedulerService ts)
     { _dataService = ds; _taskSchedulerService = ts;
@@ -32,22 +31,19 @@ public partial class TasksViewModel : ObservableObject
     [RelayCommand]
     private async Task LoadTasksAsync()
     { var saved = await _dataService.LoadTasksAsync();
-      Tasks = new(_taskSchedulerService.ActiveTasks.Concat(saved).DistinctBy(t => t.Id));
-      IsAntiSleepActive = _taskSchedulerService.IsAntiSleepActive; }
+      Tasks = new(_taskSchedulerService.ActiveTasks.Concat(saved).DistinctBy(t => t.Id)); }
 
     [RelayCommand]
     private async Task AddTaskAsync()
     {
         if (string.IsNullOrWhiteSpace(NewTaskName)) return;
         TaskItem task;
-        if (NewTaskType == TaskType.AntiSleep) task = _taskSchedulerService.CreateAntiSleepTask();
-        else if (NewScheduleType == TaskScheduleType.Delayed)
+        if (NewScheduleType == TaskScheduleType.Delayed)
             task = _taskSchedulerService.CreateDelayedTask(NewTaskName, NewTaskType, NewDelayMinutes, NewTargetApp);
         else task = _taskSchedulerService.CreateTimedTask(NewTaskName, NewTaskType, NewScheduledTime, NewTargetApp);
         Tasks.Add(task);
         await SaveTasksAsync();
         NewTaskName = ""; NewTargetApp = ""; IsAddingNew = false;
-        IsAntiSleepActive = _taskSchedulerService.IsAntiSleepActive;
     }
 
     [RelayCommand]
@@ -58,11 +54,6 @@ public partial class TasksViewModel : ObservableObject
     [RelayCommand]
     private async Task DelayTaskAsync(string taskId)
     { _taskSchedulerService.DelayTask(taskId, 10); await SaveTasksAsync(); }
-
-    [RelayCommand]
-    private void ToggleAntiSleep()
-    { if (IsAntiSleepActive) _taskSchedulerService.StopAntiSleep(); else _taskSchedulerService.CreateAntiSleepTask();
-      IsAntiSleepActive = _taskSchedulerService.IsAntiSleepActive; }
 
     private async void OnTaskExecuted(object? s, TaskItem t) { Tasks.Remove(t); await SaveTasksAsync(); }
     private async void OnTaskCancelled(object? s, TaskItem t) { Tasks.Remove(t); await SaveTasksAsync(); }

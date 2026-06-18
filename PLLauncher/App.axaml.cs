@@ -409,23 +409,22 @@ public partial class App : Application
 
     private void OnShutdownRequested(object? sender, System.ComponentModel.CancelEventArgs e)
     {
-        try
-        {
-            HotkeyService.Dispose();
-            TaskSchedulerService.Dispose();
-            TimeTrackingService.Dispose();
-            ScheduleService.Dispose();
-            ProcessMonitorService.Dispose();
-            SystemTrayService.Dispose();
-            AppUsageTrackingService.Dispose();
-            PomodoroService.Dispose();
-            HealthReminderService.Dispose();
-            UpdateService.Dispose();
+        // Release the mutex FIRST so the next instance can always start,
+        // even if one of the service Dispose calls below throws or hangs.
+        try { if (File.Exists(SignalFilePath)) File.Delete(SignalFilePath); } catch { }
+        try { _singleInstanceMutex?.ReleaseMutex(); _singleInstanceMutex?.Dispose(); } catch { }
+        _singleInstanceMutex = null;
 
-            try { if (File.Exists(SignalFilePath)) File.Delete(SignalFilePath); } catch { }
-            _singleInstanceMutex?.ReleaseMutex();
-            _singleInstanceMutex?.Dispose();
-        }
-        catch { }
+        // Now dispose services (best-effort, exceptions logged but never block next launch)
+        try { HotkeyService.Dispose(); } catch (Exception ex) { Console.WriteLine($"[App] Shutdown HotkeyService: {ex.Message}"); }
+        try { TaskSchedulerService.Dispose(); } catch (Exception ex) { Console.WriteLine($"[App] Shutdown TaskSchedulerService: {ex.Message}"); }
+        try { TimeTrackingService.Dispose(); } catch (Exception ex) { Console.WriteLine($"[App] Shutdown TimeTrackingService: {ex.Message}"); }
+        try { ScheduleService.Dispose(); } catch (Exception ex) { Console.WriteLine($"[App] Shutdown ScheduleService: {ex.Message}"); }
+        try { ProcessMonitorService.Dispose(); } catch (Exception ex) { Console.WriteLine($"[App] Shutdown ProcessMonitorService: {ex.Message}"); }
+        try { SystemTrayService.Dispose(); } catch (Exception ex) { Console.WriteLine($"[App] Shutdown SystemTrayService: {ex.Message}"); }
+        try { AppUsageTrackingService.Dispose(); } catch (Exception ex) { Console.WriteLine($"[App] Shutdown AppUsageTrackingService: {ex.Message}"); }
+        try { PomodoroService.Dispose(); } catch (Exception ex) { Console.WriteLine($"[App] Shutdown PomodoroService: {ex.Message}"); }
+        try { HealthReminderService.Dispose(); } catch (Exception ex) { Console.WriteLine($"[App] Shutdown HealthReminderService: {ex.Message}"); }
+        try { UpdateService.Dispose(); } catch (Exception ex) { Console.WriteLine($"[App] Shutdown UpdateService: {ex.Message}"); }
     }
 }

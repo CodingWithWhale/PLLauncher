@@ -162,6 +162,22 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow();
+
+            // Must attach Opened handler BEFORE Show() — Opened fires synchronously during Show()
+            desktop.MainWindow.Opened += async (_, _) =>
+            {
+                await Task.Delay(2000);
+                if (await UpdateService.PromptUpdateAsync(desktop.MainWindow))
+                {
+                    _isShuttingDown = true;
+                    try { File.Delete(SignalFilePath); } catch { }
+                    try { _singleInstanceMutex?.ReleaseMutex(); _singleInstanceMutex?.Dispose(); } catch { }
+                    _singleInstanceMutex = null;
+                    desktop.MainWindow?.Close();
+                    _ = Task.Delay(2000).ContinueWith(_ => Environment.Exit(0));
+                }
+            };
+
             desktop.MainWindow.Show();
             ToastHelper.MainWindowHandle = desktop.MainWindow.TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
 
@@ -194,21 +210,6 @@ public partial class App : Application
                     Console.WriteLine($"Service start error: {ex.Message}");
                 }
             });
-
-            // Wire up update check BEFORE the window opens (Opened fires only once)
-            desktop.MainWindow.Opened += async (_, _) =>
-            {
-                await Task.Delay(2000);
-                if (await UpdateService.PromptUpdateAsync(desktop.MainWindow))
-                {
-                    _isShuttingDown = true;
-                    try { File.Delete(SignalFilePath); } catch { }
-                    try { _singleInstanceMutex?.ReleaseMutex(); _singleInstanceMutex?.Dispose(); } catch { }
-                    _singleInstanceMutex = null;
-                    desktop.MainWindow?.Close();
-                    _ = Task.Delay(2000).ContinueWith(_ => Environment.Exit(0));
-                }
-            };
 
             // Wire up tray icon events
             SystemTrayService.ShowWindowRequested += (_, _) => EnsureWindowVisible(desktop);

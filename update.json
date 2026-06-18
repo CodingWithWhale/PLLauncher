@@ -1,5 +1,5 @@
 {
-  "version": "2.6.23",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.23/PLLauncher_Setup_2.6.23.exe",
-  "changelog": "v2.6.23: Fix toast notification off-screen positioning; include limit duration in limit-hit notifications."
+  "version": "2.6.24",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.24/PLLauncher_Setup_2.6.24.exe",
+  "changelog": "v2.6.24: Fix auto-update prompt not appearing — attach Opened handler before Show() (was attached too late, never fired)."
 }

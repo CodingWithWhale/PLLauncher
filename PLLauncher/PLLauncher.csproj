@@ -10,7 +10,9 @@
     <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-    <!-- Publish properties for standalone .exe -->
+    <!-- Publish properties for standalone .exe (no .NET runtime required) -->
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
     <Version>2.6.27.0</Version>
     <FileVersion>2.6.27.0</FileVersion>
     <AssemblyVersion>2.6.27.0</AssemblyVersion>

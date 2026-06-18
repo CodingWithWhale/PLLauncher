@@ -184,7 +184,6 @@ public class TaskSchedulerService : IDisposable
                     NativeMethods.ExitWindowsEx(NativeMethods.EWX_REBOOT | NativeMethods.EWX_FORCE, 0);
                     break;
                 case TaskType.Sleep: NativeMethods.SetSuspendState(false, false, false); break;
-                case TaskType.Hibernate: NativeMethods.SetSuspendState(true, false, false); break;
                 case TaskType.LockPC: NativeMethods.LockWorkStation(); break;
                 case TaskType.OpenApp:
                     if (!string.IsNullOrEmpty(task.TargetApp))
@@ -194,11 +193,6 @@ public class TaskSchedulerService : IDisposable
                     if (!string.IsNullOrEmpty(task.TargetApp))
                         foreach (var p in System.Diagnostics.Process.GetProcessesByName(task.TargetApp))
                         { p.CloseMainWindow(); if (!p.WaitForExit(3000)) p.Kill(); }
-                    break;
-                case TaskType.RunCommand:
-                    if (!string.IsNullOrEmpty(task.TargetApp))
-                        Process.Start(new ProcessStartInfo("cmd.exe")
-                            { Arguments = $"/c {task.TargetApp}", UseShellExecute = false, CreateNoWindow = true });
                     break;
             }
             task.Status = AppTaskStatus.Completed;

@@ -47,9 +47,9 @@
                                       Background="{DynamicResource SurfaceBrush}"
                                       SelectionChanged="LanguageCombo_SelectionChanged">
                                 <ComboBoxItem Content="English" Tag="en-US" />
-                                <ComboBoxItem Content="Russian" Tag="ru-RU" />
-                                <ComboBoxItem Content="Chinese (Simplified)" Tag="zh-CN" />
-                                <ComboBoxItem Content="Spanish" Tag="es-ES" />
+                                <ComboBoxItem Content="Русский" Tag="ru-RU" />
+                                <ComboBoxItem Content="中文 (简体)" Tag="zh-CN" />
+                                <ComboBoxItem Content="Español" Tag="es-ES" />
                             </ComboBox>
                         </Grid>
                     </Border>

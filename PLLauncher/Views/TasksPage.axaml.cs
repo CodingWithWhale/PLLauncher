@@ -16,6 +16,7 @@ public partial class TasksPage : UserControl
     {
         InitializeComponent();
         this.Loaded += OnLoaded;
+        LocalizationService.Instance.LanguageChanged += (_, _) => ApplyLocalizedText();
     }
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)
@@ -27,6 +28,7 @@ public partial class TasksPage : UserControl
             RefreshList();
         }
         catch (Exception ex) { Console.WriteLine($"Tasks load error: {ex.Message}"); }
+        ApplyLocalizedText();
     }
 
     private void RefreshList()
@@ -52,17 +54,18 @@ public partial class TasksPage : UserControl
         if (!_isLoaded) return;
         try
         {
+            var loc = LocalizationService.Instance;
             var tag = (TaskTypeCombo.SelectedItem as ComboBoxItem)?.Tag?.ToString();
             bool needsApp = tag is "OpenApp" or "CloseApp";
             AppPickerCombo.IsVisible = needsApp;
             TargetAppBox.IsVisible = needsApp;
 
             if (tag == "CloseApp")
-                TargetAppBox.Watermark = "Process name to close (e.g. notepad)";
+                TargetAppBox.Watermark = loc.Get("tasks.close_target_watermark");
             else if (tag == "OpenApp")
-                TargetAppBox.Watermark = "App path (or select from list above)";
+                TargetAppBox.Watermark = loc.Get("tasks.open_target_watermark");
             else
-                TargetAppBox.Watermark = "Target app (optional)";
+                TargetAppBox.Watermark = loc.Get("tasks.target_watermark");
 
             if (needsApp) LoadInstalledApps();
         }
@@ -89,7 +92,6 @@ public partial class TasksPage : UserControl
 
         if (isSpecificTime)
         {
-            // Set default time to next hour
             TimePicker.SelectedTime = new TimeSpan(DateTime.Now.Hour + 1, 0, 0);
         }
     }
@@ -113,8 +115,6 @@ public partial class TasksPage : UserControl
             if (AppPickerCombo.SelectedItem is AppInfo app)
             {
                 var taskTag = (TaskTypeCombo.SelectedItem as ComboBoxItem)?.Tag?.ToString();
-                // For CloseApp, use ProcessName (not the executable path)
-                // For OpenApp, use ExecutablePath
                 if (taskTag == "CloseApp" && !string.IsNullOrEmpty(app.ProcessName))
                     TargetAppBox.Text = app.ProcessName;
                 else if (!string.IsNullOrEmpty(app.ExecutablePath))
@@ -130,21 +130,18 @@ public partial class TasksPage : UserControl
         vm.NewTaskName = TaskNameBox.Text ?? "";
         vm.NewTaskType = (TaskTypeCombo.SelectedItem as ComboBoxItem)?.Tag?.ToString() switch
         { "Shutdown" => TaskType.Shutdown, "Restart" => TaskType.Restart, "Sleep" => TaskType.Sleep,
-          "Hibernate" => TaskType.Hibernate, "LockPC" => TaskType.LockPC, "OpenApp" => TaskType.OpenApp,
-          "CloseApp" => TaskType.CloseApp, "RunCommand" => TaskType.RunCommand,
-          _ => TaskType.Shutdown };
+          "LockPC" => TaskType.LockPC, "OpenApp" => TaskType.OpenApp,
+          "CloseApp" => TaskType.CloseApp, _ => TaskType.Shutdown };
 
         var scheduleTag = (ScheduleTypeCombo.SelectedItem as ComboBoxItem)?.Tag?.ToString();
         vm.NewScheduleType = scheduleTag == "SpecificTime"
             ? TaskScheduleType.SpecificTime : TaskScheduleType.Delayed;
 
-        // For SpecificTime: build the DateTime from today + the TimePicker value
         if (vm.NewScheduleType == TaskScheduleType.SpecificTime)
         {
             var selectedTime = TimePicker.SelectedTime ?? TimeSpan.FromHours(DateTime.Now.Hour + 1);
             var today = DateTime.Today;
             var scheduled = today.Add(selectedTime);
-            // If the time has already passed today, schedule for tomorrow
             if (scheduled <= DateTime.Now)
                 scheduled = scheduled.AddDays(1);
             vm.NewScheduledTime = scheduled;
@@ -178,4 +175,33 @@ public partial class TasksPage : UserControl
         }
     }
 
+    private void ApplyLocalizedText()
+    {
+        var loc = LocalizationService.Instance;
+        TasksTitle.Text = loc.Get("tasks.title");
+        TasksSubtitle.Text = loc.Get("tasks.subtitle");
+        AddTaskBtnText.Text = loc.Get("tasks.add_task");
+        NewTaskTitle.Text = loc.Get("tasks.new_task");
+        TaskNameBox.Watermark = loc.Get("tasks.name_watermark");
+
+        TypeShutdown.Content = loc.Get("tasks.type_shutdown");
+        TypeRestart.Content = loc.Get("tasks.type_restart");
+        TypeSleep.Content = loc.Get("tasks.type_sleep");
+
+        TypeLockPC.Content = loc.Get("tasks.type_lockpc");
+        TypeOpenApp.Content = loc.Get("tasks.type_openapp");
+        TypeCloseApp.Content = loc.Get("tasks.type_closeapp");
+
+        ScheduleDelayed.Content = loc.Get("tasks.schedule_delayed");
+        ScheduleSpecificTime.Content = loc.Get("tasks.schedule_time");
+
+        DelayLabel.Text = loc.Get("tasks.delay_label");
+        ScheduledTimeLabel.Text = loc.Get("tasks.scheduled_time");
+
+        CancelBtnText.Text = loc.Get("tasks.cancel");
+        CreateTaskBtnText.Text = loc.Get("tasks.create_task");
+
+        // Note: "Delay 10m" button text inside the DataTemplate cannot be localized
+        // via x:Name. Consider using a binding or a value converter for full localization.
+    }
 }

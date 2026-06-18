@@ -21,6 +21,7 @@ public partial class SchedulerPage : UserControl
     {
         InitializeComponent();
         this.Loaded += OnLoaded;
+        LocalizationService.Instance.LanguageChanged += (_, _) => ApplyLocalizedText();
     }
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)
@@ -44,8 +45,53 @@ public partial class SchedulerPage : UserControl
                 };
             }
             catch { }
+
+            ApplyLocalizedText();
         }
         catch (Exception ex) { Console.WriteLine($"Scheduler load error: {ex.Message}"); }
+    }
+
+    private void ApplyLocalizedText()
+    {
+        var loc = LocalizationService.Instance;
+        TitleLabel.Text = loc.Get("scheduler.title");
+        SubtitleLabel.Text = loc.Get("scheduler.subtitle");
+        AddReminderText.Text = loc.Get("scheduler.add_reminder");
+        AddScheduleText.Text = loc.Get("scheduler.add_schedule");
+        AddPanelTitle.Text = loc.Get("scheduler.new_schedule");
+        PriorityLabel.Text = loc.Get("scheduler.priority");
+        UrgencyMeh.Content = $"🟢 {loc.Get("scheduler.priority_low")}";
+        UrgencyDoIt.Content = $"🟡 {loc.Get("scheduler.priority_medium")}";
+        UrgencyUrgent.Content = $"🔴 {loc.Get("scheduler.priority_high")}";
+        ActionOpenApp.Content = loc.Get("scheduler.action_openapp");
+        ActionCloseApp.Content = loc.Get("scheduler.action_closeapp");
+        ActionRunCommand.Content = loc.Get("scheduler.action_runcommand");
+        ActionShutdown.Content = loc.Get("scheduler.action_shutdown");
+        ActionRestart.Content = loc.Get("scheduler.action_restart");
+        ActionSleep.Content = loc.Get("scheduler.action_sleep");
+        ActionLockPC.Content = loc.Get("scheduler.action_lockpc");
+        RecurrenceOnce.Content = loc.Get("scheduler.recurrence_once");
+        RecurrenceDaily.Content = loc.Get("scheduler.recurrence_daily");
+        RecurrenceWeekdays.Content = loc.Get("scheduler.recurrence_weekdays");
+        RecurrenceWeekly.Content = loc.Get("scheduler.recurrence_weekly");
+        RecurrenceCustom.Content = loc.Get("scheduler.recurrence_custom");
+        SelectDaysLabel.Text = loc.Get("scheduler.select_days");
+        DayMon.Content = loc.Get("scheduler.day_mon");
+        DayTue.Content = loc.Get("scheduler.day_tue");
+        DayWed.Content = loc.Get("scheduler.day_wed");
+        DayThu.Content = loc.Get("scheduler.day_thu");
+        DayFri.Content = loc.Get("scheduler.day_fri");
+        DaySat.Content = loc.Get("scheduler.day_sat");
+        DaySun.Content = loc.Get("scheduler.day_sun");
+        ActionTargetBox.Watermark = loc.Get("scheduler.target_watermark");
+        DateLabel.Text = loc.Get("scheduler.date");
+        TimeLabel.Text = loc.Get("scheduler.time");
+        CancelButton.Content = loc.Get("scheduler.cancel");
+        CreateButton.Content = loc.Get("scheduler.create_schedule");
+        SelectedDateLabel.Text = loc.Get("scheduler.select_day");
+        DayEmptyLabel.Text = loc.Get("scheduler.nothing_planned");
+        ScheduleNameBox.Watermark = loc.Get("scheduler.name_watermark");
+        ReminderMessageBox.Watermark = loc.Get("scheduler.message_watermark");
     }
 
     private void RefreshList()
@@ -68,26 +114,27 @@ public partial class SchedulerPage : UserControl
 
     private void ShowAddPanel(bool isReminder)
     {
+        var loc = LocalizationService.Instance;
         AddSchedulePanel.IsVisible = true;
         ScheduleNameBox.Focus();
 
         if (isReminder)
         {
-            AddPanelTitle.Text = "New Reminder";
+            AddPanelTitle.Text = loc.Get("scheduler.new_reminder");
             ReminderFieldsPanel.IsVisible = true;
             ActionFieldsPanel.IsVisible = false;
-            CreateButton.Content = "Create Reminder";
-            ScheduleNameBox.Watermark = "Reminder title";
+            CreateButton.Content = loc.Get("scheduler.create_reminder");
+            ScheduleNameBox.Watermark = loc.Get("scheduler.reminder_title_watermark");
             UrgencyMeh.IsChecked = true;
             ReminderMessageBox.Text = "";
         }
         else
         {
-            AddPanelTitle.Text = "New Schedule";
+            AddPanelTitle.Text = loc.Get("scheduler.new_schedule");
             ReminderFieldsPanel.IsVisible = false;
             ActionFieldsPanel.IsVisible = true;
-            CreateButton.Content = "Create Schedule";
-            ScheduleNameBox.Watermark = "Name (e.g. Open VSCode on weekdays)";
+            CreateButton.Content = loc.Get("scheduler.create_schedule");
+            ScheduleNameBox.Watermark = loc.Get("scheduler.name_watermark");
             ActionTypeCombo.SelectedIndex = 0;
             RecurrenceCombo.SelectedIndex = 2; // Weekdays
         }
@@ -113,15 +160,16 @@ public partial class SchedulerPage : UserControl
         if (!_isLoaded) return;
         try
         {
+            var loc = LocalizationService.Instance;
             var tag = (ActionTypeCombo.SelectedItem as ComboBoxItem)?.Tag?.ToString();
             bool needsApp = tag is "OpenApp" or "CloseApp";
             AppPickerCombo.IsVisible = needsApp;
             ActionTargetBox.Watermark = tag switch
             {
-                "OpenApp" => "App path (or select from list above)",
-                "CloseApp" => "Process name to close",
-                "RunCommand" => "Command to run",
-                _ => "Target"
+                "OpenApp" => loc.Get("scheduler.target_watermark"),
+                "CloseApp" => loc.Get("scheduler.close_target_watermark"),
+                "RunCommand" => loc.Get("scheduler.command_target_watermark"),
+                _ => loc.Get("scheduler.target_watermark")
             };
             if (needsApp) LoadInstalledApps();
         }

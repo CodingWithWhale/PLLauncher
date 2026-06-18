@@ -22,6 +22,7 @@ public partial class SetupsPage : UserControl
         InitializeComponent();
         GroupIconCombo.ItemsSource = SetupEmojis;
         this.Loaded += OnLoaded;
+        LocalizationService.Instance.LanguageChanged += (_, _) => ApplyLocalizedText();
     }
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)
@@ -30,6 +31,7 @@ public partial class SetupsPage : UserControl
         {
             await App.SetupsViewModel.LoadGroupsCommand.ExecuteAsync(null);
             RefreshList();
+            ApplyLocalizedText();
         }
         catch (Exception ex) { Console.WriteLine($"Setups load error: {ex.Message}"); }
     }
@@ -45,7 +47,6 @@ public partial class SetupsPage : UserControl
         GroupsList.ItemsSource = null;
         GroupsList.ItemsSource = App.SetupsViewModel.Groups;
 
-        // Populate app pickers in group cards after layout
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
         {
             var newPanelPickers = NewGroupAppsPanel.GetVisualDescendants().OfType<ComboBox>().ToHashSet();
@@ -59,6 +60,7 @@ public partial class SetupsPage : UserControl
 
     private ComboBox CreateAppPickerCombo()
     {
+        var loc = LocalizationService.Instance;
         var combo = new ComboBox
         {
             HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
@@ -193,5 +195,20 @@ public partial class SetupsPage : UserControl
     {
         var parent = ctrl.GetVisualAncestors().FirstOrDefault(a => a is Border b && b.DataContext is AppGroup);
         return (parent as Border)?.DataContext as AppGroup;
+    }
+
+    private void ApplyLocalizedText()
+    {
+        var loc = LocalizationService.Instance;
+        TitleText.Text = loc.Get("setups.title");
+        SubtitleText.Text = loc.Get("setups.subtitle");
+        NewSetupBtnText.Text = loc.Get("setups.new_setup");
+        NewSetupPanelTitle.Text = loc.Get("setups.new_setup_title");
+        GroupNameBox.Watermark = loc.Get("setups.name_watermark");
+        IconLabel.Text = loc.Get("setups.icon");
+        AppsToLaunchLabel.Text = loc.Get("setups.apps_to_launch");
+        AddAnotherAppBtn.Content = loc.Get("setups.add_another_app");
+        CancelBtn.Content = loc.Get("confirm.cancel");
+        CreateBtn.Content = loc.Get("setups.create");
     }
 }

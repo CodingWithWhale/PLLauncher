@@ -16,6 +16,7 @@ public partial class TimeLimitsPage : UserControl
     {
         InitializeComponent();
         this.Loaded += OnLoaded;
+        LocalizationService.Instance.LanguageChanged += (_, _) => ApplyLocalizedText();
     }
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)
@@ -27,12 +28,28 @@ public partial class TimeLimitsPage : UserControl
             RefreshList();
         }
         catch (Exception ex) { Console.WriteLine($"TimeLimits load error: {ex.Message}"); }
+        ApplyLocalizedText();
     }
 
     private void RefreshList()
     {
         LimitsList.ItemsSource = null;
         LimitsList.ItemsSource = App.TimeLimitsViewModel.TimeLimits;
+    }
+
+    private void ApplyLocalizedText()
+    {
+        var loc = LocalizationService.Instance;
+        TitleText.Text = loc.Get("timelimits.title");
+        SubtitleText.Text = loc.Get("timelimits.subtitle");
+        AddLimitBtnText.Text = loc.Get("timelimits.add_limit");
+        NewLimitTitle.Text = loc.Get("timelimits.new_limit");
+        AppNameBox.Watermark = loc.Get("timelimits.app_name");
+        ProcessNameBox.Watermark = loc.Get("timelimits.process_name");
+        DailyLimitLabel.Text = loc.Get("timelimits.daily_limit");
+        CooldownWarningText.Text = loc.Get("timelimits.cooldown_warning");
+        CancelBtn.Content = loc.Get("confirm.cancel");
+        SaveLimitBtn.Content = loc.Get("timelimits.save_limit");
     }
 
     // === App Picker ===

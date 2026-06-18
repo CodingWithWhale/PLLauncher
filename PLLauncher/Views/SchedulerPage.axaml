@@ -7,21 +7,21 @@
         <!-- Title -->
         <Grid Grid.Row="0" Margin="0,0,0,16" ColumnDefinitions="*,Auto,Auto">
             <StackPanel Grid.Column="0" Spacing="4">
-                <TextBlock Text="Scheduler" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                <TextBlock Text="Schedule actions, reminders, and plan ahead" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock x:Name="TitleLabel" Text="Scheduler" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock x:Name="SubtitleLabel" Text="Schedule actions, reminders, and plan ahead" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
             </StackPanel>
             <Button Grid.Column="1" Click="AddReminder_Click" CornerRadius="6" Margin="0,0,8,0"
                     Background="{DynamicResource WarningBrush}" Foreground="White" Padding="16,8">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="&#xE7BA;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
-                    <TextBlock Text="Add Reminder" />
+                    <TextBlock x:Name="AddReminderText" Text="Add Reminder" />
                 </StackPanel>
             </Button>
             <Button Grid.Column="2" Click="AddSchedule_Click" CornerRadius="6"
                     Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" Padding="16,8">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
-                    <TextBlock Text="Add Schedule" />
+                    <TextBlock x:Name="AddScheduleText" Text="Add Schedule" />
                 </StackPanel>
             </Button>
         </Grid>
@@ -45,7 +45,7 @@
                              Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
                              Height="70" AcceptsReturn="True" TextWrapping="Wrap" />
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Priority" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock x:Name="PriorityLabel" Text="Priority" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <RadioButton x:Name="UrgencyMeh" GroupName="Urgency" Content="🟢 Low" IsChecked="True"
                                          Foreground="{DynamicResource TextPrimaryBrush}" Tag="Meh" />
@@ -63,28 +63,28 @@
                         <ComboBox x:Name="ActionTypeCombo" Grid.Column="0" HorizontalAlignment="Stretch"
                                   Background="{DynamicResource SurfaceBrush}"
                                   SelectionChanged="ActionTypeCombo_SelectionChanged">
-                            <ComboBoxItem Content="Open App" Tag="OpenApp" />
-                            <ComboBoxItem Content="Close App" Tag="CloseApp" />
-                            <ComboBoxItem Content="Run Command" Tag="RunCommand" />
-                            <ComboBoxItem Content="Shutdown" Tag="Shutdown" />
-                            <ComboBoxItem Content="Restart" Tag="Restart" />
-                            <ComboBoxItem Content="Sleep" Tag="Sleep" />
-                            <ComboBoxItem Content="Lock PC" Tag="LockPC" />
+                            <ComboBoxItem x:Name="ActionOpenApp" Content="Open App" Tag="OpenApp" />
+                            <ComboBoxItem x:Name="ActionCloseApp" Content="Close App" Tag="CloseApp" />
+                            <ComboBoxItem x:Name="ActionRunCommand" Content="Run Command" Tag="RunCommand" />
+                            <ComboBoxItem x:Name="ActionShutdown" Content="Shutdown" Tag="Shutdown" />
+                            <ComboBoxItem x:Name="ActionRestart" Content="Restart" Tag="Restart" />
+                            <ComboBoxItem x:Name="ActionSleep" Content="Sleep" Tag="Sleep" />
+                            <ComboBoxItem x:Name="ActionLockPC" Content="Lock PC" Tag="LockPC" />
                         </ComboBox>
                         <ComboBox x:Name="RecurrenceCombo" Grid.Column="1" HorizontalAlignment="Stretch"
                                   Background="{DynamicResource SurfaceBrush}"
                                   SelectionChanged="RecurrenceCombo_SelectionChanged">
-                            <ComboBoxItem Content="Once" Tag="Once" />
-                            <ComboBoxItem Content="Daily" Tag="Daily" />
-                            <ComboBoxItem Content="Weekdays" Tag="Weekday" />
-                            <ComboBoxItem Content="Weekly" Tag="Weekly" />
-                            <ComboBoxItem Content="Custom" Tag="Custom" />
+                            <ComboBoxItem x:Name="RecurrenceOnce" Content="Once" Tag="Once" />
+                            <ComboBoxItem x:Name="RecurrenceDaily" Content="Daily" Tag="Daily" />
+                            <ComboBoxItem x:Name="RecurrenceWeekdays" Content="Weekdays" Tag="Weekday" />
+                            <ComboBoxItem x:Name="RecurrenceWeekly" Content="Weekly" Tag="Weekly" />
+                            <ComboBoxItem x:Name="RecurrenceCustom" Content="Custom" Tag="Custom" />
                         </ComboBox>
                     </Grid>
 
                     <!-- Custom Days Panel (only visible when "Custom" recurrence is selected) -->
                     <StackPanel x:Name="CustomDaysPanel" IsVisible="False" Spacing="8">
-                        <TextBlock Text="Select days" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock x:Name="SelectDaysLabel" Text="Select days" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
                         <StackPanel Orientation="Horizontal" Spacing="8">
                             <CheckBox x:Name="DayMon" Content="Mon" />
                             <CheckBox x:Name="DayTue" Content="Tue" />
@@ -117,17 +117,17 @@
                 <!-- Date + Time (shared by both schedules and reminders) -->
                 <Grid ColumnDefinitions="*,*">
                     <StackPanel Spacing="4">
-                        <TextBlock Text="Date" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock x:Name="DateLabel" Text="Date" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
                         <CalendarDatePicker x:Name="ScheduleDatePicker" />
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Time" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock x:Name="TimeLabel" Text="Time" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
                         <TimePicker x:Name="ScheduleTimePicker" />
                     </StackPanel>
                 </Grid>
 
                 <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-                    <Button Click="CancelSchedule_Click" CornerRadius="6" Content="Cancel"
+                    <Button x:Name="CancelButton" Click="CancelSchedule_Click" CornerRadius="6" Content="Cancel"
                             Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" />
                     <Button x:Name="CreateButton" Click="SaveSchedule_Click" CornerRadius="6" Content="Create Schedule"
                             Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" />

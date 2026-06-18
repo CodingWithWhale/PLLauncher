@@ -7,14 +7,14 @@
         <!-- Title -->
         <Grid Grid.Row="0" Margin="0,0,0,20" ColumnDefinitions="*,Auto">
             <StackPanel Grid.Column="0" Spacing="4">
-                <TextBlock Text="Time Limits" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-                <TextBlock Text="Set daily app usage limits for self-discipline" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock x:Name="TitleText" Text="Time Limits" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock x:Name="SubtitleText" Text="Set daily app usage limits for self-discipline" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
             </StackPanel>
             <Button Grid.Column="1" Click="AddLimit_Click" CornerRadius="6"
                     Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" Padding="16,8">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
-                    <TextBlock Text="Add Limit" />
+                    <TextBlock x:Name="AddLimitBtnText" Text="Add Limit" />
                 </StackPanel>
             </Button>
         </Grid>
@@ -24,7 +24,7 @@
                 Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
                 BorderBrush="{DynamicResource AccentBrush}" BorderThickness="1" Margin="0,0,0,16">
             <StackPanel Spacing="12">
-                <TextBlock Text="New Time Limit" FontWeight="SemiBold" FontSize="16" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock x:Name="NewLimitTitle" Text="New Time Limit" FontWeight="SemiBold" FontSize="16" Foreground="{DynamicResource TextPrimaryBrush}" />
 
                 <!-- App Picker -->
                 <ComboBox x:Name="AppPickerCombo" HorizontalAlignment="Stretch"
@@ -45,20 +45,20 @@
                              Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}" />
                 </Grid>
                 <StackPanel>
-                    <TextBlock Text="Daily Limit (minutes)" FontSize="12" Margin="0,0,0,4" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TextBlock x:Name="DailyLimitLabel" Text="Daily Limit (minutes)" FontSize="12" Margin="0,0,0,4" Foreground="{DynamicResource TextSecondaryBrush}" />
                     <NumericUpDown x:Name="DailyLimitBox" Value="120" Minimum="1" Maximum="1440" Increment="1" />
                 </StackPanel>
                 <Border Background="#331F1F00" CornerRadius="4" Padding="12">
                     <StackPanel Orientation="Horizontal" Spacing="8">
                         <TextBlock Text="&#xE7BA;" FontFamily="Segoe MDL2 Assets" FontSize="14" Foreground="{DynamicResource WarningBrush}" VerticalAlignment="Center" />
-                        <TextBlock Text="Disabling a limit triggers cooldown (set in Settings). Set to 0 for instant unlock." FontSize="12"
+                        <TextBlock x:Name="CooldownWarningText" Text="Disabling a limit triggers cooldown (set in Settings). Set to 0 for instant unlock." FontSize="12"
                                    Foreground="{DynamicResource WarningBrush}" TextWrapping="Wrap" />
                     </StackPanel>
                 </Border>
                 <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-                    <Button Click="CancelLimit_Click" CornerRadius="6" Content="Cancel"
+                    <Button x:Name="CancelBtn" Click="CancelLimit_Click" CornerRadius="6" Content="Cancel"
                             Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" />
-                    <Button Click="SaveLimit_Click" CornerRadius="6" Content="Save Limit"
+                    <Button x:Name="SaveLimitBtn" Click="SaveLimit_Click" CornerRadius="6" Content="Save Limit"
                             Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" />
                 </StackPanel>
             </StackPanel>

@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using PLLauncher.Models;
+using PLLauncher.Services;
 using PLLauncher.ViewModels;
 using System;
 
@@ -12,10 +13,12 @@ public partial class AppUsagePage : UserControl
     {
         InitializeComponent();
         this.Loaded += OnLoaded;
+        LocalizationService.Instance.LanguageChanged += (_, _) => ApplyLocalizedText();
     }
 
     private void OnLoaded(object? sender, RoutedEventArgs e)
     {
+        ApplyLocalizedText();
         RefreshView();
     }
 
@@ -41,6 +44,11 @@ public partial class AppUsagePage : UserControl
         RefreshView();
     }
 
+    private void RefreshBtn_Click(object? sender, RoutedEventArgs e)
+    {
+        RefreshView();
+    }
+
     private void RefreshView()
     {
         try
@@ -63,12 +71,38 @@ public partial class AppUsagePage : UserControl
         }
     }
 
-    private static string FormatTotalTime(double minutes)
+    private void ApplyLocalizedText()
     {
-        if (minutes < 1) return "<1 min";
-        if (minutes < 60) return $"{Math.Floor(minutes)} min";
+        var loc = LocalizationService.Instance;
+        AppUsageTitle.Text = loc.Get("appusage.title");
+        AppUsageSubtitle.Text = loc.Get("appusage.subtitle");
+        TimePeriodLabel.Text = loc.Get("appusage.time_period");
+        FilterToday.Content = loc.Get("appusage.filter_today");
+        FilterYesterday.Content = loc.Get("appusage.filter_yesterday");
+        FilterThisWeek.Content = loc.Get("appusage.filter_thisweek");
+        FilterThisMonth.Content = loc.Get("appusage.filter_thismonth");
+        FilterThisYear.Content = loc.Get("appusage.filter_thisyear");
+        FilterCustom.Content = loc.Get("appusage.filter_custom");
+        FromLabel.Text = loc.Get("appusage.from");
+        ToLabel.Text = loc.Get("appusage.to");
+        ApplyFilterBtn.Content = loc.Get("appusage.apply");
+        RefreshBtnText.Text = loc.Get("appusage.refresh");
+        TotalTimeLabel.Text = loc.Get("appusage.total_time");
+        TotalAppsLabel.Text = loc.Get("appusage.apps_used");
+        TotalSessionsLabel.Text = loc.Get("appusage.sessions_label");
+        EmptyTitle.Text = loc.Get("appusage.no_data");
+        EmptyDesc.Text = loc.Get("appusage.no_data_desc");
+    }
+
+    private string FormatTotalTime(double minutes)
+    {
+        var loc = LocalizationService.Instance;
+        if (minutes < 1) return loc.Get("appusage.less_1min");
+        if (minutes < 60) return $"{Math.Floor(minutes)} {loc.Get("appusage.min")}";
         var hours = Math.Floor(minutes / 60);
         var mins = Math.Floor(minutes % 60);
-        return mins > 0 ? $"{hours}h {mins}m" : $"{hours}h";
+        if (mins > 0)
+            return $"{hours}h {mins}{loc.Get("appusage.min").Substring(0, 1)}";
+        return $"{hours}h";
     }
 }

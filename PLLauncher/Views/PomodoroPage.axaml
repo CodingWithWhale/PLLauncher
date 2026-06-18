@@ -6,8 +6,8 @@
     <Grid RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="24,20">
         <!-- Title -->
         <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,24">
-            <TextBlock Text="Pomodoro Timer" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
-            <TextBlock Text="Stay focused with timed work and break sessions" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+            <TextBlock x:Name="PomodoroTitle" Text="Pomodoro Timer" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
+            <TextBlock x:Name="PomodoroSubtitle" Text="Stay focused with timed work and break sessions" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
         </StackPanel>
 
         <!-- Timer Display -->
@@ -33,28 +33,28 @@
                     Background="{DynamicResource SuccessBrush}" Foreground="White" Padding="20,10">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="&#xE768;" FontFamily="Segoe MDL2 Assets" FontSize="16" />
-                    <TextBlock Text="Start" FontSize="14" />
+                    <TextBlock x:Name="StartBtnText" Text="Start" FontSize="14" />
                 </StackPanel>
             </Button>
             <Button x:Name="PauseBtn" Click="Pause_Click" CornerRadius="6" IsEnabled="False"
                     Background="{DynamicResource WarningBrush}" Foreground="White" Padding="20,10">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="&#xE769;" FontFamily="Segoe MDL2 Assets" FontSize="16" />
-                    <TextBlock Text="Pause" FontSize="14" />
+                    <TextBlock x:Name="PauseBtnText" Text="Pause" FontSize="14" />
                 </StackPanel>
             </Button>
-            <Button Click="Reset_Click" CornerRadius="6"
+            <Button x:Name="ResetBtn" Click="Reset_Click" CornerRadius="6"
                     Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" Padding="20,10">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="16" />
-                    <TextBlock Text="Reset" FontSize="14" />
+                    <TextBlock x:Name="ResetBtnText" Text="Reset" FontSize="14" />
                 </StackPanel>
             </Button>
-            <Button Click="Skip_Click" CornerRadius="6"
+            <Button x:Name="SkipBtn" Click="Skip_Click" CornerRadius="6"
                     Background="{DynamicResource InfoBrush}" Foreground="White" Padding="20,10">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                     <TextBlock Text="&#xE753;" FontFamily="Segoe MDL2 Assets" FontSize="16" />
-                    <TextBlock Text="Skip" FontSize="14" />
+                    <TextBlock x:Name="SkipBtnText" Text="Skip" FontSize="14" />
                 </StackPanel>
             </Button>
         </StackPanel>
@@ -63,15 +63,15 @@
         <Border Grid.Row="3" Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" MaxWidth="500" HorizontalAlignment="Center" Margin="0,0,0,16">
             <StackPanel Spacing="12">
-                <TextBlock Text="Timer Settings" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}" />
+                <TextBlock x:Name="TimerSettingsTitle" Text="Timer Settings" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}" />
                 <Grid ColumnDefinitions="*,*" Margin="0,0,0,0">
                     <StackPanel Spacing="4" Margin="0,0,16,0">
-                        <TextBlock Text="Work (minutes)" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock x:Name="WorkMinutesLabel" Text="Work (minutes)" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
                         <NumericUpDown x:Name="WorkMinutesBox" Minimum="1" Maximum="120" Value="25"
                                        HorizontalAlignment="Stretch" />
                     </StackPanel>
                     <StackPanel Grid.Column="1" Spacing="4">
-                        <TextBlock Text="Break (minutes)" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                        <TextBlock x:Name="BreakMinutesLabel" Text="Break (minutes)" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
                         <NumericUpDown x:Name="BreakMinutesBox" Minimum="1" Maximum="60" Value="5"
                                        HorizontalAlignment="Stretch" />
                     </StackPanel>
@@ -84,12 +84,12 @@
                 BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" MaxWidth="500" HorizontalAlignment="Center">
             <StackPanel Spacing="12">
                 <Grid ColumnDefinitions="*,Auto">
-                    <TextBlock Text="Health Reminder" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock x:Name="HealthReminderTitle" Text="Health Reminder" FontWeight="SemiBold" FontSize="14" Foreground="{DynamicResource TextPrimaryBrush}" />
                     <ToggleSwitch x:Name="HealthToggle" Grid.Column="1" IsChecked="False" />
                 </Grid>
-                <TextBlock Text="Periodically reminds you to stretch and move around" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                <TextBlock x:Name="HealthReminderDesc" Text="Periodically reminds you to stretch and move around" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
                 <StackPanel Spacing="4">
-                    <TextBlock Text="Reminder interval (minutes)" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TextBlock x:Name="ReminderIntervalLabel" Text="Reminder interval (minutes)" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
                     <NumericUpDown x:Name="HealthIntervalBox" Minimum="10" Maximum="240" Value="60" />
                 </StackPanel>
             </StackPanel>

@@ -20,6 +20,7 @@ public partial class KeybindsPage : UserControl
     public KeybindsPage()
     {
         InitializeComponent();
+        LocalizationService.Instance.LanguageChanged += (_, _) => ApplyLocalizedText();
         this.Loaded += OnLoaded;
     }
 
@@ -42,6 +43,27 @@ public partial class KeybindsPage : UserControl
             RefreshList();
         }
         catch (Exception ex) { Console.WriteLine($"Keybinds load error: {ex.Message}"); }
+        ApplyLocalizedText();
+    }
+
+    private void ApplyLocalizedText()
+    {
+        var loc = LocalizationService.Instance;
+        TitleText.Text = loc.Get("keybinds.title");
+        SubtitleText.Text = loc.Get("keybinds.subtitle");
+        AddKeybindText.Text = loc.Get("keybinds.add_keybind");
+        SearchBox.Watermark = loc.Get("keybinds.search_watermark");
+        NewKeybindTitle.Text = loc.Get("keybinds.new_keybind");
+        NameBox.Watermark = loc.Get("keybinds.name_watermark");
+        KeyComboText.Text = loc.Get("keybinds.record_keys");
+        ActionOpenApp.Content = loc.Get("keybinds.action_openapp");
+        ActionRunCommand.Content = loc.Get("keybinds.action_runcommand");
+        ActionSystemAction.Content = loc.Get("keybinds.action_system");
+        ActionOpenUrl.Content = loc.Get("keybinds.action_openurl");
+        ActionOpenFolder.Content = loc.Get("keybinds.action_openfolder");
+        TargetBox.Watermark = loc.Get("keybinds.target_watermark");
+        CancelButton.Content = loc.Get("confirm.cancel");
+        SaveKeybindButton.Content = loc.Get("keybinds.save_keybind");
     }
 
     private void RefreshList()
@@ -55,7 +77,7 @@ public partial class KeybindsPage : UserControl
     private void KeyComboBorder_PointerPressed(object? sender, PointerPressedEventArgs e)
     {
         _isRecordingKeys = true;
-        KeyComboText.Text = "Press your key combo...";
+        KeyComboText.Text = LocalizationService.Instance.Get("keybinds.press_keys");
         KeyComboText.Foreground = GetResourceBrush("AccentBrush");
         KeyComboBorder.BorderBrush = GetResourceBrush("AccentBrush");
         KeyComboBorder.Focus();
@@ -126,7 +148,7 @@ public partial class KeybindsPage : UserControl
         }
         else
         {
-            KeyComboText.Text = "Click to record keys...";
+            KeyComboText.Text = LocalizationService.Instance.Get("keybinds.record_keys");
             KeyComboText.Foreground = GetResourceBrush("TextTertiaryBrush");
         }
         KeyComboBorder.BorderBrush = GetResourceBrush("BorderBrush");
@@ -147,12 +169,12 @@ public partial class KeybindsPage : UserControl
 
                 TargetBox.Watermark = tag switch
                 {
-                    "OpenApp" => "App path (or select from list above)",
-                    "RunCommand" => "Command to run",
-                    "SystemAction" => "Action: mute, lockpc, sleep, hibernate",
-                    "OpenUrl" => "URL to open",
-                    "OpenFolder" => "Folder path (or select from list above)",
-                    _ => "Target"
+                    "OpenApp" => LocalizationService.Instance.Get("keybinds.open_target_watermark"),
+                    "RunCommand" => LocalizationService.Instance.Get("keybinds.command_target_watermark"),
+                    "SystemAction" => LocalizationService.Instance.Get("keybinds.system_target_watermark"),
+                    "OpenUrl" => LocalizationService.Instance.Get("keybinds.url_target_watermark"),
+                    "OpenFolder" => LocalizationService.Instance.Get("keybinds.folder_target_watermark"),
+                    _ => LocalizationService.Instance.Get("keybinds.target_watermark")
                 };
 
                 if (showAppPicker) LoadInstalledApps();

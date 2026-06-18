@@ -34,6 +34,11 @@ public partial class DashboardPage : UserControl
         ShutdownText.Text = loc.Get("dashboard.shutdown_1h");
         LockText.Text = loc.Get("dashboard.lock_pc");
         NextTaskTitle.Text = loc.Get("dashboard.next_task");
+        var vm = App.DashboardViewModel;
+        if (string.IsNullOrEmpty(vm.NextTaskInfo) || vm.NextTaskInfo == "No upcoming tasks")
+            NextTaskInfo.Text = loc.Get("dashboard.no_tasks");
+        else
+            NextTaskInfo.Text = vm.NextTaskInfo;
     }
 
     private Window? GetOwnerWindow()

@@ -53,9 +53,7 @@ public enum TaskType
     Sleep,
     LockPC,
     OpenApp,
-    CloseApp,
-    RunCommand,
-    Hibernate
+    CloseApp
 }
 
 public enum TaskScheduleType

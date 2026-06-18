@@ -1,5 +1,5 @@
 {
-  "version": "2.6.20",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.20/PLLauncher_Setup_2.6.20.exe",
-  "changelog": "v2.6.20: Increase Settings page bottom scroll padding for easier scrolling."
+  "version": "2.6.21",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.21/PLLauncher_Setup_2.6.21.exe",
+  "changelog": "v2.6.21: Increase Settings page bottom scroll padding to 120 for easier scrolling."
 }

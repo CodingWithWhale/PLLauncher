@@ -93,47 +93,31 @@ public partial class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         // Single-instance check: try to own the mutex
-        // Do NOT use initiallyOwned=true on the constructor — if the previous instance
-        // was killed via Task Manager, the constructor itself throws AbandonedMutexException,
-        // the assignment never completes, _singleInstanceMutex stays null, and on the next
-        // launch the still-owned (but unreleasable) mutex causes a permanent hang.
         try
         {
             bool createdNew;
             var mutex = new Mutex(false, MutexName, out createdNew);
-
-            if (!createdNew)
+            try
             {
-                // Mutex already exists — try to acquire ownership
-                try
+                if (mutex.WaitOne(0))
                 {
-                    if (mutex.WaitOne(0))
-                    {
-                        // Previous instance exited — we own it now.
-                    }
-                    else
-                    {
-                        // Mutex held by another running instance — signal it, then exit
-                        try { File.WriteAllText(SignalFilePath, DateTime.Now.ToString("O")); } catch { }
-
-                        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
-                            lifetime.Shutdown(0);
-                        return;
-                    }
+                    // We own the mutex (created new, or recovered from abandoned/closed)
                 }
-                catch (AbandonedMutexException amex)
+                else
                 {
-                    // Crash-abandoned mutex — WaitOne still grants ownership.
-                    // Store the mutex from the exception so we can release it later.
-                    mutex = amex.Mutex ?? mutex;
+                    // Another instance holds the mutex — signal it to show window, then exit.
+                    // Do NOT call desktop.Shutdown() here: we are inside OnFrameworkInitializationCompleted
+                    // while the dispatcher is still starting up, and shutting it down mid-init crashes.
+                    try { File.WriteAllText(SignalFilePath, DateTime.Now.ToString("O")); } catch { }
+                    Environment.Exit(0);
+                    return;
                 }
             }
-            else
+            catch (AbandonedMutexException amex)
             {
-                // We created the mutex — acquire it manually (initiallyOwned was false)
-                mutex.WaitOne();
+                // Previous owner crashed — but WaitOne still grants ownership.
+                mutex = amex.Mutex ?? mutex;
             }
-
             _singleInstanceMutex = mutex;
         }
         catch (Exception ex)
@@ -178,29 +162,37 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow();
+            desktop.MainWindow.Show();
 
             // Load saved data on startup
             _ = LoadSavedDataAsync();
 
-            try
+            // Load time limits and start services in the background
+            _ = Task.Run(async () =>
             {
-                // Load time limits synchronously before tracking starts
-                var savedLimits = Task.Run(() => DataService.LoadTimeLimitsAsync()).GetAwaiter().GetResult() ?? new();
-                Console.WriteLine($"[App] Loaded {savedLimits.Count} time limits from disk");
-                TimeTrackingService.LoadLimits(savedLimits);
-                TimeLimitsViewModel.TimeLimits = new(savedLimits);
+                try
+                {
+                    var savedLimits = await DataService.LoadTimeLimitsAsync() ?? new();
+                    Console.WriteLine($"[App] Loaded {savedLimits.Count} time limits from disk");
 
-                // Start background services
-                TaskSchedulerService?.Start();
-                TimeTrackingService?.Start();
-                ScheduleService?.Start();
-                AppUsageTrackingService?.Start();
-                // Pomodoro and Health are started manually by the user from the Pomodoro page
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Service start error: {ex.Message}");
-            }
+                    // Switch back to UI thread to update ViewModel
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        TimeTrackingService.LoadLimits(savedLimits);
+                        TimeLimitsViewModel.TimeLimits = new(savedLimits);
+
+                        // Start background services
+                        TaskSchedulerService?.Start();
+                        TimeTrackingService?.Start();
+                        ScheduleService?.Start();
+                        AppUsageTrackingService?.Start();
+                    });
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Service start error: {ex.Message}");
+                }
+            });
 
             // Wire up update check BEFORE the window opens (Opened fires only once)
             desktop.MainWindow.Opened += async (_, _) =>

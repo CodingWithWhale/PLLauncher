@@ -3,6 +3,7 @@ C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\n
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\PLLauncher.deps.json
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\PLLauncher.runtimeconfig.json
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\PLLauncher.dll
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\PLLauncher.pdb
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\Avalonia.Base.dll
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\Avalonia.Controls.dll
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\Avalonia.DesignerSupport.dll
@@ -221,11 +222,10 @@ C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\n
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.AssemblyInfoInputs.cache
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.AssemblyInfo.cs
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.csproj.CoreCompileInputs.cache
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.sourcelink.json
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\Avalonia\PLLauncher.dll
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\Avalonia\PLLauncher.pdb
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\refint\Avalonia\PLLauncher.dll
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.csproj.Up2Date
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.genruntimeconfig.cache
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\ref\PLLauncher.dll
-C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\PLLauncher.pdb
-C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.sourcelink.json
-C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\Avalonia\PLLauncher.pdb

@@ -129,7 +129,7 @@ public class UpdateService
             "Update",
             "Later");
 
-        if (!confirmed) return true; // true = update available but user declined (don't show again this session)
+        if (!confirmed) return false;
 
         return await DownloadAndInstallAsync(update.DownloadUrl);
     }

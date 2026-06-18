@@ -1,5 +1,5 @@
 {
-  "version": "2.6.25",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.25/PLLauncher_Setup_2.6.25.exe",
-  "changelog": "v2.6.25: Removed Anti-Sleep feature entirely. Dashboard 'System Status' replaced with 'Next Task' card showing the next scheduled task and its countdown."
+  "version": "2.6.26",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.26/PLLauncher_Setup_2.6.26.exe",
+  "changelog": "v2.6.26: Removed Hibernate and Run Command task types (standard Windows features, nothing custom)."
 }

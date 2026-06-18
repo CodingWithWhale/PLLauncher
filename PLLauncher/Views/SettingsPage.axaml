@@ -26,7 +26,7 @@
             </StackPanel>
         </Border>
         <!-- Scrollable content (filling child - no Dock set) -->
-        <ScrollViewer Padding="32,28,32,8" VerticalScrollBarVisibility="Auto">
+        <ScrollViewer Padding="32,28,32,48" VerticalScrollBarVisibility="Auto">
             <StackPanel Spacing="24" MaxWidth="700">
                 <StackPanel Spacing="4">
                     <TextBlock x:Name="SettingsTitle" Text="Settings" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />

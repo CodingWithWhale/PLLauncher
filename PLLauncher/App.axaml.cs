@@ -163,6 +163,7 @@ public partial class App : Application
         {
             desktop.MainWindow = new MainWindow();
             desktop.MainWindow.Show();
+            ToastHelper.MainWindowHandle = desktop.MainWindow.TryGetPlatformHandle()?.Handle ?? IntPtr.Zero;
 
             // Load saved data on startup
             _ = LoadSavedDataAsync();

@@ -7,6 +7,7 @@ namespace PLLauncher.Helpers;
 
 public static class ToastHelper
 {
+    public static IntPtr MainWindowHandle { get; set; }
     private static uint _uid;
     private static readonly object Lock = new();
 
@@ -80,6 +81,7 @@ public static class ToastHelper
                 var data = new NOTIFYICONDATAW
                 {
                     cbSize = Marshal.SizeOf<NOTIFYICONDATAW>(),
+                    hWnd = MainWindowHandle,
                     uID = _uid,
                     uFlags = NIF_INFO | NIF_ICON | NIF_MESSAGE,
                     hIcon = hIcon,

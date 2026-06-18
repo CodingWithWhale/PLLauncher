@@ -113,7 +113,7 @@ public class TimeTrackingService : IDisposable
 
             _lastNotificationTime[l.ProcessName] = now;
             _notificationService.ShowNotification("Time Limit Reached",
-                $"You've reached your limit for {l.AppName}.");
+                $"Your limit of {FormatLimit(l.DailyLimitMinutes)} is hit for {l.AppName}.");
         }
     }
     public void AddTimeLimit(TimeLimitItem limit) { lock (_timeLimitsLock) { _timeLimits.Add(limit); } }
@@ -231,7 +231,7 @@ public class TimeTrackingService : IDisposable
                     _processMonitor.LockApp(l.ProcessName);
                     AppLocked?.Invoke(this, l); LimitReached?.Invoke(this, l);
                     _notificationService.ShowNotification("Time Limit Reached",
-                        $"You've reached your limit for {l.AppName}.");
+                        $"Your limit of {FormatLimit(l.DailyLimitMinutes)} is hit for {l.AppName}.");
 
                     // Start cooldown automatically
                     double cooldownHours = App.SettingsViewModel.TimeLimitCooldownHours;
@@ -289,6 +289,16 @@ public class TimeTrackingService : IDisposable
         {
             return _timeLimits.FirstOrDefault(l => l.ProcessName.Equals(processName, StringComparison.OrdinalIgnoreCase))?.RemainingMinutes ?? double.MaxValue;
         }
+    }
+
+    private static string FormatLimit(double minutes)
+    {
+        var totalMinutes = (int)Math.Ceiling(minutes);
+        var h = totalMinutes / 60;
+        var m = totalMinutes % 60;
+        if (h > 0 && m > 0) return $"{h} hour(s) {m} minute(s)";
+        if (h > 0) return $"{h} hour(s)";
+        return $"{m} minute(s)";
     }
 
     public void Dispose()

@@ -41,6 +41,10 @@ public partial class SettingsPage : UserControl
             LocalizationService.Instance.LoadFromSettings(vm.Language);
             ApplyLocalizedText();
 
+            var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+            if (version != null)
+                VersionDesc.Text = $"PLLauncher v{version.Major}.{version.Minor}.{version.Build}";
+
             App.SetTheme(vm.DarkMode);
             App.AnimationsEnabled = vm.EnableAnimations;
             MarkUnsaved(false);
@@ -114,8 +118,10 @@ public partial class SettingsPage : UserControl
         ExportButtonText.Text = loc.Get("settings.export_button");
         ImportButtonText.Text = loc.Get("settings.import_button");
         ResetButtonText.Text = loc.Get("settings.reset_button");
-        CheckUpdatesLabel.Text = loc.Get("settings.check_updates");
-        CheckUpdatesDesc.Text = loc.Get("settings.check_updates_desc");
+        AboutSectionTitle.Text = loc.Get("settings.about");
+        var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        VersionLabel.Text = string.Format(loc.Get("settings.version"), version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "?");
+        VersionDesc.Text = loc.Get("settings.about");
         CheckUpdatesBtnText.Text = loc.Get("settings.check_updates");
         SaveButtonText.Text = loc.Get("settings.save");
         DiscardButtonText.Text = loc.Get("settings.discard");

@@ -179,21 +179,28 @@
                                     </StackPanel>
                                 </Button>
                             </Grid>
-                            <Border Height="1" Background="{DynamicResource BorderBrush}" />
-                            <Grid ColumnDefinitions="*,Auto">
-                                <StackPanel Spacing="2">
-                                    <TextBlock x:Name="CheckUpdatesLabel" Text="Check for Updates" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
-                                    <TextBlock x:Name="CheckUpdatesDesc" Text="Manually check if a new version is available" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
-                                </StackPanel>
-                                <Button x:Name="CheckUpdatesBtn" Grid.Column="1" Click="CheckUpdates_Click" CornerRadius="6"
-                                        Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Padding="14,8">
-                                    <StackPanel Orientation="Horizontal" Spacing="6">
-                                        <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
-                                        <TextBlock x:Name="CheckUpdatesBtnText" Text="Check" FontSize="13" />
-                                    </StackPanel>
-                                </Button>
-                            </Grid>
                         </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <!-- About -->
+                <StackPanel Spacing="8">
+                    <TextBlock x:Name="AboutSectionTitle" Text="About" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2">
+                                <TextBlock x:Name="VersionLabel" Text="PLLauncher" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock x:Name="VersionDesc" Text="PLLauncher" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </StackPanel>
+                            <Button x:Name="CheckUpdatesBtn" Grid.Column="1" Click="CheckUpdates_Click" CornerRadius="6"
+                                    Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Padding="14,8">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                                    <TextBlock x:Name="CheckUpdatesBtnText" Text="Check" FontSize="13" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
                     </Border>
                 </StackPanel>
 

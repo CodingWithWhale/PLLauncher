@@ -147,7 +147,8 @@ public partial class MainWindow : Window
             {
                 var animation = new Animation
                 {
-                    Duration = TimeSpan.FromMilliseconds(150),
+                    Duration = TimeSpan.FromMilliseconds(250),
+                    Easing = new Avalonia.Animation.Easings.CubicEaseOut(),
                     Children =
                     {
                         new KeyFrame

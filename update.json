@@ -1,5 +1,5 @@
 {
-  "version": "2.6.31",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.31/PLLauncher_Setup_2.6.31.exe",
-  "changelog": "v2.6.31: Fixed auto-update: batch file installer launch (reliable), error dialog on download failure, immediate app exit (no 2s delay), correct exit timing so installer doesn't race with running app."
+  "version": "2.6.32",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.32/PLLauncher_Setup_2.6.32.exe",
+  "changelog": "v2.6.32: Added About section (moved Check for Updates out of Data Management), added button hover transitions, enhanced page transition animation, ToggleSwitch and nav item hover transitions."
 }

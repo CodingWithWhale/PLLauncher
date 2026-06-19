@@ -17,6 +17,7 @@ public partial class TimeLimitsPage : UserControl
     {
         InitializeComponent();
         this.Loaded += OnLoaded;
+        this.Unloaded += OnUnloaded;
         LocalizationService.Instance.LanguageChanged += (_, _) => ApplyLocalizedText();
     }
 
@@ -30,6 +31,17 @@ public partial class TimeLimitsPage : UserControl
         }
         catch (Exception ex) { Console.WriteLine($"TimeLimits load error: {ex.Message}"); }
         ApplyLocalizedText();
+        App.TimeTrackingService.UsageUpdated += OnUsageUpdated;
+    }
+
+    private void OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        App.TimeTrackingService.UsageUpdated -= OnUsageUpdated;
+    }
+
+    private void OnUsageUpdated(object? sender, Models.TimeLimitItem item)
+    {
+        Avalonia.Threading.Dispatcher.UIThread.Post(() => RefreshList());
     }
 
     private void RefreshList()

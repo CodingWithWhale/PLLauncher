@@ -1,11 +1,3 @@
-C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.csproj.AssemblyReference.cache
-C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\Avalonia\Resources.Inputs.cache
-C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\Avalonia\resources
-C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.GeneratedMSBuildEditorConfig.editorconfig
-C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.AssemblyInfoInputs.cache
-C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.AssemblyInfo.cs
-C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.csproj.CoreCompileInputs.cache
-C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.sourcelink.json
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\icon.ico
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\PLLauncher.exe
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\PLLauncher.deps.json
@@ -223,6 +215,14 @@ C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\n
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\mscordbi.dll
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\mscorrc.dll
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\bin\Release\net8.0-windows\win-x64\msquic.dll
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.csproj.AssemblyReference.cache
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\Avalonia\Resources.Inputs.cache
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\Avalonia\resources
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.GeneratedMSBuildEditorConfig.editorconfig
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.AssemblyInfoInputs.cache
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.AssemblyInfo.cs
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.csproj.CoreCompileInputs.cache
+C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\PLLauncher.sourcelink.json
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\Avalonia\PLLauncher.dll
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\Avalonia\PLLauncher.pdb
 C:\Documents Nikitas\ProgrammingPractice\app\PLLauncher\PLLauncher\obj\Release\net8.0-windows\win-x64\refint\Avalonia\PLLauncher.dll

@@ -100,6 +100,14 @@ public class TimeTrackingService : IDisposable
                 _processMonitor.LockApp(l.ProcessName);
                 AppLocked?.Invoke(this, l);
                 LimitReached?.Invoke(this, l);
+                // Start cooldown (same as TrackUsageAsync)
+                var duration = l.LockDuration;
+                if (duration <= TimeSpan.Zero)
+                    duration = TimeSpan.FromMinutes(10);
+                l.IsInCooldown = true;
+                l.CooldownEndAt = DateTime.Now.Add(duration);
+                CooldownStarted?.Invoke(this, l);
+                _ = MonitorCooldownAsync(l);
             }
 
             if (!l.IsLocked) continue;

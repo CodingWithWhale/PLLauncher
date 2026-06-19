@@ -1,5 +1,5 @@
 {
-  "version": "2.6.47",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.47/PLLauncher_Setup_2.6.47.exe",
-  "changelog": "v2.6.47: Lock overlay window replaces toast notification; live countdown; auto-open after unlock; fixed lock duration; blocked delete/disable while locked."
+  "version": "2.6.48",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.48/PLLauncher_Setup_2.6.48.exe",
+  "changelog": "v2.6.48: Fixed lock overlay closing immediately (cooldown now set in enforcement loop); fixed progress bar live updates (subscribe to UsageUpdated)."
 }

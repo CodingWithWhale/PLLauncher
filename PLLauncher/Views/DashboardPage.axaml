@@ -13,40 +13,52 @@
                            Foreground="{DynamicResource TextSecondaryBrush}" />
             </StackPanel>
 
-            <!-- Stats Row -->
+            <!-- Stats Row (clickable cards) -->
             <UniformGrid Columns="4">
-                <Border Margin="0,0,8,0" Classes="CardBorder" Background="{DynamicResource CardBackgroundBrush}"
-                        CornerRadius="8" Padding="16" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                <Button x:Name="HotkeysCard" Margin="0,0,8,0" Click="HotkeysCard_Click"
+                        Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                        Cursor="Hand">
                     <StackPanel Spacing="8">
                         <TextBlock Text="&#xE92E;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="{DynamicResource AccentBrush}" />
                         <TextBlock x:Name="HotkeyCount" Text="0" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
                         <TextBlock x:Name="HotkeysLabel" Text="Active Hotkeys" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
-                </Border>
-                <Border Margin="4,0" Classes="CardBorder" Background="{DynamicResource CardBackgroundBrush}"
-                        CornerRadius="8" Padding="16" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                </Button>
+                <Button x:Name="TasksCard" Margin="4,0" Click="TasksCard_Click"
+                        Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                        Cursor="Hand">
                     <StackPanel Spacing="8">
                         <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="{DynamicResource WarningBrush}" />
                         <TextBlock x:Name="TaskCount" Text="0" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
                         <TextBlock x:Name="TasksLabel" Text="Active Tasks" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
-                </Border>
-                <Border Margin="4,0" Classes="CardBorder" Background="{DynamicResource CardBackgroundBrush}"
-                        CornerRadius="8" Padding="16" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                </Button>
+                <Button x:Name="TimeLimitsCard" Margin="4,0" Click="TimeLimitsCard_Click"
+                        Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                        Cursor="Hand">
                     <StackPanel Spacing="8">
                         <TextBlock Text="&#xE917;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="{DynamicResource ErrorBrush}" />
                         <TextBlock x:Name="LimitCount" Text="0" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
                         <TextBlock x:Name="LimitsLabel" Text="Time Limits" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
-                </Border>
-                <Border Margin="8,0,0,0" Classes="CardBorder" Background="{DynamicResource CardBackgroundBrush}"
-                        CornerRadius="8" Padding="16" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                </Button>
+                <Button x:Name="SchedulesCard" Margin="8,0,0,0" Click="SchedulesCard_Click"
+                        Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                        BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                        Cursor="Hand">
                     <StackPanel Spacing="8">
                         <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="24" Foreground="{DynamicResource SuccessBrush}" />
                         <TextBlock x:Name="ScheduleCount" Text="0" FontSize="28" FontWeight="Bold" Foreground="{DynamicResource TextPrimaryBrush}" />
                         <TextBlock x:Name="SchedulesLabel" Text="Schedules" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
                     </StackPanel>
-                </Border>
+                </Button>
             </UniformGrid>
 
             <!-- Quick Actions -->

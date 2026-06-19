@@ -80,4 +80,15 @@ public partial class DashboardPage : UserControl
         if (confirmed)
             NativeMethods.LockWorkStation();
     }
+
+    private void NavigateTo(string pageTag)
+    {
+        if (TopLevel.GetTopLevel(this) is MainWindow main)
+            main.NavigateToPage(pageTag);
+    }
+
+    private void HotkeysCard_Click(object? sender, RoutedEventArgs e) => NavigateTo("Keybinds");
+    private void TasksCard_Click(object? sender, RoutedEventArgs e) => NavigateTo("Tasks");
+    private void TimeLimitsCard_Click(object? sender, RoutedEventArgs e) => NavigateTo("TimeLimits");
+    private void SchedulesCard_Click(object? sender, RoutedEventArgs e) => NavigateTo("Scheduler");
 }

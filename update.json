@@ -1,5 +1,5 @@
 {
-  "version": "2.6.33",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.33/PLLauncher_Setup_2.6.33.exe",
-  "changelog": "v2.6.33: Fixed misleading 'check internet' error message on update failure. Now shows a clearer message about possible causes."
+  "version": "2.6.34",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.34/PLLauncher_Setup_2.6.34.exe",
+  "changelog": "v2.6.34: Dashboard stat cards are now clickable buttons navigating to respective pages. Added button scale hover (1.03x) and press (0.97x) animations via global styles."
 }

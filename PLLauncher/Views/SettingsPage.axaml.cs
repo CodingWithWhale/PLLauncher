@@ -181,6 +181,12 @@ public partial class SettingsPage : UserControl
     private void CooldownBox_Changed(object? sender, NumericUpDownValueChangedEventArgs e) => OnSettingChanged();
     private void LanguageCombo_SelectionChanged(object? sender, SelectionChangedEventArgs e) => OnSettingChanged();
 
+    private void SearchHotkeyBox_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+    {
+        SearchHotkeyBox.Text = "";
+        SearchHotkeyBox.Focus();
+    }
+
     private void SearchHotkeyBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
     {
         if (e.Key == Avalonia.Input.Key.Back || e.Key == Avalonia.Input.Key.Delete)
@@ -263,8 +269,19 @@ public partial class SettingsPage : UserControl
             vm.TimeLimitCooldownHours = (double)(CooldownBox.Value ?? 0);
             vm.Language = GetSelectedLanguageCode();
             vm.AccentColor = GetSelectedAccentColor();
-            vm.SearchHotkey = SearchHotkeyEnabled.IsChecked == true ? SearchHotkeyBox.Text?.Trim() ?? "Ctrl+K" : "";
+            var newHotkey = SearchHotkeyEnabled.IsChecked == true ? SearchHotkeyBox.Text?.Trim() ?? "Ctrl+K" : "";
 
+            if (string.IsNullOrEmpty(newHotkey))
+            {
+                if (!await DialogHelper.ShowConfirmAsync(TopLevel.GetTopLevel(this) as Window, "Disable search hotkey?",
+                    "You won't be able to open search via keyboard until you re-enable it in Settings. Continue?"))
+                {
+                    SearchHotkeyEnabled.IsChecked = true;
+                    MarkUnsaved(true);
+                    return;
+                }
+            }
+            vm.SearchHotkey = newHotkey;
             await vm.SaveSettingsCommand.ExecuteAsync(null);
 
             LocalizationService.Instance.LoadFromSettings(vm.Language);

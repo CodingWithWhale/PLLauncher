@@ -6,6 +6,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using Avalonia.VisualTree;
 using PLLauncher.Helpers;
+using PLLauncher.Models;
 using PLLauncher.Services;
 using PLLauncher.Views;
 using System;
@@ -87,13 +88,12 @@ public partial class MainWindow : Window
     private readonly List<SearchAction> _searchActions = new();
     private List<Services.AppInfo>? _installedApps;
     private int _searchHotkeyId = -1;
-
-    private record SearchAction(string Title, string Icon, string Keywords, Action Action);
+    private SearchOverlayWindow? _searchOverlay;
 
     private void BuildSearchActions()
     {
         _searchActions.Clear();
-        _searchActions.Add(new("Open App...", "\uE8F1", "open start launch run program app", SwitchToAppSearchMode));
+        _searchActions.Add(new("Open App...", "\uE8F1", "open start launch run program app", SwitchToAppSearchMode, ClosesSearch: false));
         _searchActions.Add(new("Lock PC", "\uE72E", "lock", () => NativeMethods.LockWorkStation()));
         _searchActions.Add(new("Shutdown 1h", "\uE7E8", "shutdown", () =>
         {
@@ -202,6 +202,11 @@ public partial class MainWindow : Window
     private void ExecuteSearchAction(SearchAction? action)
     {
         if (action == null) return;
+        if (!action.ClosesSearch)
+        {
+            action.Action();
+            return;
+        }
         HideSearch();
         action.Action();
     }
@@ -307,22 +312,38 @@ public partial class MainWindow : Window
             var savedHotkey = settings.SearchHotkey ?? "Ctrl+K";
             _searchHotkeyId = App.HotkeyService.RegisterAppHotkey(savedHotkey, () =>
             {
-                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                {
-                    if (!this.IsVisible || this.WindowState == WindowState.Minimized)
-                    {
-                        this.Show();
-                        this.WindowState = WindowState.Normal;
-                        this.Activate();
-                    }
-                    if (SearchOverlay.IsVisible) HideSearch();
-                    else ShowSearch();
-                });
+                Avalonia.Threading.Dispatcher.UIThread.Post(ShowSearchGlobal);
             });
         }
         catch (Exception ex)
         {
             Console.WriteLine($"[MainWindow] Failed to load search hotkey: {ex.Message}");
+        }
+    }
+
+    private void ShowSearchGlobal()
+    {
+        if (this.IsVisible && this.WindowState != WindowState.Minimized)
+        {
+            // Main window is visible — use in-window overlay
+            if (SearchOverlay.IsVisible) HideSearch();
+            else ShowSearch();
+            if (WindowState == WindowState.Normal) Activate();
+        }
+        else
+        {
+            // Main window is hidden — show system overlay
+            if (_searchOverlay == null || !_searchOverlay.IsVisible)
+            {
+                _searchOverlay = new SearchOverlayWindow();
+                _searchOverlay.Show();
+                _searchOverlay.ShowSearch();
+            }
+            else
+            {
+                _searchOverlay.Close();
+                _searchOverlay = null;
+            }
         }
     }
 
@@ -333,17 +354,7 @@ public partial class MainWindow : Window
         {
             _searchHotkeyId = App.HotkeyService.RegisterAppHotkey(keyCombo, () =>
             {
-                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                {
-                    if (!this.IsVisible || this.WindowState == WindowState.Minimized)
-                    {
-                        this.Show();
-                        this.WindowState = WindowState.Normal;
-                        this.Activate();
-                    }
-                    if (SearchOverlay.IsVisible) HideSearch();
-                    else ShowSearch();
-                });
+                Avalonia.Threading.Dispatcher.UIThread.Post(ShowSearchGlobal);
             });
         }
         else

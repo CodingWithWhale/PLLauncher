@@ -65,6 +65,22 @@ public class ProcessMonitorService : IDisposable
         return result;
     }
 
+    public string? GetProcessPath(string processName)
+    {
+        try
+        {
+            var name = NormalizeName(processName);
+            foreach (var p in Process.GetProcessesByName(name))
+            {
+                try { return p.MainModule?.FileName; }
+                catch { }
+                finally { p.Dispose(); }
+            }
+        }
+        catch { }
+        return null;
+    }
+
     public void LockApp(string processName) { processName = NormalizeName(processName); _lockedProcesses.Add(processName); TerminateProcess(processName); }
     public void UnlockApp(string processName) { _lockedProcesses.Remove(NormalizeName(processName)); }
     public bool IsProcessLocked(string processName) => _lockedProcesses.Contains(NormalizeName(processName));

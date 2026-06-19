@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using PLLauncher.Helpers;
 using PLLauncher.Services;
 using PLLauncher.ViewModels;
 using System;
@@ -113,6 +114,13 @@ public partial class TimeLimitsPage : UserControl
             var limit = App.TimeLimitsViewModel.TimeLimits.FirstOrDefault(l => l.Id == id);
             if (limit != null)
             {
+                if (limit.IsLocked)
+                {
+                    await DialogHelper.ShowConfirmAsync(GetOwnerWindow(),
+                        $"Cannot disable \"{limit.AppName}\" while it is locked.\nWait until the lock expires.",
+                        "App is Locked", "OK");
+                    return;
+                }
                 await App.TimeLimitsViewModel.DisableTimeLimitCommand.ExecuteAsync(limit);
                 RefreshList();
             }
@@ -126,9 +134,19 @@ public partial class TimeLimitsPage : UserControl
             var limit = App.TimeLimitsViewModel.TimeLimits.FirstOrDefault(l => l.Id == id);
             if (limit != null)
             {
+                if (limit.IsLocked)
+                {
+                    await DialogHelper.ShowConfirmAsync(GetOwnerWindow(),
+                        $"Cannot delete limit for \"{limit.AppName}\" while it is locked.\nWait until the lock expires.",
+                        "App is Locked", "OK");
+                    return;
+                }
                 await App.TimeLimitsViewModel.DeleteTimeLimitCommand.ExecuteAsync(limit);
                 RefreshList();
             }
         }
     }
+
+    private Window? GetOwnerWindow()
+        => TopLevel.GetTopLevel(this) as Window;
 }

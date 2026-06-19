@@ -23,6 +23,7 @@ public class TimeTrackingService : IDisposable
     public event EventHandler<TimeLimitItem>? LimitReached;
     public event EventHandler<TimeLimitItem>? AppLocked;
     public event EventHandler<TimeLimitItem>? CooldownStarted;
+    public event EventHandler<TimeLimitItem>? CooldownEnded;
     public event EventHandler<TimeLimitItem>? UsageUpdated;
 
     public IReadOnlyList<TimeLimitItem> TimeLimits
@@ -72,10 +73,6 @@ public class TimeTrackingService : IDisposable
         }, _cts.Token);
     }
 
-    // Tracks which locked processes we've already notified about (per re-launch attempt)
-    private readonly Dictionary<string, DateTime> _lastNotificationTime = new(StringComparer.OrdinalIgnoreCase);
-    private static readonly TimeSpan NotificationCooldown = TimeSpan.FromSeconds(10);
-
     public void Stop() { _isRunning = false; _cts?.Cancel(); _cts?.Dispose(); _cts = null; }
 
     private void EnforceLockedProcesses()
@@ -97,6 +94,9 @@ public class TimeTrackingService : IDisposable
                 Console.WriteLine($"[TimeTrack] ENFORCE locking {l.AppName} ({l.ProcessName}): Used={l.UsedMinutesToday:F2}, Limit={l.DailyLimitMinutes}, Remaining={l.RemainingMinutes:F3}");
                 l.IsLocked = true;
                 l.LockedAt = DateTime.Now;
+                var exePath = _processMonitor.GetProcessPath(l.ProcessName);
+                if (!string.IsNullOrEmpty(exePath))
+                    l.AppExecutablePath = exePath;
                 _processMonitor.LockApp(l.ProcessName);
                 AppLocked?.Invoke(this, l);
                 LimitReached?.Invoke(this, l);
@@ -105,19 +105,6 @@ public class TimeTrackingService : IDisposable
             if (!l.IsLocked) continue;
 
             _processMonitor.TerminateProcess(l.ProcessName);
-
-            var now = DateTime.Now;
-            if (_lastNotificationTime.TryGetValue(l.ProcessName, out var last) &&
-                (now - last) < NotificationCooldown)
-                continue;
-
-            _lastNotificationTime[l.ProcessName] = now;
-            var remaining = l.CooldownEndAt.HasValue ? l.CooldownEndAt.Value - now : TimeSpan.Zero;
-            var timeStr = remaining > TimeSpan.Zero
-                ? $"Unlocked in {(int)remaining.TotalHours}h {remaining.Minutes}m {remaining.Seconds}s"
-                : "Locked indefinitely";
-            _notificationService.ShowNotification("Time Limit Reached",
-                $"{l.AppName}: limit of {FormatLimit(l.DailyLimitMinutes)} hit. {timeStr}.");
         }
     }
     public void AddTimeLimit(TimeLimitItem limit) { lock (_timeLimitsLock) { _timeLimits.Add(limit); } }
@@ -207,7 +194,6 @@ public class TimeTrackingService : IDisposable
                 l.UsedMinutesToday = 0; l.IsLocked = false;
                 l.IsInCooldown = false; l.CooldownEndAt = null;
                 l.LastResetDate = DateTime.Today;
-                _lastNotificationTime.Clear();
                 if (l.IsEnabled) _processMonitor.UnlockApp(l.ProcessName);
             }
         }
@@ -228,10 +214,12 @@ public class TimeTrackingService : IDisposable
                 {
                     Console.WriteLine($"[TimeTrack] LOCK {l.AppName}: UsedMinutesToday={l.UsedMinutesToday:F2}, DailyLimit={l.DailyLimitMinutes}, Remaining={l.RemainingMinutes:F3}");
                     l.IsLocked = true; l.LockedAt = DateTime.Now;
+                    // Capture executable path before killing
+                    var exePath = _processMonitor.GetProcessPath(l.ProcessName);
+                    if (!string.IsNullOrEmpty(exePath))
+                        l.AppExecutablePath = exePath;
                     _processMonitor.LockApp(l.ProcessName);
                     AppLocked?.Invoke(this, l); LimitReached?.Invoke(this, l);
-                    _notificationService.ShowNotification("Time Limit Reached",
-                        $"Your limit of {FormatLimit(l.DailyLimitMinutes)} is hit for {l.AppName}.");
 
                     // Start lock cooldown automatically using per-limit lock duration
                     var duration = l.LockDuration;
@@ -271,13 +259,16 @@ public class TimeTrackingService : IDisposable
     {
         while (l.IsInCooldown && l.CooldownEndAt.HasValue)
         {
-            await Task.Delay(60000);
+            await Task.Delay(5000);
             if (DateTime.Now >= l.CooldownEndAt.Value)
             {
                 l.IsInCooldown = false; l.CooldownEndAt = null; l.IsLocked = false;
                 l.UsedMinutesToday = 0; l.LastResetDate = DateTime.Today;
                 _processMonitor.UnlockApp(l.ProcessName);
-                _notificationService.ShowNotification("Cooldown Complete", $"'{l.AppName}' unlocked.");
+                CooldownEnded?.Invoke(this, l);
+                // Re-launch the app if we have its path
+                if (!string.IsNullOrEmpty(l.AppExecutablePath))
+                    _processMonitor.LaunchApp(l.AppExecutablePath);
                 break;
             }
         }

@@ -1,0 +1,36 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PLLauncher.Helpers.LockOverlayWindow"
+        Title="Time Limit Reached"
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen"
+        SystemDecorations="None"
+        CanResize="False"
+        Background="#CC000000"
+        Topmost="True"
+        ShowInTaskbar="False"
+        MinWidth="400"
+        MaxWidth="500">
+    <Border CornerRadius="12" Background="#E0000000" Margin="20" Padding="32">
+        <StackPanel HorizontalAlignment="Center" Spacing="20">
+            <TextBlock x:Name="LockIcon" Text="&#xE72E;" FontFamily="Segoe MDL2 Assets"
+                       FontSize="48" Foreground="{DynamicResource ErrorBrush}"
+                       HorizontalAlignment="Center" />
+            <TextBlock x:Name="TitleText" Text="Time Limit Reached"
+                       Foreground="White" FontSize="22" FontWeight="Bold"
+                       HorizontalAlignment="Center" TextWrapping="Wrap"
+                       TextAlignment="Center" />
+            <TextBlock x:Name="MessageText" Text=""
+                       Foreground="#CCCCCC" FontSize="16"
+                       HorizontalAlignment="Center" TextWrapping="Wrap"
+                       TextAlignment="Center" />
+            <TextBlock x:Name="CountdownText" Text=""
+                       Foreground="{DynamicResource ErrorBrush}" FontSize="28" FontWeight="Bold"
+                       HorizontalAlignment="Center" />
+            <TextBlock Text="(the app will open automatically when time is up)"
+                       Foreground="#888888" FontSize="12"
+                       HorizontalAlignment="Center" TextWrapping="Wrap"
+                       TextAlignment="Center" />
+        </StackPanel>
+    </Border>
+</Window>

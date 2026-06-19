@@ -31,6 +31,12 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [C:/Documents Nikitas/ProgrammingPractice/app/PLLauncher/PLLauncher/Helpers/ColorPickerDialog.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[C:/Documents Nikitas/ProgrammingPractice/app/PLLauncher/PLLauncher/Helpers/LockOverlayWindow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[C:/Documents Nikitas/ProgrammingPractice/app/PLLauncher/PLLauncher/Helpers/UpdateProgressDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [C:/Documents Nikitas/ProgrammingPractice/app/PLLauncher/PLLauncher/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 

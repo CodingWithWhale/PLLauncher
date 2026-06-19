@@ -41,6 +41,7 @@ public partial class App : Application
     public static PomodoroService PomodoroService { get; private set; } = null!;
     public static HealthReminderService HealthReminderService { get; private set; } = null!;
     public static UpdateService UpdateService { get; private set; } = null!;
+internal static Helpers.LockOverlayWindow? CurrentLockOverlay { get; set; }
 
     // GitHub repo info — CHANGE THESE to match your repo
     private const string GitHubOwner = "CodingWithWhale";
@@ -350,6 +351,23 @@ public partial class App : Application
                     {
                         TimeTrackingService.LoadLimits(savedLimits);
                         TimeLimitsViewModel.TimeLimits = new(savedLimits);
+
+                        // Show lock overlay when app is locked
+                        TimeTrackingService.AppLocked += (_, limit) =>
+                        {
+                            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                            {
+                                // Close any existing overlay
+                                if (CurrentLockOverlay != null && !CurrentLockOverlay.IsClosed)
+                                {
+                                    CurrentLockOverlay.Close();
+                                    CurrentLockOverlay = null;
+                                }
+                                var overlay = new Helpers.LockOverlayWindow(limit);
+                                CurrentLockOverlay = overlay;
+                                overlay.Show();
+                            });
+                        };
 
                         // Start background services
                         TaskSchedulerService?.Start();

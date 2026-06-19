@@ -54,6 +54,9 @@ public partial class TimeLimitItem : ObservableObject
     [ObservableProperty]
     private string _appIconPath = string.Empty;
 
+    [ObservableProperty]
+    private string _appExecutablePath = string.Empty;
+
     public double RemainingMinutes => DailyLimitMinutes - UsedMinutesToday;
 
     public double UsagePercentage => DailyLimitMinutes > 0 

@@ -31,6 +31,7 @@ public partial class DashboardPage : UserControl
     {
         App.TimeTrackingService.AppLocked += OnAppLocked;
         App.TimeTrackingService.CooldownStarted += OnCooldownStarted;
+        App.TimeTrackingService.CooldownEnded += OnCooldownEnded;
     }
 
     private void OnAppLocked(object? sender, TimeLimitItem item)
@@ -49,6 +50,15 @@ public partial class DashboardPage : UserControl
         {
             if (!_lockedApps.Any(l => l.Id == item.Id))
                 _lockedApps.Add(item);
+            UpdateLockedBanner();
+        });
+    }
+
+    private void OnCooldownEnded(object? sender, TimeLimitItem item)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            _lockedApps.RemoveAll(l => l.Id == item.Id);
             UpdateLockedBanner();
         });
     }
@@ -134,6 +144,7 @@ public partial class DashboardPage : UserControl
         _lockCountdownTimer = null;
         App.TimeTrackingService.AppLocked -= OnAppLocked;
         App.TimeTrackingService.CooldownStarted -= OnCooldownStarted;
+        App.TimeTrackingService.CooldownEnded -= OnCooldownEnded;
     }
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)

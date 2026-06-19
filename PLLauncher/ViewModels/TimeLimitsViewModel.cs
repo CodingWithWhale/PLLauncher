@@ -60,12 +60,21 @@ public partial class TimeLimitsViewModel : ObservableObject
 
     [RelayCommand]
     private async Task DeleteTimeLimitAsync(TimeLimitItem? l)
-    { if (l == null) return; _timeTrackingService.RemoveTimeLimit(l.Id);
-      TimeLimits.Remove(l); await _dataService.SaveTimeLimitsAsync(TimeLimits.ToList()); }
+    {
+        if (l == null) return;
+        if (l.IsLocked) return;
+        _timeTrackingService.RemoveTimeLimit(l.Id);
+        TimeLimits.Remove(l);
+        await _dataService.SaveTimeLimitsAsync(TimeLimits.ToList());
+    }
 
     [RelayCommand]
     private async Task DisableTimeLimitAsync(TimeLimitItem l)
-    { _timeTrackingService.DisableTimeLimit(l.Id); await _dataService.SaveTimeLimitsAsync(TimeLimits.ToList()); }
+    {
+        if (l.IsLocked) return;
+        _timeTrackingService.DisableTimeLimit(l.Id);
+        await _dataService.SaveTimeLimitsAsync(TimeLimits.ToList());
+    }
 
     [RelayCommand]
     private async Task EnableTimeLimitAsync(TimeLimitItem l)

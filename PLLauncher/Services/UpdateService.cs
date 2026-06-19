@@ -138,12 +138,29 @@ start """" ""{installDir}\PLLauncher.exe""
 
         if (!confirmed) return false;
 
-        bool success = await DownloadAndInstallAsync(update.DownloadUrl);
-        if (!success)
+        var progress = new Helpers.UpdateProgressDialog();
+        Exception? downloadError = null;
+
+        var downloadTask = DownloadAndInstallAsync(update.DownloadUrl);
+
+        _ = downloadTask.ContinueWith(_ =>
+        {
+            Avalonia.Threading.Dispatcher.UIThread.Post(() => progress.Close());
+        });
+
+        progress.Start();
+        await progress.ShowDialog(owner!);
+
+        if (downloadTask.Exception != null)
+        {
+            downloadError = downloadTask.Exception.InnerException ?? downloadTask.Exception;
+        }
+
+        if (downloadError != null)
         {
             await Helpers.DialogHelper.ShowConfirmAsync(
                 owner,
-                loc.Get("update.error"),
+                loc.Get("update.error") + $"\n\n{downloadError.Message}",
                 loc.Get("update.title"),
                 "OK",
                 "OK");

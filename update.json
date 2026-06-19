@@ -1,5 +1,5 @@
 {
-  "version": "2.6.45",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.45/PLLauncher_Setup_2.6.45.exe",
-  "changelog": "v2.6.45: Removed Bugs & Ideas feedback dialog (will be rebuilt with direct-to-server submission)."
+  "version": "2.6.46",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.46/PLLauncher_Setup_2.6.46.exe",
+  "changelog": "v2.6.46: Update download now shows a dark progress overlay with a rotating accent-colored ring."
 }

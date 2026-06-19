@@ -1,0 +1,30 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PLLauncher.Helpers.UpdateProgressDialog"
+        Title="Updating..."
+        SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterOwner"
+        SystemDecorations="None"
+        CanResize="False"
+        Background="#CC000000"
+        Topmost="True"
+        ShowInTaskbar="False"
+        Width="220">
+    <Border CornerRadius="12" Background="#E0000000" Margin="20" Padding="24">
+        <StackPanel HorizontalAlignment="Center" Spacing="16">
+            <Ellipse x:Name="Spinner" Width="48" Height="48"
+                     Stroke="{DynamicResource AccentSecondaryBrush}"
+                     StrokeThickness="5"
+                     StrokeDashArray="24,3"
+                     Fill="Transparent"
+                     RenderTransformOrigin="50%,50%">
+                <Ellipse.RenderTransform>
+                    <RotateTransform Angle="0" />
+                </Ellipse.RenderTransform>
+            </Ellipse>
+            <TextBlock x:Name="StatusText" Text="Downloading update..."
+                       Foreground="White" FontSize="14"
+                       HorizontalAlignment="Center" />
+        </StackPanel>
+    </Border>
+</Window>

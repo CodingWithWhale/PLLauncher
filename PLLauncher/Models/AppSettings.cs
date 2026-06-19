@@ -46,4 +46,7 @@ public partial class AppSettings : ObservableObject
 
     [ObservableProperty]
     private string _accentColor = "Blue";
+
+    [ObservableProperty]
+    private string _searchHotkey = "Ctrl+K";
 }

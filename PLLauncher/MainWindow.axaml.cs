@@ -41,8 +41,13 @@ public partial class MainWindow : Window
     private void ApplySearchLocalization()
     {
         var loc = LocalizationService.Instance;
-        SearchHintText.Text = loc.Get("search.hint");
-        SearchTextBox.Watermark = loc.Get("search.placeholder");
+        var hotkey = App.SettingsViewModel.SearchHotkey;
+        SearchHintText.Text = string.IsNullOrEmpty(hotkey)
+            ? loc.Get("search.hint")
+            : loc.Get("search.hint").Replace("Ctrl+K", hotkey);
+        SearchTextBox.Watermark = _currentSearchMode == SearchMode.AppSearch
+            ? loc.Get("search.placeholder_apps")
+            : loc.Get("search.placeholder");
     }
 
     public void ApplyLocalization()
@@ -77,13 +82,18 @@ public partial class MainWindow : Window
     }
 
     // Search bar
+    private enum SearchMode { Actions, AppSearch }
+    private SearchMode _currentSearchMode = SearchMode.Actions;
     private readonly List<SearchAction> _searchActions = new();
+    private List<Services.AppInfo>? _installedApps;
+    private int _searchHotkeyId = -1;
 
     private record SearchAction(string Title, string Icon, string Keywords, Action Action);
 
     private void BuildSearchActions()
     {
         _searchActions.Clear();
+        _searchActions.Add(new("Open App...", "\uE8F1", "open start launch run program app", SwitchToAppSearchMode));
         _searchActions.Add(new("Lock PC", "\uE72E", "lock", () => NativeMethods.LockWorkStation()));
         _searchActions.Add(new("Shutdown 1h", "\uE7E8", "shutdown", () =>
         {
@@ -100,17 +110,53 @@ public partial class MainWindow : Window
         _searchActions.Add(new("Settings", "\uE713", "settings config", () => NavigateToPage("Settings")));
     }
 
+    private void SwitchToAppSearchMode()
+    {
+        _currentSearchMode = SearchMode.AppSearch;
+        _installedApps ??= App.InstalledAppsService.GetInstalledApps();
+        SearchTextBox.Text = "";
+        SearchTextBox.Watermark = LocalizationService.Instance.Get("search.placeholder_apps");
+        FilterSearchResults();
+        _ = SearchTextBox.Focus();
+    }
+
+    private void SwitchToActionMode()
+    {
+        _currentSearchMode = SearchMode.Actions;
+        SearchTextBox.Watermark = LocalizationService.Instance.Get("search.placeholder");
+        SearchTextBox.Text = "";
+        SearchResultsList.SelectedIndex = -1;
+        SearchResultsList.ItemsSource = null;
+        BuildSearchActions();
+        _ = SearchTextBox.Focus();
+    }
+
+    private void LaunchApp(string exePath)
+    {
+        try
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = exePath, UseShellExecute = true
+            });
+        }
+        catch (Exception ex) { Console.WriteLine($"[Search] Launch failed: {ex.Message}"); }
+    }
+
     private void ShowSearch()
     {
+        _currentSearchMode = SearchMode.Actions;
         BuildSearchActions();
         SearchOverlay.IsVisible = true;
         SearchTextBox.Text = "";
+        SearchTextBox.Watermark = LocalizationService.Instance.Get("search.placeholder");
         SearchResultsList.ItemsSource = null;
         _ = SearchTextBox.Focus();
     }
 
     private void HideSearch()
     {
+        _currentSearchMode = SearchMode.Actions;
         SearchOverlay.IsVisible = false;
         SearchTextBox.Text = "";
         SearchResultsList.ItemsSource = null;
@@ -119,15 +165,38 @@ public partial class MainWindow : Window
     private void FilterSearchResults()
     {
         var query = SearchTextBox.Text?.Trim().ToLowerInvariant() ?? "";
+
+        if (_currentSearchMode == SearchMode.AppSearch)
+        {
+            var results = new List<SearchAction>
+            {
+                new("← Back", "\uE72B", "",
+                    SwitchToActionMode)
+            };
+            var apps = _installedApps ??= App.InstalledAppsService.GetInstalledApps();
+            foreach (var app in apps)
+            {
+                if (string.IsNullOrEmpty(query) ||
+                    app.DisplayName.ToLowerInvariant().Contains(query))
+                {
+                    var capturedPath = app.ExecutablePath;
+                    results.Add(new(app.DisplayName, "\uE8F1", "",
+                        () => LaunchApp(capturedPath)));
+                }
+            }
+            SearchResultsList.ItemsSource = results;
+            return;
+        }
+
         if (string.IsNullOrEmpty(query))
         {
             SearchResultsList.ItemsSource = null;
             return;
         }
-        var results = _searchActions
+        var actionResults = _searchActions
             .Where(a => a.Keywords.Contains(query) || a.Title.ToLowerInvariant().Contains(query))
             .ToList();
-        SearchResultsList.ItemsSource = results;
+        SearchResultsList.ItemsSource = actionResults;
     }
 
     private void ExecuteSearchAction(SearchAction? action)
@@ -141,9 +210,22 @@ public partial class MainWindow : Window
 
     private void SearchTextBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
     {
-        if (e.Key == Avalonia.Input.Key.Escape) { HideSearch(); e.Handled = true; }
+        if (e.Key == Avalonia.Input.Key.Escape)
+        {
+            if (_currentSearchMode == SearchMode.AppSearch)
+                SwitchToActionMode();
+            else
+                HideSearch();
+            e.Handled = true;
+        }
         else if (e.Key == Avalonia.Input.Key.Enter && SearchResultsList.SelectedItem is SearchAction sa)
-        { ExecuteSearchAction(sa); e.Handled = true; }
+        {
+            if (_currentSearchMode == SearchMode.AppSearch && SearchResultsList.SelectedIndex == 0)
+                SwitchToActionMode();
+            else
+                ExecuteSearchAction(sa);
+            e.Handled = true;
+        }
         else if (e.Key == Avalonia.Input.Key.Down)
         {
             if (SearchResultsList.ItemCount > 0)
@@ -168,7 +250,15 @@ public partial class MainWindow : Window
     private void SearchResultsList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         if (e.AddedItems.Count > 0 && e.AddedItems[0] is SearchAction sa)
+        {
+            if (_currentSearchMode == SearchMode.AppSearch && SearchResultsList.SelectedIndex == 0)
+            {
+                // "Back to actions" — don't hide search, just switch mode
+                SwitchToActionMode();
+                return;
+            }
             ExecuteSearchAction(sa);
+        }
     }
 
     private void SearchOverlaySelf_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
@@ -195,15 +285,8 @@ public partial class MainWindow : Window
 
                 _ = RegisterAllHotkeysAsync();
 
-                // Register Ctrl+K for search bar
-                App.HotkeyService.RegisterAppHotkey("Ctrl+K", () =>
-                {
-                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                    {
-                        if (SearchOverlay.IsVisible) HideSearch();
-                        else ShowSearch();
-                    });
-                });
+                // Register search hotkey (saved in settings)
+                _ = LoadAndRegisterSearchHotkeyAsync();
             }
             else
             {
@@ -213,6 +296,59 @@ public partial class MainWindow : Window
         catch (Exception ex)
         {
             Console.WriteLine($"[MainWindow] OnOpened error: {ex.Message}");
+        }
+    }
+
+    private async System.Threading.Tasks.Task LoadAndRegisterSearchHotkeyAsync()
+    {
+        try
+        {
+            var settings = await App.DataService.LoadSettingsAsync();
+            var savedHotkey = settings.SearchHotkey ?? "Ctrl+K";
+            _searchHotkeyId = App.HotkeyService.RegisterAppHotkey(savedHotkey, () =>
+            {
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    if (!this.IsVisible || this.WindowState == WindowState.Minimized)
+                    {
+                        this.Show();
+                        this.WindowState = WindowState.Normal;
+                        this.Activate();
+                    }
+                    if (SearchOverlay.IsVisible) HideSearch();
+                    else ShowSearch();
+                });
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[MainWindow] Failed to load search hotkey: {ex.Message}");
+        }
+    }
+
+    public void ReRegisterSearchHotkey(string keyCombo)
+    {
+        App.HotkeyService.UnregisterAppHotkey(_searchHotkeyId);
+        if (!string.IsNullOrEmpty(keyCombo))
+        {
+            _searchHotkeyId = App.HotkeyService.RegisterAppHotkey(keyCombo, () =>
+            {
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    if (!this.IsVisible || this.WindowState == WindowState.Minimized)
+                    {
+                        this.Show();
+                        this.WindowState = WindowState.Normal;
+                        this.Activate();
+                    }
+                    if (SearchOverlay.IsVisible) HideSearch();
+                    else ShowSearch();
+                });
+            });
+        }
+        else
+        {
+            _searchHotkeyId = -1;
         }
     }
 

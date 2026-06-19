@@ -25,6 +25,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _enableAnimations = true;
     [ObservableProperty] private string _language = "en-US";
     [ObservableProperty] private string _accentColor = "Blue";
+    [ObservableProperty] private string _searchHotkey = "Ctrl+K";
     [ObservableProperty] private string _statusMessage = string.Empty;
 
     public SettingsViewModel(DataService ds, SystemTrayService sts) { _dataService = ds; _systemTrayService = sts; }
@@ -39,6 +40,7 @@ public partial class SettingsViewModel : ObservableObject
         TimeLimitCooldownHours = _settings.TimeLimitCooldownHours; EnableSoundEffects = _settings.EnableSoundEffects;
         EnableAnimations = _settings.EnableAnimations; Language = _settings.Language;
         AccentColor = _settings.AccentColor;
+        SearchHotkey = _settings.SearchHotkey;
     }
 
     [RelayCommand]
@@ -50,6 +52,7 @@ public partial class SettingsViewModel : ObservableObject
         _settings.TimeLimitCooldownHours = TimeLimitCooldownHours; _settings.EnableSoundEffects = EnableSoundEffects;
         _settings.EnableAnimations = EnableAnimations; _settings.Language = Language;
         _settings.AccentColor = AccentColor;
+        _settings.SearchHotkey = SearchHotkey;
         await _dataService.SaveSettingsAsync(_settings);
         _systemTrayService.SetAutoStart(LaunchOnStartup);
         StatusMessage = "Settings saved successfully!";

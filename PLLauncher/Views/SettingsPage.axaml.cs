@@ -48,6 +48,8 @@ public partial class SettingsPage : UserControl
 
             App.SetAccentColor(vm.AccentColor);
             HighlightSelectedAccent(vm.AccentColor);
+            SearchHotkeyBox.Text = string.IsNullOrEmpty(vm.SearchHotkey) ? "" : vm.SearchHotkey;
+            SearchHotkeyEnabled.IsChecked = !string.IsNullOrEmpty(vm.SearchHotkey);
             App.SetTheme(vm.DarkMode);
             App.AnimationsEnabled = vm.EnableAnimations;
             MarkUnsaved(false);
@@ -147,6 +149,8 @@ public partial class SettingsPage : UserControl
         VersionDesc.Text = loc.Get("settings.about");
         CheckUpdatesBtnText.Text = loc.Get("settings.check_updates");
         AccentLabel.Text = loc.Get("settings.accent_label");
+        SearchHotkeyLabel.Text = loc.Get("settings.search_hotkey");
+        SearchHotkeyDesc.Text = loc.Get("settings.search_hotkey_desc");
         SaveButtonText.Text = loc.Get("settings.save");
         DiscardButtonText.Text = loc.Get("settings.discard");
         if (UnsavedHint.IsVisible)
@@ -177,12 +181,39 @@ public partial class SettingsPage : UserControl
     private void CooldownBox_Changed(object? sender, NumericUpDownValueChangedEventArgs e) => OnSettingChanged();
     private void LanguageCombo_SelectionChanged(object? sender, SelectionChangedEventArgs e) => OnSettingChanged();
 
+    private void SearchHotkeyBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
+    {
+        if (e.Key == Avalonia.Input.Key.Back || e.Key == Avalonia.Input.Key.Delete)
+            return;
+        var parts = new List<string>();
+        if ((e.KeyModifiers & Avalonia.Input.KeyModifiers.Control) != 0) parts.Add("Ctrl");
+        if ((e.KeyModifiers & Avalonia.Input.KeyModifiers.Alt) != 0) parts.Add("Alt");
+        if ((e.KeyModifiers & Avalonia.Input.KeyModifiers.Shift) != 0) parts.Add("Shift");
+        if ((e.KeyModifiers & Avalonia.Input.KeyModifiers.Meta) != 0) parts.Add("Win");
+        var key = e.Key switch
+        {
+            Avalonia.Input.Key.LeftCtrl or Avalonia.Input.Key.RightCtrl
+                or Avalonia.Input.Key.LeftAlt or Avalonia.Input.Key.RightAlt
+                or Avalonia.Input.Key.LeftShift or Avalonia.Input.Key.RightShift
+                or Avalonia.Input.Key.LWin or Avalonia.Input.Key.RWin => null,
+            _ => e.Key.ToString()
+        };
+        if (key != null)
+        {
+            parts.Add(key);
+            SearchHotkeyBox.Text = string.Join("+", parts);
+            OnSettingChanged();
+        }
+        e.Handled = true;
+    }
+
     private void AccentColor_Click(object? sender, Avalonia.Input.PointerPressedEventArgs e)
     {
         if (sender is Border b && b.Tag is string name)
         {
             HighlightSelectedAccent(name);
             App.SetAccentColor(name);
+            OnSettingChanged();
         }
     }
 
@@ -203,6 +234,8 @@ public partial class SettingsPage : UserControl
             CooldownBox.Value = (decimal)vm.TimeLimitCooldownHours;
             SelectLanguageCombo(vm.Language);
             LocalizationService.Instance.LoadFromSettings(vm.Language);
+            SearchHotkeyBox.Text = string.IsNullOrEmpty(vm.SearchHotkey) ? "" : vm.SearchHotkey;
+            SearchHotkeyEnabled.IsChecked = !string.IsNullOrEmpty(vm.SearchHotkey);
             MarkUnsaved(false);
         }
         finally
@@ -230,6 +263,7 @@ public partial class SettingsPage : UserControl
             vm.TimeLimitCooldownHours = (double)(CooldownBox.Value ?? 0);
             vm.Language = GetSelectedLanguageCode();
             vm.AccentColor = GetSelectedAccentColor();
+            vm.SearchHotkey = SearchHotkeyEnabled.IsChecked == true ? SearchHotkeyBox.Text?.Trim() ?? "Ctrl+K" : "";
 
             await vm.SaveSettingsCommand.ExecuteAsync(null);
 
@@ -244,7 +278,10 @@ public partial class SettingsPage : UserControl
             if (Avalonia.Application.Current?.ApplicationLifetime
                 is Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop
                 && desktop.MainWindow is MainWindow mainWindow)
+            {
                 mainWindow.ApplyLocalization();
+                mainWindow.ReRegisterSearchHotkey(vm.SearchHotkey);
+            }
 
             StatusMsg.Text = LocalizationService.Instance.Get("settings.saved");
             StatusMsg.IsVisible = true;

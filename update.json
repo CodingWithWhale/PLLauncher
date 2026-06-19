@@ -1,5 +1,5 @@
 {
-  "version": "2.6.35",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.35/PLLauncher_Setup_2.6.35.exe",
-  "changelog": "v2.6.35: Dashboard clock, accent colour picker (Blue/Purple/Green/Orange/Red/Cyan), and search bar (Ctrl+K) with Lock PC and page navigation actions."
+  "version": "2.6.36",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.36/PLLauncher_Setup_2.6.36.exe",
+  "changelog": "v2.6.36: Global Ctrl+K search hotkey (now works from anywhere), configurable in Settings (change or disable), Open App action in search to browse & launch installed apps, accent colour now correctly shows save button."
 }

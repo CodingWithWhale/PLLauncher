@@ -163,10 +163,16 @@ public class HotkeyService : IDisposable
         return false;
     }
 
-    public bool RegisterAppHotkey(string keyCombo, Action callback)
+    /// <summary>
+    /// Register an app-level hotkey (not user-configurable). Returns the hotkey ID, or -1 on failure.
+    /// Pass empty keyCombo to skip (no registration, returns -1).
+    /// </summary>
+    public int RegisterAppHotkey(string keyCombo, Action callback)
     {
+        if (string.IsNullOrWhiteSpace(keyCombo)) return -1;
+
         var (modifiers, vk) = NativeMethods.ParseKeyCombo(keyCombo);
-        if (vk == 0) return false;
+        if (vk == 0) return -1;
 
         var hotkeyId = _nextHotkeyId++;
         try
@@ -175,11 +181,22 @@ public class HotkeyService : IDisposable
                 (uint)(modifiers | NativeMethods.MOD_NOREPEAT), (uint)vk))
             {
                 _appCallbacks[hotkeyId] = callback;
-                return true;
+                return hotkeyId;
             }
         }
         catch { }
-        return false;
+        return -1;
+    }
+
+    /// <summary>
+    /// Unregister an app hotkey previously registered via RegisterAppHotkey.
+    /// </summary>
+    public void UnregisterAppHotkey(int hotkeyId)
+    {
+        if (hotkeyId < 0) return;
+        if (!_appCallbacks.ContainsKey(hotkeyId)) return;
+        try { NativeMethods.UnregisterHotKey(_windowHandle, hotkeyId); } catch { }
+        _appCallbacks.Remove(hotkeyId);
     }
 
     public void ProcessHotkeyMessage(int hotkeyId)

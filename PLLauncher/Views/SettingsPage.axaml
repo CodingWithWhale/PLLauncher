@@ -81,6 +81,17 @@
                                 <ToggleSwitch x:Name="NotificationsToggle" Grid.Column="1" IsChecked="True"
                                               IsCheckedChanged="NotificationsToggle_Changed" />
                             </Grid>
+                            <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Spacing="2"><TextBlock x:Name="SearchHotkeyLabel" Text="Search Hotkey" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                    <TextBlock x:Name="SearchHotkeyDesc" Text="Keyboard shortcut to open search bar (e.g. Ctrl+K)" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
+                                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                    <TextBox x:Name="SearchHotkeyBox" Text="Ctrl+K" Width="140"
+                                             KeyDown="SearchHotkeyBox_KeyDown" />
+                                    <CheckBox x:Name="SearchHotkeyEnabled" IsChecked="True"
+                                              Content="Enabled" />
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
                     </Border>
                 </StackPanel>

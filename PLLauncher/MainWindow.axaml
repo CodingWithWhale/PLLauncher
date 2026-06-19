@@ -7,128 +7,178 @@
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource BackgroundBrush}">
 
-    <Grid ColumnDefinitions="260,*">
-        <!-- Left Sidebar -->
-        <Border Grid.Column="0" Background="{DynamicResource SidebarBackgroundBrush}">
-            <Grid RowDefinitions="Auto,*,Auto">
-                <!-- App Logo / Title -->
-                <StackPanel Grid.Row="0" Margin="24,28,24,20" Orientation="Horizontal" Spacing="12">
-                    <Border Width="36" Height="36" CornerRadius="8"
-                            Background="{DynamicResource AccentSecondaryBrush}">
-                        <TextBlock Text="PL" Foreground="White" FontWeight="Bold" FontSize="14"
-                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
+    <Panel>
+        <!-- Main layout -->
+        <Grid ColumnDefinitions="260,*">
+            <!-- Left Sidebar -->
+            <Border Grid.Column="0" Background="{DynamicResource SidebarBackgroundBrush}">
+                <Grid RowDefinitions="Auto,*,Auto">
+                    <!-- App Logo / Title -->
+                    <StackPanel Grid.Row="0" Margin="24,28,24,20" Orientation="Horizontal" Spacing="12">
+                        <Border Width="36" Height="36" CornerRadius="8"
+                                Background="{DynamicResource AccentSecondaryBrush}">
+                            <TextBlock Text="PL" Foreground="White" FontWeight="Bold" FontSize="14"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="PLLauncher" FontSize="20" FontWeight="SemiBold"
+                                   Foreground="{DynamicResource TextPrimaryBrush}"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Navigation Items -->
+                    <ListBox Grid.Row="1" x:Name="NavList" Margin="8,0"
+                             SelectionMode="Single"
+                             SelectionChanged="NavList_SelectionChanged"
+                             Background="Transparent" BorderThickness="0"
+                             Padding="0">
+
+                        <ListBoxItem x:Name="NavDashboard" Tag="Dashboard" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="14">
+                                <TextBlock Text="&#xE80F;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                           Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="Dashboard" FontSize="14" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+
+                        <ListBoxItem x:Name="NavKeybinds" Tag="Keybinds" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="14">
+                                <TextBlock Text="&#xE92E;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                           Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="Keybinds" FontSize="14" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+
+                        <ListBoxItem x:Name="NavTasks" Tag="Tasks" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="14">
+                                <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                           Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="Tasks" FontSize="14" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+
+                        <ListBoxItem x:Name="NavTimeLimits" Tag="TimeLimits" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="14">
+                                <TextBlock Text="&#xE917;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                           Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="Time Limits" FontSize="14" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+
+                        <ListBoxItem x:Name="NavScheduler" Tag="Scheduler" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="14">
+                                <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                           Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="Scheduler" FontSize="14" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+
+                        <ListBoxItem x:Name="NavSetups" Tag="Setups" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="14">
+                                <TextBlock Text="&#xE8F1;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                           Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="Setups" FontSize="14" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+
+                        <ListBoxItem x:Name="NavPomodoro" Tag="Pomodoro" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="14">
+                                <TextBlock Text="&#xE917;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                           Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="Pomodoro" FontSize="14" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+
+                        <ListBoxItem x:Name="NavAppUsage" Tag="AppUsage" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="14">
+                                <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                           Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="App Usage" FontSize="14" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+
+                        <ListBoxItem x:Name="NavSettings" Tag="Settings" Padding="12,10">
+                            <StackPanel Orientation="Horizontal" Spacing="14">
+                                <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                                           Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
+                                <TextBlock Text="Settings" FontSize="14" FontWeight="Medium"
+                                           Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </ListBoxItem>
+                    </ListBox>
+
+                    <!-- Bottom Section: Version + Search hint -->
+                    <StackPanel Grid.Row="2" Margin="24,12" Spacing="4">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                       Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" />
+                            <TextBlock x:Name="VersionText" Text="PLLauncher" FontSize="11"
+                                       Foreground="{DynamicResource TextTertiaryBrush}" />
+                        </StackPanel>
+                        <TextBlock x:Name="SearchHintText" Text="Ctrl+K to search" FontSize="10"
+                                   Foreground="{DynamicResource TextTertiaryBrush}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Divider -->
+            <Border Grid.Column="0" Width="1" HorizontalAlignment="Right"
+                    Background="{DynamicResource BorderBrush}" />
+
+            <!-- Main Content Area -->
+            <Panel Grid.Column="1">
+                <ContentControl x:Name="ContentArea" />
+            </Panel>
+        </Grid>
+
+        <!-- Search overlay -->
+        <Border x:Name="SearchOverlay" IsVisible="False" ZIndex="100" Background="#80000000">
+            <Border MaxWidth="500" VerticalAlignment="Top" Margin="0,100,0,0"
+                    Background="{DynamicResource SurfaceBrush}"
+                    CornerRadius="12" Padding="0"
+                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    PointerPressed="SearchOverlaySelf_PointerPressed">
+                <DockPanel>
+                    <!-- Search input -->
+                    <Border DockPanel.Dock="Top" Padding="16,14"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1">
+                        <Grid ColumnDefinitions="Auto,*">
+                            <TextBlock Text="&#xE721;" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                       Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                            <TextBox x:Name="SearchTextBox" Grid.Column="1" Margin="12,0,0,0"
+                                     Background="Transparent" BorderThickness="0"
+                                     Foreground="{DynamicResource TextPrimaryBrush}"
+                                     Watermark="Search actions..."
+                                     TextChanged="SearchTextBox_TextChanged"
+                                     KeyDown="SearchTextBox_KeyDown" />
+                        </Grid>
                     </Border>
-                    <TextBlock Text="PLLauncher" FontSize="20" FontWeight="SemiBold"
-                               Foreground="{DynamicResource TextPrimaryBrush}"
-                               VerticalAlignment="Center" />
-                </StackPanel>
-
-                <!-- Navigation Items -->
-                <ListBox Grid.Row="1" x:Name="NavList" Margin="8,0"
-                         SelectionMode="Single"
-                         SelectionChanged="NavList_SelectionChanged"
-                         Background="Transparent" BorderThickness="0"
-                         Padding="0">
-
-                    <ListBoxItem x:Name="NavDashboard" Tag="Dashboard" Padding="12,10">
-                        <StackPanel Orientation="Horizontal" Spacing="14">
-                            <TextBlock Text="&#xE80F;" FontFamily="Segoe MDL2 Assets" FontSize="18"
-                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                            <TextBlock Text="Dashboard" FontSize="14" FontWeight="Medium"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem x:Name="NavKeybinds" Tag="Keybinds" Padding="12,10">
-                        <StackPanel Orientation="Horizontal" Spacing="14">
-                            <TextBlock Text="&#xE92E;" FontFamily="Segoe MDL2 Assets" FontSize="18"
-                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                            <TextBlock Text="Keybinds" FontSize="14" FontWeight="Medium"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem x:Name="NavTasks" Tag="Tasks" Padding="12,10">
-                        <StackPanel Orientation="Horizontal" Spacing="14">
-                            <TextBlock Text="&#xE916;" FontFamily="Segoe MDL2 Assets" FontSize="18"
-                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                            <TextBlock Text="Tasks" FontSize="14" FontWeight="Medium"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem x:Name="NavTimeLimits" Tag="TimeLimits" Padding="12,10">
-                        <StackPanel Orientation="Horizontal" Spacing="14">
-                            <TextBlock Text="&#xE917;" FontFamily="Segoe MDL2 Assets" FontSize="18"
-                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                            <TextBlock Text="Time Limits" FontSize="14" FontWeight="Medium"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem x:Name="NavScheduler" Tag="Scheduler" Padding="12,10">
-                        <StackPanel Orientation="Horizontal" Spacing="14">
-                            <TextBlock Text="&#xE787;" FontFamily="Segoe MDL2 Assets" FontSize="18"
-                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                            <TextBlock Text="Scheduler" FontSize="14" FontWeight="Medium"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem x:Name="NavSetups" Tag="Setups" Padding="12,10">
-                        <StackPanel Orientation="Horizontal" Spacing="14">
-                            <TextBlock Text="&#xE8F1;" FontFamily="Segoe MDL2 Assets" FontSize="18"
-                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                            <TextBlock Text="Setups" FontSize="14" FontWeight="Medium"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem x:Name="NavPomodoro" Tag="Pomodoro" Padding="12,10">
-                        <StackPanel Orientation="Horizontal" Spacing="14">
-                            <TextBlock Text="&#xE917;" FontFamily="Segoe MDL2 Assets" FontSize="18"
-                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                            <TextBlock Text="Pomodoro" FontSize="14" FontWeight="Medium"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem x:Name="NavAppUsage" Tag="AppUsage" Padding="12,10">
-                        <StackPanel Orientation="Horizontal" Spacing="14">
-                            <TextBlock Text="&#xE9D9;" FontFamily="Segoe MDL2 Assets" FontSize="18"
-                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                            <TextBlock Text="App Usage" FontSize="14" FontWeight="Medium"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-
-                    <ListBoxItem x:Name="NavSettings" Tag="Settings" Padding="12,10">
-                        <StackPanel Orientation="Horizontal" Spacing="14">
-                            <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="18"
-                                       Foreground="{DynamicResource AccentBrush}" VerticalAlignment="Center" />
-                            <TextBlock Text="Settings" FontSize="14" FontWeight="Medium"
-                                       Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </ListBoxItem>
-                </ListBox>
-
-                <!-- Bottom Section: Version -->
-                <StackPanel Grid.Row="2" Margin="24,12" Orientation="Horizontal" Spacing="8">
-                    <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="12"
-                               Foreground="{DynamicResource TextTertiaryBrush}" VerticalAlignment="Center" />
-                    <TextBlock x:Name="VersionText" Text="PLLauncher" FontSize="11"
-                               Foreground="{DynamicResource TextTertiaryBrush}" />
-                </StackPanel>
-            </Grid>
+                    <!-- Results -->
+                    <ListBox x:Name="SearchResultsList" MaxHeight="300"
+                             Background="Transparent" BorderThickness="0"
+                             SelectionChanged="SearchResultsList_SelectionChanged">
+                         <ListBox.ItemTemplate>
+                             <DataTemplate>
+                                 <Border Padding="16,10">
+                                     <StackPanel Orientation="Horizontal" Spacing="12">
+                                         <TextBlock Text="{Binding Icon}" FontFamily="Segoe MDL2 Assets" FontSize="16"
+                                                    Foreground="{DynamicResource AccentBrush}" />
+                                         <TextBlock Text="{Binding Title}" FontSize="14"
+                                                    Foreground="{DynamicResource TextPrimaryBrush}" />
+                                     </StackPanel>
+                                 </Border>
+                             </DataTemplate>
+                         </ListBox.ItemTemplate>
+                    </ListBox>
+                </DockPanel>
+            </Border>
         </Border>
-
-        <!-- Divider -->
-        <Border Grid.Column="0" Width="1" HorizontalAlignment="Right"
-                Background="{DynamicResource BorderBrush}" />
-
-        <!-- Main Content Area -->
-        <Panel Grid.Column="1">
-            <ContentControl x:Name="ContentArea" />
-        </Panel>
-    </Grid>
+    </Panel>
 </Window>

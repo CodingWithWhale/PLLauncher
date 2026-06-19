@@ -10,6 +10,7 @@ namespace PLLauncher.Services;
 public class HotkeyService : IDisposable
 {
     private readonly Dictionary<int, KeybindItem> _registeredHotkeys = new();
+    private readonly Dictionary<int, Action> _appCallbacks = new();
     private int _nextHotkeyId = 1;
     private IntPtr _windowHandle;
     private bool _isInitialized;
@@ -162,8 +163,32 @@ public class HotkeyService : IDisposable
         return false;
     }
 
+    public bool RegisterAppHotkey(string keyCombo, Action callback)
+    {
+        var (modifiers, vk) = NativeMethods.ParseKeyCombo(keyCombo);
+        if (vk == 0) return false;
+
+        var hotkeyId = _nextHotkeyId++;
+        try
+        {
+            if (NativeMethods.RegisterHotKey(_windowHandle, hotkeyId,
+                (uint)(modifiers | NativeMethods.MOD_NOREPEAT), (uint)vk))
+            {
+                _appCallbacks[hotkeyId] = callback;
+                return true;
+            }
+        }
+        catch { }
+        return false;
+    }
+
     public void ProcessHotkeyMessage(int hotkeyId)
     {
+        if (_appCallbacks.TryGetValue(hotkeyId, out var cb))
+        {
+            cb();
+            return;
+        }
         if (_registeredHotkeys.TryGetValue(hotkeyId, out var keybind) && keybind.IsEnabled)
         {
             HotkeyPressed?.Invoke(this, keybind);

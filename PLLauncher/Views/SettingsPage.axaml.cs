@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using PLLauncher.Helpers;
 using PLLauncher.Services;
 using System;
@@ -45,6 +46,8 @@ public partial class SettingsPage : UserControl
             if (version != null)
                 VersionDesc.Text = $"PLLauncher v{version.Major}.{version.Minor}.{version.Build}";
 
+            App.SetAccentColor(vm.AccentColor);
+            HighlightSelectedAccent(vm.AccentColor);
             App.SetTheme(vm.DarkMode);
             App.AnimationsEnabled = vm.EnableAnimations;
             MarkUnsaved(false);
@@ -56,6 +59,16 @@ public partial class SettingsPage : UserControl
         finally
         {
             _isLoading = false;
+        }
+    }
+
+    private void HighlightSelectedAccent(string name)
+    {
+        foreach (var child in AccentColorsPanel.Children)
+        {
+            if (child is Border b)
+                b.BorderBrush = b.Tag?.ToString() == name
+                    ? Brushes.White : Avalonia.Media.Brushes.Transparent;
         }
     }
 
@@ -79,6 +92,16 @@ public partial class SettingsPage : UserControl
         if (LanguageCombo.SelectedItem is ComboBoxItem item && item.Tag is string code)
             return code;
         return "en-US";
+    }
+
+    private string GetSelectedAccentColor()
+    {
+        foreach (var child in AccentColorsPanel.Children)
+        {
+            if (child is Border b && b.BorderBrush == Brushes.White && b.Tag is string name)
+                return name;
+        }
+        return "Blue";
     }
 
     private void ApplyLocalizedText()
@@ -123,6 +146,7 @@ public partial class SettingsPage : UserControl
         VersionLabel.Text = string.Format(loc.Get("settings.version"), version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "?");
         VersionDesc.Text = loc.Get("settings.about");
         CheckUpdatesBtnText.Text = loc.Get("settings.check_updates");
+        AccentLabel.Text = loc.Get("settings.accent_label");
         SaveButtonText.Text = loc.Get("settings.save");
         DiscardButtonText.Text = loc.Get("settings.discard");
         if (UnsavedHint.IsVisible)
@@ -152,6 +176,15 @@ public partial class SettingsPage : UserControl
     private void WarningTimeBox_Changed(object? sender, NumericUpDownValueChangedEventArgs e) => OnSettingChanged();
     private void CooldownBox_Changed(object? sender, NumericUpDownValueChangedEventArgs e) => OnSettingChanged();
     private void LanguageCombo_SelectionChanged(object? sender, SelectionChangedEventArgs e) => OnSettingChanged();
+
+    private void AccentColor_Click(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+    {
+        if (sender is Border b && b.Tag is string name)
+        {
+            HighlightSelectedAccent(name);
+            App.SetAccentColor(name);
+        }
+    }
 
     private async void DiscardChanges_Click(object? s, RoutedEventArgs e)
     {
@@ -196,6 +229,7 @@ public partial class SettingsPage : UserControl
             vm.TaskWarningMinutes = (double)(WarningTimeBox.Value ?? 0);
             vm.TimeLimitCooldownHours = (double)(CooldownBox.Value ?? 0);
             vm.Language = GetSelectedLanguageCode();
+            vm.AccentColor = GetSelectedAccentColor();
 
             await vm.SaveSettingsCommand.ExecuteAsync(null);
 
@@ -204,6 +238,7 @@ public partial class SettingsPage : UserControl
 
             try { App.SetTheme(vm.DarkMode); }
             catch (Exception ex) { Console.WriteLine($"[Settings] Theme switch error: {ex.Message}"); }
+            App.SetAccentColor(vm.AccentColor);
             App.AnimationsEnabled = vm.EnableAnimations;
 
             if (Avalonia.Application.Current?.ApplicationLifetime

@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Threading;
 using PLLauncher.Helpers;
 using PLLauncher.Services;
 using PLLauncher.ViewModels;
@@ -9,11 +10,36 @@ namespace PLLauncher.Views;
 
 public partial class DashboardPage : UserControl
 {
+    private DispatcherTimer? _clockTimer;
+
     public DashboardPage()
     {
         InitializeComponent();
         this.Loaded += OnLoaded;
+        this.Unloaded += OnUnloaded;
         LocalizationService.Instance.LanguageChanged += (_, _) => ApplyLocalizedText();
+        StartClock();
+    }
+
+    private void StartClock()
+    {
+        _clockTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+        _clockTimer.Tick += (_, _) => UpdateClock();
+        _clockTimer.Start();
+        UpdateClock();
+    }
+
+    private void UpdateClock()
+    {
+        var now = DateTime.Now;
+        ClockTime.Text = now.ToString("HH:mm");
+        ClockDate.Text = now.ToString("dddd, d MMMM");
+    }
+
+    private void OnUnloaded(object? sender, RoutedEventArgs e)
+    {
+        _clockTimer?.Stop();
+        _clockTimer = null;
     }
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)

@@ -24,6 +24,7 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _enableSoundEffects = true;
     [ObservableProperty] private bool _enableAnimations = true;
     [ObservableProperty] private string _language = "en-US";
+    [ObservableProperty] private string _accentColor = "Blue";
     [ObservableProperty] private string _statusMessage = string.Empty;
 
     public SettingsViewModel(DataService ds, SystemTrayService sts) { _dataService = ds; _systemTrayService = sts; }
@@ -37,6 +38,7 @@ public partial class SettingsViewModel : ObservableObject
         PerformanceMode = _settings.PerformanceMode; TaskWarningMinutes = _settings.TaskWarningMinutes;
         TimeLimitCooldownHours = _settings.TimeLimitCooldownHours; EnableSoundEffects = _settings.EnableSoundEffects;
         EnableAnimations = _settings.EnableAnimations; Language = _settings.Language;
+        AccentColor = _settings.AccentColor;
     }
 
     [RelayCommand]
@@ -47,6 +49,7 @@ public partial class SettingsViewModel : ObservableObject
         _settings.PerformanceMode = PerformanceMode; _settings.TaskWarningMinutes = TaskWarningMinutes;
         _settings.TimeLimitCooldownHours = TimeLimitCooldownHours; _settings.EnableSoundEffects = EnableSoundEffects;
         _settings.EnableAnimations = EnableAnimations; _settings.Language = Language;
+        _settings.AccentColor = AccentColor;
         await _dataService.SaveSettingsAsync(_settings);
         _systemTrayService.SetAutoStart(LaunchOnStartup);
         StatusMessage = "Settings saved successfully!";

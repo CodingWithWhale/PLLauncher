@@ -56,6 +56,32 @@ public partial class App : Application
     // Settings cache
     public static bool AnimationsEnabled { get; set; } = true;
 
+    // Accent colour presets
+    public static string CurrentAccentColor { get; set; } = "Blue";
+
+    public static readonly Dictionary<string, (Color Primary, Color Secondary)> AccentColors = new()
+    {
+        ["Blue"]   = (Color.FromRgb(0x60, 0xCD, 0xFF), Color.FromRgb(0x00, 0x78, 0xD4)),
+        ["Purple"] = (Color.FromRgb(0xBB, 0x86, 0xFC), Color.FromRgb(0x7C, 0x4D, 0xFF)),
+        ["Green"]  = (Color.FromRgb(0x81, 0xC7, 0x84), Color.FromRgb(0x4C, 0xAF, 0x50)),
+        ["Orange"] = (Color.FromRgb(0xFF, 0xB7, 0x4D), Color.FromRgb(0xFF, 0x98, 0x00)),
+        ["Red"]    = (Color.FromRgb(0xE5, 0x73, 0x73), Color.FromRgb(0xF4, 0x43, 0x36)),
+        ["Cyan"]   = (Color.FromRgb(0x4D, 0xD0, 0xE1), Color.FromRgb(0x00, 0xBC, 0xD4)),
+    };
+
+    public static void SetAccentColor(string name)
+    {
+        if (!AccentColors.TryGetValue(name, out var colors))
+            name = "Blue";
+        CurrentAccentColor = name;
+        var r = Current?.Resources;
+        if (r == null) return;
+        r["AccentColor"] = colors.Primary;
+        r["AccentColorSecondary"] = colors.Secondary;
+        r["AccentBrush"] = new SolidColorBrush(colors.Primary);
+        r["AccentSecondaryBrush"] = new SolidColorBrush(colors.Secondary);
+    }
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -299,9 +325,6 @@ public partial class App : Application
 
             if (darkMode)
             {
-                // Dark theme colors
-                r["AccentColor"] = Color.FromRgb(0x60, 0xCD, 0xFF);
-                r["AccentColorSecondary"] = Color.FromRgb(0x00, 0x78, 0xD4);
                 r["BackgroundColor"] = Color.FromRgb(0x0A, 0x0A, 0x0A);
                 r["SurfaceColor"] = Color.FromRgb(0x1C, 0x1C, 0x1C);
                 r["SurfaceColor2"] = Color.FromRgb(0x2D, 0x2D, 0x2D);
@@ -316,9 +339,6 @@ public partial class App : Application
                 r["ErrorColor"] = Color.FromRgb(0xF4, 0x43, 0x36);
                 r["InfoColor"] = Color.FromRgb(0x21, 0x96, 0xF3);
 
-                // Dark theme brushes — always create NEW instances
-                r["AccentBrush"] = new SolidColorBrush(Color.FromRgb(0x60, 0xCD, 0xFF));
-                r["AccentSecondaryBrush"] = new SolidColorBrush(Color.FromRgb(0x00, 0x78, 0xD4));
                 r["BackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0x0A, 0x0A, 0x0A));
                 r["SurfaceBrush"] = new SolidColorBrush(Color.FromRgb(0x1C, 0x1C, 0x1C));
                 r["Surface2Brush"] = new SolidColorBrush(Color.FromRgb(0x2D, 0x2D, 0x2D));
@@ -332,12 +352,11 @@ public partial class App : Application
                 r["WarningBrush"] = new SolidColorBrush(Color.FromRgb(0xFF, 0x98, 0x00));
                 r["ErrorBrush"] = new SolidColorBrush(Color.FromRgb(0xF4, 0x43, 0x36));
                 r["InfoBrush"] = new SolidColorBrush(Color.FromRgb(0x21, 0x96, 0xF3));
+
+                SetAccentColor(CurrentAccentColor);
             }
             else
             {
-                // Light theme colors — Windows 11 inspired
-                r["AccentColor"] = Color.FromRgb(0x00, 0x78, 0xD4);
-                r["AccentColorSecondary"] = Color.FromRgb(0x00, 0x5A, 0x9E);
                 r["BackgroundColor"] = Color.FromRgb(0xF3, 0xF3, 0xF3);
                 r["SurfaceColor"] = Color.FromRgb(0xFF, 0xFF, 0xFF);
                 r["SurfaceColor2"] = Color.FromRgb(0xE8, 0xE8, 0xE8);
@@ -352,9 +371,6 @@ public partial class App : Application
                 r["ErrorColor"] = Color.FromRgb(0xC6, 0x28, 0x28);
                 r["InfoColor"] = Color.FromRgb(0x15, 0x65, 0xC0);
 
-                // Light theme brushes — always create NEW instances
-                r["AccentBrush"] = new SolidColorBrush(Color.FromRgb(0x00, 0x78, 0xD4));
-                r["AccentSecondaryBrush"] = new SolidColorBrush(Color.FromRgb(0x00, 0x5A, 0x9E));
                 r["BackgroundBrush"] = new SolidColorBrush(Color.FromRgb(0xF3, 0xF3, 0xF3));
                 r["SurfaceBrush"] = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
                 r["Surface2Brush"] = new SolidColorBrush(Color.FromRgb(0xE8, 0xE8, 0xE8));
@@ -368,9 +384,9 @@ public partial class App : Application
                 r["WarningBrush"] = new SolidColorBrush(Color.FromRgb(0xE6, 0x51, 0x00));
                 r["ErrorBrush"] = new SolidColorBrush(Color.FromRgb(0xC6, 0x28, 0x28));
                 r["InfoBrush"] = new SolidColorBrush(Color.FromRgb(0x15, 0x65, 0xC0));
-            }
 
-            Console.WriteLine($"[App] Theme switched to {(darkMode ? "Dark" : "Light")}");
+                SetAccentColor(CurrentAccentColor);
+            }
         }
         catch (Exception ex)
         {

@@ -5,13 +5,21 @@
 
     <ScrollViewer Padding="32,28">
         <StackPanel Spacing="24">
-            <!-- Greeting -->
-            <StackPanel Spacing="4">
-                <TextBlock x:Name="GreetingText" Text="Good morning" FontSize="28" FontWeight="Bold"
-                           Foreground="{DynamicResource TextPrimaryBrush}" />
-                <TextBlock x:Name="SubtitleText" Text="Here's your productivity overview" FontSize="14"
-                           Foreground="{DynamicResource TextSecondaryBrush}" />
-            </StackPanel>
+            <!-- Greeting + Clock -->
+            <Grid ColumnDefinitions="*,Auto">
+                <StackPanel Spacing="4">
+                    <TextBlock x:Name="GreetingText" Text="Good morning" FontSize="28" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <TextBlock x:Name="SubtitleText" Text="Here's your productivity overview" FontSize="14"
+                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Right" Spacing="2">
+                    <TextBlock x:Name="ClockTime" Text="13:47" FontSize="28" FontWeight="Bold"
+                               Foreground="{DynamicResource TextPrimaryBrush}" HorizontalAlignment="Right" />
+                    <TextBlock x:Name="ClockDate" Text="Thursday, 19 June" FontSize="14"
+                               Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right" />
+                </StackPanel>
+            </Grid>
 
             <!-- Stats Row (clickable cards) -->
             <UniformGrid Columns="4">

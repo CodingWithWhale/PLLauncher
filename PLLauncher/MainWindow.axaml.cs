@@ -9,6 +9,7 @@ using PLLauncher.Helpers;
 using PLLauncher.Services;
 using PLLauncher.Views;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -37,6 +38,13 @@ public partial class MainWindow : Window
             Icon = new WindowIcon(iconPath);
     }
 
+    private void ApplySearchLocalization()
+    {
+        var loc = LocalizationService.Instance;
+        SearchHintText.Text = loc.Get("search.hint");
+        SearchTextBox.Watermark = loc.Get("search.placeholder");
+    }
+
     public void ApplyLocalization()
     {
         var loc = LocalizationService.Instance;
@@ -53,6 +61,7 @@ public partial class MainWindow : Window
                     label.Text = loc.Get(keys[i]);
             }
         }
+        ApplySearchLocalization();
     }
 
     protected override void OnClosing(WindowClosingEventArgs e)
@@ -67,27 +76,134 @@ public partial class MainWindow : Window
         base.OnClosing(e);
     }
 
+    // Search bar
+    private readonly List<SearchAction> _searchActions = new();
+
+    private record SearchAction(string Title, string Icon, string Keywords, Action Action);
+
+    private void BuildSearchActions()
+    {
+        _searchActions.Clear();
+        _searchActions.Add(new("Lock PC", "\uE72E", "lock", () => NativeMethods.LockWorkStation()));
+        _searchActions.Add(new("Shutdown 1h", "\uE7E8", "shutdown", () =>
+        {
+            _ = App.TaskSchedulerService.CreateDelayedTask("Quick Shutdown", Models.TaskType.Shutdown, 60);
+        }));
+        _searchActions.Add(new("Dashboard", "\uE80F", "home dashboard", () => NavigateToPage("Dashboard")));
+        _searchActions.Add(new("Keybinds", "\uE92E", "keybinds keys hotkeys", () => NavigateToPage("Keybinds")));
+        _searchActions.Add(new("Tasks", "\uE916", "tasks", () => NavigateToPage("Tasks")));
+        _searchActions.Add(new("Time Limits", "\uE917", "time limits", () => NavigateToPage("TimeLimits")));
+        _searchActions.Add(new("Scheduler", "\uE787", "scheduler schedule", () => NavigateToPage("Scheduler")));
+        _searchActions.Add(new("Setups", "\uE8F1", "setups groups", () => NavigateToPage("Setups")));
+        _searchActions.Add(new("Pomodoro", "\uE917", "pomodoro timer focus", () => NavigateToPage("Pomodoro")));
+        _searchActions.Add(new("App Usage", "\uE9D9", "usage app", () => NavigateToPage("AppUsage")));
+        _searchActions.Add(new("Settings", "\uE713", "settings config", () => NavigateToPage("Settings")));
+    }
+
+    private void ShowSearch()
+    {
+        BuildSearchActions();
+        SearchOverlay.IsVisible = true;
+        SearchTextBox.Text = "";
+        SearchResultsList.ItemsSource = null;
+        _ = SearchTextBox.Focus();
+    }
+
+    private void HideSearch()
+    {
+        SearchOverlay.IsVisible = false;
+        SearchTextBox.Text = "";
+        SearchResultsList.ItemsSource = null;
+    }
+
+    private void FilterSearchResults()
+    {
+        var query = SearchTextBox.Text?.Trim().ToLowerInvariant() ?? "";
+        if (string.IsNullOrEmpty(query))
+        {
+            SearchResultsList.ItemsSource = null;
+            return;
+        }
+        var results = _searchActions
+            .Where(a => a.Keywords.Contains(query) || a.Title.ToLowerInvariant().Contains(query))
+            .ToList();
+        SearchResultsList.ItemsSource = results;
+    }
+
+    private void ExecuteSearchAction(SearchAction? action)
+    {
+        if (action == null) return;
+        HideSearch();
+        action.Action();
+    }
+
+    private void SearchTextBox_TextChanged(object? sender, TextChangedEventArgs e) => FilterSearchResults();
+
+    private void SearchTextBox_KeyDown(object? sender, Avalonia.Input.KeyEventArgs e)
+    {
+        if (e.Key == Avalonia.Input.Key.Escape) { HideSearch(); e.Handled = true; }
+        else if (e.Key == Avalonia.Input.Key.Enter && SearchResultsList.SelectedItem is SearchAction sa)
+        { ExecuteSearchAction(sa); e.Handled = true; }
+        else if (e.Key == Avalonia.Input.Key.Down)
+        {
+            if (SearchResultsList.ItemCount > 0)
+            {
+                SearchResultsList.SelectedIndex = SearchResultsList.SelectedIndex < 0
+                    ? 0 : Math.Min(SearchResultsList.SelectedIndex + 1, SearchResultsList.ItemCount - 1);
+                SearchResultsList.ScrollIntoView(SearchResultsList.SelectedItem);
+            }
+            e.Handled = true;
+        }
+        else if (e.Key == Avalonia.Input.Key.Up)
+        {
+            if (SearchResultsList.SelectedIndex > 0)
+            {
+                SearchResultsList.SelectedIndex--;
+                SearchResultsList.ScrollIntoView(SearchResultsList.SelectedItem);
+            }
+            e.Handled = true;
+        }
+    }
+
+    private void SearchResultsList_SelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        if (e.AddedItems.Count > 0 && e.AddedItems[0] is SearchAction sa)
+            ExecuteSearchAction(sa);
+    }
+
+    private void SearchOverlaySelf_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+    {
+        // Clicking the backdrop dismisses
+        if (e.Source is Border && e.Source == SearchOverlay)
+            HideSearch();
+    }
+
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
 
         try
         {
-            // Get the Win32 window handle
             var platformHandle = TryGetPlatformHandle();
             if (platformHandle != null)
             {
                 var hwnd = platformHandle.Handle;
                 Console.WriteLine($"[MainWindow] HWND={hwnd}");
 
-                // Initialize the hotkey service with the real window handle
                 App.HotkeyService.Initialize(hwnd);
-
-                // Subclass the window to intercept WM_HOTKEY messages
                 App.HotkeyService.SubclassWindow(hwnd);
 
-                // Register all saved hotkeys now that we have a valid window handle
                 _ = RegisterAllHotkeysAsync();
+
+                // Register Ctrl+K for search bar
+                App.HotkeyService.RegisterAppHotkey("Ctrl+K", () =>
+                {
+                    Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                    {
+                        if (SearchOverlay.IsVisible) HideSearch();
+                        else ShowSearch();
+                    });
+                });
             }
             else
             {

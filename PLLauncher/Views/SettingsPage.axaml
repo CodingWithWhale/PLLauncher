@@ -104,6 +104,24 @@
                                 <ToggleSwitch x:Name="AnimationsToggle" Grid.Column="1" IsChecked="True"
                                               IsCheckedChanged="AnimationsToggle_Changed" />
                             </Grid>
+                            <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                            <StackPanel Spacing="8">
+                                <TextBlock x:Name="AccentLabel" Text="Accent Color" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <StackPanel Orientation="Horizontal" x:Name="AccentColorsPanel">
+                                    <Border x:Name="AccentBlue" Width="28" Height="28" CornerRadius="14" Background="#60CDFF" Margin="0,0,8,0"
+                                            BorderThickness="2" PointerPressed="AccentColor_Click" Tag="Blue" Cursor="Hand" />
+                                    <Border x:Name="AccentPurple" Width="28" Height="28" CornerRadius="14" Background="#BB86FC" Margin="0,0,8,0"
+                                            BorderThickness="2" PointerPressed="AccentColor_Click" Tag="Purple" Cursor="Hand" />
+                                    <Border x:Name="AccentGreen" Width="28" Height="28" CornerRadius="14" Background="#81C784" Margin="0,0,8,0"
+                                            BorderThickness="2" PointerPressed="AccentColor_Click" Tag="Green" Cursor="Hand" />
+                                    <Border x:Name="AccentOrange" Width="28" Height="28" CornerRadius="14" Background="#FFB74D" Margin="0,0,8,0"
+                                            BorderThickness="2" PointerPressed="AccentColor_Click" Tag="Orange" Cursor="Hand" />
+                                    <Border x:Name="AccentRed" Width="28" Height="28" CornerRadius="14" Background="#E57373" Margin="0,0,8,0"
+                                            BorderThickness="2" PointerPressed="AccentColor_Click" Tag="Red" Cursor="Hand" />
+                                    <Border x:Name="AccentCyan" Width="28" Height="28" CornerRadius="14" Background="#4DD0E1"
+                                            BorderThickness="2" PointerPressed="AccentColor_Click" Tag="Cyan" Cursor="Hand" />
+                                </StackPanel>
+                            </StackPanel>
                         </StackPanel>
                     </Border>
                 </StackPanel>

@@ -43,4 +43,7 @@ public partial class AppSettings : ObservableObject
 
     [ObservableProperty]
     private DateTime? _lastBackupDate;
+
+    [ObservableProperty]
+    private string _accentColor = "Blue";
 }

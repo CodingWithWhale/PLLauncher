@@ -10,7 +10,7 @@ public partial class PomodoroPage : UserControl
     public PomodoroPage()
     {
         InitializeComponent();
-        UpdateTimerDisplay();
+        this.Loaded += OnLoaded;
         
         // Subscribe to timer events
         App.PomodoroService.TimerTick += OnTimerTick;
@@ -22,13 +22,19 @@ public partial class PomodoroPage : UserControl
         LocalizationService.Instance.LanguageChanged += (_, _) => ApplyLocalizedText();
     }
 
+    private void OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        ApplyLocalizedText();
+        UpdateTimerDisplay();
+    }
+
     private void OnTimerTick(object? sender, PomodoroEventArgs e)
     {
         Avalonia.Threading.Dispatcher.UIThread.Post(() =>
         {
             UpdateTimerDisplay(e.Remaining, e.Phase);
             var loc = LocalizationService.Instance;
-            SessionsLabel.Text = $"{loc.Get("pomodoro.sessions")}: {App.PomodoroService.SessionsCompleted}";
+            SessionsLabel.Text = string.Format(loc.Get("pomodoro.sessions"), App.PomodoroService.SessionsCompleted);
         });
     }
 
@@ -71,7 +77,9 @@ public partial class PomodoroPage : UserControl
         BreakMinutesLabel.Text = loc.Get("pomodoro.break_minutes");
         HealthReminderTitle.Text = loc.Get("pomodoro.health_reminder");
         HealthReminderDesc.Text = loc.Get("pomodoro.health_desc");
-        ReminderIntervalLabel.Text = loc.Get("pomodoro.reminder_interval");
+        ReminderIntervalLabel.Text = loc.Get("pomodoro.health_interval");
+        HealthToggle.OnContent = loc.Get("pomodoro.health_on");
+        HealthToggle.OffContent = loc.Get("pomodoro.health_off");
     }
 
     private void Reset_Click(object? s, RoutedEventArgs e)
@@ -113,7 +121,7 @@ public partial class PomodoroPage : UserControl
         var ph = phase ?? App.PomodoroService.CurrentPhase;
         var loc = LocalizationService.Instance;
         TimerDisplay.Text = $"{(int)rem.TotalMinutes:D2}:{rem.Seconds:D2}";
-        PhaseLabel.Text = ph == PomodoroPhase.Work ? loc.Get("pomodoro.work") : loc.Get("pomodoro.break");
+        PhaseLabel.Text = ph == PomodoroPhase.Work ? loc.Get("pomodoro.phase_work") : loc.Get("pomodoro.phase_break");
     }
 
     private void UpdateButtonStates(bool isRunning)

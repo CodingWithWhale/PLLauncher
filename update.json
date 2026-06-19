@@ -1,5 +1,5 @@
 {
-  "version": "2.6.28",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.28/PLLauncher_Setup_2.6.28.exe",
-  "changelog": "v2.6.28: Self-contained publish (bundles .NET 8 runtime, no install required). Fixes 'You must install .NET' error on machines without .NET 8."
+  "version": "2.6.29",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.29/PLLauncher_Setup_2.6.29.exe",
+  "changelog": "v2.6.29: Fixed PhaseLabel showing 'pomodoro.work' (wrong key). Fixed SessionsLabel double-colon. Fixed PomodoroPage not applying localization on initial load. Fixed 'Jun' → 'June' month format. Added HealthToggle On/Off localization."
 }

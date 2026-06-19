@@ -75,12 +75,12 @@ public partial class AppUsageViewModel : ObservableObject
 
             PeriodDescription = SelectedFilter switch
             {
-                UsageTimeFilter.Today => $"Usage for today ({from:MMM d})",
-                UsageTimeFilter.Yesterday => $"Usage for yesterday ({from:MMM d})",
-                UsageTimeFilter.ThisWeek => $"This week (Mon {from:MMM d} - Sun {to:MMM d})",
-                UsageTimeFilter.ThisMonth => $"This month ({from:MMM yyyy})",
+                UsageTimeFilter.Today => $"Usage for today ({from:MMMM d})",
+                UsageTimeFilter.Yesterday => $"Usage for yesterday ({from:MMMM d})",
+                UsageTimeFilter.ThisWeek => $"This week (Mon {from:MMMM d} - Sun {to:MMMM d})",
+                UsageTimeFilter.ThisMonth => $"This month ({from:MMMM yyyy})",
                 UsageTimeFilter.ThisYear => $"This year ({from:yyyy})",
-                UsageTimeFilter.Custom => $"{from:MMM d, yyyy} - {to:MMM d, yyyy}",
+                UsageTimeFilter.Custom => $"{from:MMMM d, yyyy} - {to:MMMM d, yyyy}",
                 _ => ""
             };
         }

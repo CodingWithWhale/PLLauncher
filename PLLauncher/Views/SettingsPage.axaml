@@ -147,22 +147,51 @@
                             <Grid ColumnDefinitions="*,Auto">
                                 <StackPanel Spacing="2"><TextBlock x:Name="ExportLabel" Text="Export Configuration" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
                                     <TextBlock x:Name="ExportDesc" Text="Save all data to JSON" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
-                                <Button Grid.Column="1" Click="ExportConfig_Click" CornerRadius="6" Content="Export"
-                                        Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                                <Button x:Name="ExportButton" Grid.Column="1" Click="ExportConfig_Click" CornerRadius="6"
+                                        Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Padding="14,8">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="&#xE74E;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                                        <TextBlock x:Name="ExportButtonText" Text="Export" FontSize="13" />
+                                    </StackPanel>
+                                </Button>
                             </Grid>
                             <Border Height="1" Background="{DynamicResource BorderBrush}" />
                             <Grid ColumnDefinitions="*,Auto">
                                 <StackPanel Spacing="2"><TextBlock x:Name="ImportLabel" Text="Import Configuration" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
                                     <TextBlock x:Name="ImportDesc" Text="Restore from exported file" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
-                                <Button Grid.Column="1" Click="ImportConfig_Click" CornerRadius="6" Content="Import"
-                                        Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" />
+                                <Button x:Name="ImportButton" Grid.Column="1" Click="ImportConfig_Click" CornerRadius="6"
+                                        Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Padding="14,8">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="&#xE718;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                                        <TextBlock x:Name="ImportButtonText" Text="Import" FontSize="13" />
+                                    </StackPanel>
+                                </Button>
                             </Grid>
                             <Border Height="1" Background="{DynamicResource BorderBrush}" />
                             <Grid ColumnDefinitions="*,Auto">
                                 <StackPanel Spacing="2"><TextBlock x:Name="ResetLabel" Text="Reset All Data" FontWeight="Medium" Foreground="{DynamicResource ErrorBrush}" />
                                     <TextBlock x:Name="ResetDesc" Text="Delete everything permanently" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
-                                <Button Grid.Column="1" Click="ResetSettings_Click" CornerRadius="6" Content="Reset"
-                                        Background="#33F44336" Foreground="{DynamicResource ErrorBrush}" BorderBrush="{DynamicResource ErrorBrush}" VerticalAlignment="Center" />
+                                <Button x:Name="ResetButton" Grid.Column="1" Click="ResetSettings_Click" CornerRadius="6"
+                                        Background="#33F44336" Foreground="{DynamicResource ErrorBrush}" BorderBrush="{DynamicResource ErrorBrush}" VerticalAlignment="Center" Padding="14,8">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                                        <TextBlock x:Name="ResetButtonText" Text="Reset" FontSize="13" />
+                                    </StackPanel>
+                                </Button>
+                            </Grid>
+                            <Border Height="1" Background="{DynamicResource BorderBrush}" />
+                            <Grid ColumnDefinitions="*,Auto">
+                                <StackPanel Spacing="2">
+                                    <TextBlock x:Name="CheckUpdatesLabel" Text="Check for Updates" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                    <TextBlock x:Name="CheckUpdatesDesc" Text="Manually check if a new version is available" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+                                </StackPanel>
+                                <Button x:Name="CheckUpdatesBtn" Grid.Column="1" Click="CheckUpdates_Click" CornerRadius="6"
+                                        Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Padding="14,8">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                                        <TextBlock x:Name="CheckUpdatesBtnText" Text="Check" FontSize="13" />
+                                    </StackPanel>
+                                </Button>
                             </Grid>
                         </StackPanel>
                     </Border>

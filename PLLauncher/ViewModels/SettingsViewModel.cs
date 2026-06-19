@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -52,20 +53,31 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task ExportConfigAsync()
-    { try { var path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-        $"PLLauncher_Backup_{DateTime.Now:yyyyMMdd_HHmmss}.json");
-        await _dataService.ExportAllAsync(path); StatusMessage = $"Exported to {path}"; }
-      catch (Exception ex) { StatusMessage = $"Export failed: {ex.Message}"; } }
+    private async Task ExportConfigAsync((string path, List<string> selectedKeys) args)
+    {
+        try
+        {
+            await _dataService.ExportSelectedAsync(args.path, args.selectedKeys);
+            StatusMessage = $"Exported to {args.path}";
+        }
+        catch (Exception ex) { StatusMessage = $"Export failed: {ex.Message}"; }
+    }
 
     [RelayCommand]
-    private async Task ImportConfigAsync()
-    { try { var path = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-        "PLLauncher_Backup.json");
-        if (System.IO.File.Exists(path)) { await _dataService.ImportAllAsync(path); await LoadSettingsAsync();
-            StatusMessage = "Imported successfully!"; }
-        else StatusMessage = "No backup found on desktop."; }
-      catch (Exception ex) { StatusMessage = $"Import failed: {ex.Message}"; } }
+    private async Task ImportConfigAsync((string path, List<string> selectedKeys) args)
+    {
+        try
+        {
+            if (System.IO.File.Exists(args.path))
+            {
+                await _dataService.ImportSelectedAsync(args.path, args.selectedKeys);
+                await LoadSettingsAsync();
+                StatusMessage = "Imported successfully!";
+            }
+            else StatusMessage = "File not found.";
+        }
+        catch (Exception ex) { StatusMessage = $"Import failed: {ex.Message}"; }
+    }
 
     [RelayCommand]
     private async Task ResetSettingsAsync()

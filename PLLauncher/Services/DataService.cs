@@ -115,6 +115,52 @@ public class DataService
         if (data.Settings != null) await SaveSettingsAsync(data.Settings);
     }
 
+    public async Task ExportSelectedAsync(string path, List<string> selectedKeys)
+    {
+        var data = new AppExportData();
+        if (selectedKeys.Contains("keybinds")) data.Keybinds = await LoadKeybindsAsync();
+        if (selectedKeys.Contains("tasks")) data.Tasks = await LoadTasksAsync();
+        if (selectedKeys.Contains("timelimits")) data.TimeLimits = await LoadTimeLimitsAsync();
+        if (selectedKeys.Contains("schedules")) data.Schedules = await LoadSchedulesAsync();
+        if (selectedKeys.Contains("setups")) data.AppGroups = await LoadAppGroupsAsync();
+        if (selectedKeys.Contains("settings")) data.Settings = await LoadSettingsAsync();
+        data.ExportedAt = DateTime.Now;
+        var json = JsonSerializer.Serialize(data, JsonOptions);
+        await _fileLock.WaitAsync();
+        try { await File.WriteAllTextAsync(path, json); }
+        finally { _fileLock.Release(); }
+    }
+
+    public async Task<List<string>> GetImportableSectionsAsync(string importPath)
+    {
+        if (!File.Exists(importPath)) return new();
+        var json = await File.ReadAllTextAsync(importPath);
+        var data = JsonSerializer.Deserialize<AppExportData>(json, JsonOptions);
+        if (data == null) return new();
+        var sections = new List<string>();
+        if (data.Keybinds != null) sections.Add("keybinds");
+        if (data.Tasks != null) sections.Add("tasks");
+        if (data.TimeLimits != null) sections.Add("timelimits");
+        if (data.Schedules != null) sections.Add("schedules");
+        if (data.AppGroups != null) sections.Add("setups");
+        if (data.Settings != null) sections.Add("settings");
+        return sections;
+    }
+
+    public async Task ImportSelectedAsync(string importPath, List<string> selectedKeys)
+    {
+        if (!File.Exists(importPath)) return;
+        var json = await File.ReadAllTextAsync(importPath);
+        var data = JsonSerializer.Deserialize<AppExportData>(json, JsonOptions);
+        if (data == null) return;
+        if (selectedKeys.Contains("keybinds") && data.Keybinds != null) await SaveKeybindsAsync(data.Keybinds);
+        if (selectedKeys.Contains("tasks") && data.Tasks != null) await SaveTasksAsync(data.Tasks);
+        if (selectedKeys.Contains("timelimits") && data.TimeLimits != null) await SaveTimeLimitsAsync(data.TimeLimits);
+        if (selectedKeys.Contains("schedules") && data.Schedules != null) await SaveSchedulesAsync(data.Schedules);
+        if (selectedKeys.Contains("setups") && data.AppGroups != null) await SaveAppGroupsAsync(data.AppGroups);
+        if (selectedKeys.Contains("settings") && data.Settings != null) await SaveSettingsAsync(data.Settings);
+    }
+
     public async Task ResetAllDataAsync()
     {
         await SaveKeybindsAsync(new());

@@ -4,6 +4,8 @@ using Avalonia.Interactivity;
 using PLLauncher.Helpers;
 using PLLauncher.Services;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PLLauncher.Views;
 
@@ -109,6 +111,12 @@ public partial class SettingsPage : UserControl
         ImportDesc.Text = loc.Get("settings.import_desc");
         ResetLabel.Text = loc.Get("settings.reset_label");
         ResetDesc.Text = loc.Get("settings.reset_desc");
+        ExportButtonText.Text = loc.Get("settings.export_button");
+        ImportButtonText.Text = loc.Get("settings.import_button");
+        ResetButtonText.Text = loc.Get("settings.reset_button");
+        CheckUpdatesLabel.Text = loc.Get("settings.check_updates");
+        CheckUpdatesDesc.Text = loc.Get("settings.check_updates_desc");
+        CheckUpdatesBtnText.Text = loc.Get("settings.check_updates");
         SaveButtonText.Text = loc.Get("settings.save");
         DiscardButtonText.Text = loc.Get("settings.discard");
         if (UnsavedHint.IsVisible)
@@ -208,16 +216,88 @@ public partial class SettingsPage : UserControl
         }
     }
 
+    private static string SectionToNavKey(string sectionKey) => sectionKey switch
+    {
+        "schedules" => "scheduler",
+        _ => sectionKey
+    };
+
     private async void ExportConfig_Click(object? s, RoutedEventArgs e)
     {
-        await App.SettingsViewModel.ExportConfigCommand.ExecuteAsync(null);
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        if (owner == null) return;
+
+        var loc = LocalizationService.Instance;
+        var sectionKeys = new[] { "keybinds", "tasks", "timelimits", "schedules", "setups", "settings" };
+        var items = new Dictionary<string, string>();
+        foreach (var k in sectionKeys)
+            items[k] = loc.Get($"nav.{SectionToNavKey(k)}");
+
+        var dialog = new ChecklistDialog();
+        dialog.Configure(loc.Get("settings.export_label"), items);
+        await dialog.ShowDialog(owner);
+        if (dialog.SelectedItems.Count == 0) return;
+
+        var saveFile = await owner.StorageProvider.SaveFilePickerAsync(new Avalonia.Platform.Storage.FilePickerSaveOptions
+        {
+            Title = loc.Get("settings.export_label"),
+            DefaultExtension = "json",
+            FileTypeChoices = new List<Avalonia.Platform.Storage.FilePickerFileType>
+            {
+                new Avalonia.Platform.Storage.FilePickerFileType("JSON files") { Patterns = new[] { "*.json" } }
+            },
+            SuggestedFileName = $"PLLauncher_Backup_{DateTime.Now:yyyyMMdd_HHmmss}.json"
+        });
+        if (saveFile == null) return;
+        var path = saveFile.Path.LocalPath;
+
+        StatusMsg.Text = loc.Get("settings.checking");
+        StatusMsg.IsVisible = true;
+
+        await App.SettingsViewModel.ExportConfigCommand.ExecuteAsync((path, dialog.SelectedItems));
         StatusMsg.Text = App.SettingsViewModel.StatusMessage;
         StatusMsg.IsVisible = true;
     }
 
     private async void ImportConfig_Click(object? s, RoutedEventArgs e)
     {
-        await App.SettingsViewModel.ImportConfigCommand.ExecuteAsync(null);
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        if (owner == null) return;
+
+        var loc = LocalizationService.Instance;
+
+        var openFiles = await owner.StorageProvider.OpenFilePickerAsync(new Avalonia.Platform.Storage.FilePickerOpenOptions
+        {
+            Title = loc.Get("settings.import_label"),
+            AllowMultiple = false,
+            FileTypeFilter = new List<Avalonia.Platform.Storage.FilePickerFileType>
+            {
+                new Avalonia.Platform.Storage.FilePickerFileType("JSON files") { Patterns = new[] { "*.json" } }
+            }
+        });
+        if (openFiles.Count == 0) return;
+        var path = openFiles[0].Path.LocalPath;
+
+        var available = await App.DataService.GetImportableSectionsAsync(path);
+        if (available.Count == 0)
+        {
+            StatusMsg.Text = "No importable data found in file.";
+            StatusMsg.IsVisible = true;
+            return;
+        }
+
+        var items = new Dictionary<string, string>();
+        foreach (var key in available)
+        {
+            items[key] = loc.Get($"nav.{SectionToNavKey(key)}");
+        }
+
+        var dialog = new ChecklistDialog();
+        dialog.Configure(loc.Get("settings.import_label"), items, available);
+        await dialog.ShowDialog(owner);
+        if (dialog.SelectedItems.Count == 0) return;
+
+        await App.SettingsViewModel.ImportConfigCommand.ExecuteAsync((path, dialog.SelectedItems));
         _isLoading = true;
         var vm = App.SettingsViewModel;
         StartupToggle.IsChecked = vm.LaunchOnStartup;
@@ -237,6 +317,44 @@ public partial class SettingsPage : UserControl
         StatusMsg.Text = App.SettingsViewModel.StatusMessage;
         StatusMsg.IsVisible = true;
         MarkUnsaved(false);
+    }
+
+    private async void CheckUpdates_Click(object? s, RoutedEventArgs e)
+    {
+        var loc = LocalizationService.Instance;
+        CheckUpdatesBtn.IsEnabled = false;
+        StatusMsg.Text = loc.Get("settings.checking");
+        StatusMsg.IsVisible = true;
+
+        try
+        {
+            var update = await App.UpdateService.CheckForUpdatesAsync();
+            if (update != null)
+            {
+                if (await App.UpdateService.PromptUpdateAsync(TopLevel.GetTopLevel(this) as Window))
+                {
+                    App._isShuttingDown = true;
+                    Environment.Exit(0);
+                }
+                else
+                {
+                    StatusMsg.Text = string.Format(loc.Get("settings.update_found"), update.Version);
+                }
+            }
+            else
+            {
+                StatusMsg.Text = loc.Get("settings.no_update");
+            }
+        }
+        catch (Exception ex)
+        {
+            StatusMsg.Text = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            CheckUpdatesBtn.IsEnabled = true;
+            StatusMsg.IsVisible = true;
+        }
     }
 
     private async void ResetSettings_Click(object? s, RoutedEventArgs e)

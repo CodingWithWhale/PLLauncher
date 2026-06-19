@@ -88,7 +88,7 @@ public class UpdateService
 
             // Launch installer via cmd wrapper: wait for app to exit, install silently, then restart
             var installDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
-            var args = $"/c timeout /t 3 /nobreak >nul & \"{installerPath}\" /SILENT & start \"\" \"{installDir}\\PLLauncher.exe\"";
+            var args = $"/c timeout /t 1 /nobreak >nul & \"{installerPath}\" /SILENT & start \"\" \"{installDir}\\PLLauncher.exe\"";
             Process.Start(new ProcessStartInfo
             {
                 FileName = "cmd.exe",
@@ -111,9 +111,10 @@ public class UpdateService
         var update = await CheckForUpdatesAsync();
         if (update == null) return;
 
+        var loc = LocalizationService.Instance;
         _notificationService.ShowNotification(
-            "Update Available",
-            $"PLLauncher v{update.Version} is available (you have v{CurrentVersion}).");
+            loc.Get("update.title"),
+            string.Format(loc.Get("settings.update_found"), update.Version));
     }
 
     public async Task<bool> PromptUpdateAsync(Window? owner)
@@ -124,10 +125,10 @@ public class UpdateService
         var loc = LocalizationService.Instance;
         var confirmed = await Helpers.DialogHelper.ShowConfirmAsync(
             owner,
-            $"PLLauncher v{update.Version} is available (you have v{CurrentVersion}). Download and install?",
-            "Update Available",
-            "Update",
-            "Later");
+            string.Format(loc.Get("update.new_version"), update.Version, CurrentVersion),
+            loc.Get("update.title"),
+            loc.Get("update.download"),
+            loc.Get("update.later"));
 
         if (!confirmed) return false;
 

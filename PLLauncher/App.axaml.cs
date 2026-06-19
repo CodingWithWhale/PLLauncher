@@ -166,7 +166,7 @@ public partial class App : Application
             // Must attach Opened handler BEFORE Show() — Opened fires synchronously during Show()
             desktop.MainWindow.Opened += async (_, _) =>
             {
-                await Task.Delay(2000);
+                await Task.Delay(500);
                 if (await UpdateService.PromptUpdateAsync(desktop.MainWindow))
                 {
                     _isShuttingDown = true;

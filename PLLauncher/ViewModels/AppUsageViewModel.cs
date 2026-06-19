@@ -40,15 +40,22 @@ public partial class AppUsageViewModel : ObservableObject
     {
         SelectedFilter = filter;
         IsCustomPeriod = filter == UsageTimeFilter.Custom;
-        FilterLabel = filter switch
+        ApplyLocalizedText();
+        RefreshData();
+    }
+
+    public void ApplyLocalizedText()
+    {
+        var loc = LocalizationService.Instance;
+        FilterLabel = SelectedFilter switch
         {
-            UsageTimeFilter.Today => "Today",
-            UsageTimeFilter.Yesterday => "Yesterday",
-            UsageTimeFilter.ThisWeek => "This Week",
-            UsageTimeFilter.ThisMonth => "This Month",
-            UsageTimeFilter.ThisYear => "This Year",
-            UsageTimeFilter.Custom => "Custom",
-            _ => "Today"
+            UsageTimeFilter.Today => loc.Get("appusage.filter_today"),
+            UsageTimeFilter.Yesterday => loc.Get("appusage.filter_yesterday"),
+            UsageTimeFilter.ThisWeek => loc.Get("appusage.filter_thisweek"),
+            UsageTimeFilter.ThisMonth => loc.Get("appusage.filter_thismonth"),
+            UsageTimeFilter.ThisYear => loc.Get("appusage.filter_thisyear"),
+            UsageTimeFilter.Custom => loc.Get("appusage.filter_custom"),
+            _ => loc.Get("appusage.filter_today")
         };
         RefreshData();
     }
@@ -65,6 +72,7 @@ public partial class AppUsageViewModel : ObservableObject
     {
         try
         {
+            var loc = LocalizationService.Instance;
             var (from, to) = GetDateRange();
             var summaries = _usageService.GetUsageSummaries(from, to);
 
@@ -75,12 +83,12 @@ public partial class AppUsageViewModel : ObservableObject
 
             PeriodDescription = SelectedFilter switch
             {
-                UsageTimeFilter.Today => $"Usage for today ({from:MMMM d})",
-                UsageTimeFilter.Yesterday => $"Usage for yesterday ({from:MMMM d})",
-                UsageTimeFilter.ThisWeek => $"This week (Mon {from:MMMM d} - Sun {to:MMMM d})",
-                UsageTimeFilter.ThisMonth => $"This month ({from:MMMM yyyy})",
-                UsageTimeFilter.ThisYear => $"This year ({from:yyyy})",
-                UsageTimeFilter.Custom => $"{from:MMMM d, yyyy} - {to:MMMM d, yyyy}",
+                UsageTimeFilter.Today => string.Format(loc.Get("appusage.period_today"), from.ToString("MMMM d")),
+                UsageTimeFilter.Yesterday => string.Format(loc.Get("appusage.period_yesterday"), from.ToString("MMMM d")),
+                UsageTimeFilter.ThisWeek => string.Format(loc.Get("appusage.period_thisweek"), from.ToString("MMMM d"), to.ToString("MMMM d")),
+                UsageTimeFilter.ThisMonth => string.Format(loc.Get("appusage.period_thismonth"), from.ToString("MMMM yyyy")),
+                UsageTimeFilter.ThisYear => string.Format(loc.Get("appusage.period_thisyear"), from.ToString("yyyy")),
+                UsageTimeFilter.Custom => string.Format(loc.Get("appusage.period_custom"), from.ToString("MMMM d, yyyy"), to.ToString("MMMM d, yyyy")),
                 _ => ""
             };
         }

@@ -1,5 +1,5 @@
 {
-  "version": "2.6.29",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.29/PLLauncher_Setup_2.6.29.exe",
-  "changelog": "v2.6.29: Fixed PhaseLabel showing 'pomodoro.work' (wrong key). Fixed SessionsLabel double-colon. Fixed PomodoroPage not applying localization on initial load. Fixed 'Jun' → 'June' month format. Added HealthToggle On/Off localization."
+  "version": "2.6.30",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.30/PLLauncher_Setup_2.6.30.exe",
+  "changelog": "v2.6.30: Localized update dialog, export/import buttons, period descriptions. Added pick-what-to-export dialog. Added Check for Updates button. Speeded up startup/update delays. Fixed Export/Import file dialogs. Added more localization keys."
 }

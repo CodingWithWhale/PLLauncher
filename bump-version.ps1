@@ -20,7 +20,7 @@ $installerIss = "installer.iss"
 $json = Get-Content $updateJson -Raw | ConvertFrom-Json
 $json.version = $NewVersion
 $json.downloadUrl = "https://github.com/CodingWithWhale/PLLauncher/releases/download/v$NewVersion/PLLauncher_Setup_$NewVersion.exe"
-$json.changelog = "v$NewVersion: "
+$json.changelog = "v$($NewVersion): "
 $json | ConvertTo-Json | Set-Content $updateJson
 
 (Get-Content $installerIss) -replace '#define MyAppVersion "\d+\.\d+\.\d+"', "#define MyAppVersion `"$NewVersion`"" |

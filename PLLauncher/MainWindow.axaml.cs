@@ -34,9 +34,6 @@ public partial class MainWindow : Window
         var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         if (version != null)
             VersionText.Text = $"PLLauncher v{version.Major}.{version.Minor}.{version.Build}";
-
-        if (!string.IsNullOrEmpty(App.GeneratedIconPath) && File.Exists(App.GeneratedIconPath))
-            Icon = new WindowIcon(App.GeneratedIconPath);
     }
 
     private void ApplySearchLocalization()
@@ -276,6 +273,8 @@ public partial class MainWindow : Window
     protected override void OnOpened(EventArgs e)
     {
         base.OnOpened(e);
+
+        App.ApplyWindowIcon(this);
 
         try
         {

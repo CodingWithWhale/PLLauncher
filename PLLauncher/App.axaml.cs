@@ -11,6 +11,7 @@ using PLLauncher.ViewModels;
 using SkiaSharp;
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -141,6 +142,29 @@ public partial class App : Application
         return ms.ToArray();
     }
 
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
+    [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+    private static extern IntPtr LoadImage(IntPtr hInst, string lpszName, uint uType, int cxDesired, int cyDesired, uint fuLoad);
+    private const uint WM_SETICON = 0x0080;
+    private const uint IMAGE_ICON = 1;
+    private const uint LR_LOADFROMFILE = 0x00000010;
+
+    internal static void ApplyWindowIcon(Window? window)
+    {
+        if (window == null || !File.Exists(GeneratedIconPath)) return;
+        try
+        {
+            var hwnd = window.TryGetPlatformHandle()?.Handle;
+            if (hwnd == null || hwnd.Value == IntPtr.Zero) return;
+            var hIcon = LoadImage(IntPtr.Zero, GeneratedIconPath, IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
+            if (hIcon == IntPtr.Zero) return;
+            SendMessage(hwnd.Value, WM_SETICON, new IntPtr(0), hIcon); // ICON_SMALL
+            SendMessage(hwnd.Value, WM_SETICON, new IntPtr(1), hIcon); // ICON_BIG
+        }
+        catch { }
+    }
+
     public static void UpdateAppIcons(Color secondaryColor)
     {
         try
@@ -151,8 +175,7 @@ public partial class App : Application
             File.WriteAllBytes(GeneratedIconPath, BuildIco(new[] { png16, png32 }, new[] { 16, 32 }));
             ToastHelper.GeneratedIconPath = GeneratedIconPath;
 
-            if (MainWindow != null && File.Exists(GeneratedIconPath))
-                MainWindow.Icon = new WindowIcon(GeneratedIconPath);
+            ApplyWindowIcon(MainWindow);
 
             var ms = new MemoryStream(png32);
             using var bmp = new Bitmap(ms);

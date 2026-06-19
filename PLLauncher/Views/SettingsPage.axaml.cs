@@ -332,14 +332,6 @@ public partial class SettingsPage : UserControl
         _ => sectionKey
     };
 
-    private async void FeedbackBtn_Click(object? sender, RoutedEventArgs e)
-    {
-        var owner = TopLevel.GetTopLevel(this) as Window;
-        if (owner == null) return;
-        var dialog = new Helpers.FeedbackDialog();
-        await dialog.ShowDialog(owner);
-    }
-
     private async void ExportConfig_Click(object? s, RoutedEventArgs e)
     {
         var owner = TopLevel.GetTopLevel(this) as Window;

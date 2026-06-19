@@ -1,5 +1,5 @@
 {
-  "version": "2.6.44",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.44/PLLauncher_Setup_2.6.44.exe",
-  "changelog": "v2.6.44: Feedback dialog now sends directly via SMTP (no email client needed). Photo is a real attachment. Your Gmail App Password is stored encrypted."
+  "version": "2.6.45",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.45/PLLauncher_Setup_2.6.45.exe",
+  "changelog": "v2.6.45: Removed Bugs & Ideas feedback dialog (will be rebuilt with direct-to-server submission)."
 }

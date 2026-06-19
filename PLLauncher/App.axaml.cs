@@ -63,7 +63,7 @@ public partial class App : Application
 
     // Temp path for toast notification icon
     private static readonly string GeneratedIconDir = Path.Combine(Path.GetTempPath(), "PLLauncher");
-    private static string GeneratedIconPath => Path.Combine(GeneratedIconDir, "appicon.ico");
+    internal static string GeneratedIconPath => Path.Combine(GeneratedIconDir, "appicon.ico");
 
     // Accent colour presets
     public static string CurrentAccentColor { get; set; } = "Blue";
@@ -100,54 +100,44 @@ public partial class App : Application
         SetAccentColor("Custom");
     }
 
-    public static WindowIcon GenerateAppIcon(Color backgroundColor)
+    private static byte[] RenderPlPng(Color backgroundColor, int size, float textSize)
     {
-        int size = 32;
         using var surface = SKSurface.Create(new SKImageInfo(size, size));
         var canvas = surface.Canvas;
         canvas.Clear(SKColors.Transparent);
-
         var bg = new SKColor(backgroundColor.R, backgroundColor.G, backgroundColor.B, backgroundColor.A);
         using var bgPaint = new SKPaint { Color = bg, IsAntialias = true };
-        canvas.DrawRoundRect(new SKRoundRect(new SKRect(2, 2, size - 2, size - 2), 6), bgPaint);
-
+        float margin = size <= 16 ? 1 : 2;
+        canvas.DrawRoundRect(new SKRoundRect(new SKRect(margin, margin, size - margin, size - margin), margin * 3), bgPaint);
         using var typeface = SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
         using var textPaint = new SKPaint
         {
-            Color = SKColors.White,
-            IsAntialias = true,
-            TextAlign = SKTextAlign.Center,
-            Typeface = typeface,
-            TextSize = 18
+            Color = SKColors.White, IsAntialias = true, TextAlign = SKTextAlign.Center,
+            Typeface = typeface, TextSize = textSize
         };
-        float x = size / 2f;
-        float y = size / 2f + textPaint.TextSize / 3f;
-        canvas.DrawText("PL", x, y, textPaint);
+        canvas.DrawText("PL", size / 2f, size / 2f + textSize / 3f, textPaint);
         canvas.Flush();
-
         using var image = surface.Snapshot();
         using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-        var ms = new MemoryStream(data.ToArray());
-        var bmp = new Bitmap(ms);
-        return new WindowIcon(bmp);
+        return data.ToArray();
     }
 
-    private static byte[] CreateIcoFromPng(byte[] pngData)
+    private static byte[] BuildIco(byte[][] pngs, int[] sizes)
     {
+        int count = pngs.Length, headerSize = 6 + count * 16;
         using var ms = new MemoryStream();
         using var bw = new BinaryWriter(ms);
-        bw.Write((short)0);          // reserved
-        bw.Write((short)1);          // type = icon
-        bw.Write((short)1);          // count = 1
-        bw.Write((byte)32);          // width
-        bw.Write((byte)32);          // height
-        bw.Write((byte)0);           // color count
-        bw.Write((byte)0);           // reserved
-        bw.Write((short)1);          // planes
-        bw.Write((short)32);         // bit count
-        bw.Write(pngData.Length);    // size
-        bw.Write(22);                // offset = 6 + 16
-        bw.Write(pngData);
+        bw.Write((short)0); bw.Write((short)1); bw.Write((short)count);
+        int offset = headerSize;
+        for (int i = 0; i < count; i++)
+        {
+            bw.Write((byte)sizes[i]); bw.Write((byte)sizes[i]);
+            bw.Write((byte)0); bw.Write((byte)0);
+            bw.Write((short)1); bw.Write((short)32);
+            bw.Write(pngs[i].Length); bw.Write(offset);
+            offset += pngs[i].Length;
+        }
+        foreach (var p in pngs) bw.Write(p);
         return ms.ToArray();
     }
 
@@ -155,43 +145,18 @@ public partial class App : Application
     {
         try
         {
-            var icon = GenerateAppIcon(secondaryColor);
+            Directory.CreateDirectory(GeneratedIconDir);
+            var png32 = RenderPlPng(secondaryColor, 32, 18);
+            var png16 = RenderPlPng(secondaryColor, 16, 9);
+            File.WriteAllBytes(GeneratedIconPath, BuildIco(new[] { png16, png32 }, new[] { 16, 32 }));
+            ToastHelper.GeneratedIconPath = GeneratedIconPath;
 
-            if (MainWindow != null)
-                MainWindow.Icon = icon;
+            if (MainWindow != null && File.Exists(GeneratedIconPath))
+                MainWindow.Icon = new WindowIcon(GeneratedIconPath);
 
-            SystemTrayService?.UpdateIcon(icon);
-
-            // Write .ico file for toast notifications
-            try
-            {
-                Directory.CreateDirectory(GeneratedIconDir);
-                int size = 32;
-                using var surface = SKSurface.Create(new SKImageInfo(size, size));
-                var canvas = surface.Canvas;
-                canvas.Clear(SKColors.Transparent);
-                var bg = new SKColor(secondaryColor.R, secondaryColor.G, secondaryColor.B, secondaryColor.A);
-                using var bgPaint = new SKPaint { Color = bg, IsAntialias = true };
-                canvas.DrawRoundRect(new SKRoundRect(new SKRect(2, 2, size - 2, size - 2), 6), bgPaint);
-                using var typeface = SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
-                using var textPaint = new SKPaint
-                {
-                    Color = SKColors.White,
-                    IsAntialias = true,
-                    TextAlign = SKTextAlign.Center,
-                    Typeface = typeface,
-                    TextSize = 18
-                };
-                canvas.DrawText("PL", size / 2f, size / 2f + textPaint.TextSize / 3f, textPaint);
-                canvas.Flush();
-                using var image = surface.Snapshot();
-                using var data = image.Encode(SKEncodedImageFormat.Png, 100);
-                var pngBytes = data.ToArray();
-                var icoBytes = CreateIcoFromPng(pngBytes);
-                File.WriteAllBytes(GeneratedIconPath, icoBytes);
-                ToastHelper.GeneratedIconPath = GeneratedIconPath;
-            }
-            catch { }
+            var ms = new MemoryStream(png32);
+            using var bmp = new Bitmap(ms);
+            SystemTrayService?.UpdateIcon(new WindowIcon(bmp));
         }
         catch { }
     }
@@ -301,6 +266,18 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            // Generate initial app icon .ico file (multi-size for taskbar)
+            try
+            {
+                Directory.CreateDirectory(GeneratedIconDir);
+                var initSecondary = AccentColors.GetValueOrDefault("Blue").Secondary;
+                var p32 = RenderPlPng(initSecondary, 32, 18);
+                var p16 = RenderPlPng(initSecondary, 16, 9);
+                File.WriteAllBytes(GeneratedIconPath, BuildIco(new[] { p16, p32 }, new[] { 16, 32 }));
+                ToastHelper.GeneratedIconPath = GeneratedIconPath;
+            }
+            catch { }
+
             desktop.MainWindow = new MainWindow();
             MainWindow = (MainWindow)desktop.MainWindow;
 

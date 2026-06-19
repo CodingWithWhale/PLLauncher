@@ -35,9 +35,8 @@ public partial class MainWindow : Window
         if (version != null)
             VersionText.Text = $"PLLauncher v{version.Major}.{version.Minor}.{version.Build}";
 
-        // Use dynamically generated icon matching current accent color
-        var accentSecondary = (Color)(App.Current?.Resources["AccentColorSecondary"] ?? Color.FromRgb(0x00, 0x78, 0xD4));
-        Icon = App.GenerateAppIcon(accentSecondary);
+        if (!string.IsNullOrEmpty(App.GeneratedIconPath) && File.Exists(App.GeneratedIconPath))
+            Icon = new WindowIcon(App.GeneratedIconPath);
     }
 
     private void ApplySearchLocalization()

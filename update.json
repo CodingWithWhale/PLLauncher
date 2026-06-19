@@ -1,5 +1,5 @@
 {
-  "version": "2.6.40",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.40/PLLauncher_Setup_2.6.40.exe",
-  "changelog": "v2.6.40: Fixed — saved accent colour now applies to window icon on next launch, so the PL badge in the title bar (top-left corner) is no longer stuck on blue."
+  "version": "2.6.41",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.41/PLLauncher_Setup_2.6.41.exe",
+  "changelog": "v2.6.41: Fixed — taskbar icon now updates with the generated PL badge (multi-size .ico with 16x16 + 32x32 frames)."
 }

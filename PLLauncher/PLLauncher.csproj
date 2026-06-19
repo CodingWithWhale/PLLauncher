@@ -13,9 +13,9 @@
     <!-- Publish properties for standalone .exe (no .NET runtime required) -->
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
-    <Version>2.6.40.0</Version>
-    <FileVersion>2.6.40.0</FileVersion>
-    <AssemblyVersion>2.6.40.0</AssemblyVersion>
+    <Version>2.6.41.0</Version>
+    <FileVersion>2.6.41.0</FileVersion>
+    <AssemblyVersion>2.6.41.0</AssemblyVersion>
     <Description>PLLauncher - Windows Automation Launcher</Description>
     <Product>PLLauncher</Product>
     <Company>PLLauncher</Company>

@@ -1,5 +1,5 @@
 {
-  "version": "2.6.39",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.39/PLLauncher_Setup_2.6.39.exe",
-  "changelog": "v2.6.39: Dynamic app logo — the window icon, tray icon, and toast icon now render \"PL\" in the current accent colour using SkiaSharp, so the app icon changes to match whichever accent colour you pick."
+  "version": "2.6.40",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.40/PLLauncher_Setup_2.6.40.exe",
+  "changelog": "v2.6.40: Fixed — saved accent colour now applies to window icon on next launch, so the PL badge in the title bar (top-left corner) is no longer stuck on blue."
 }

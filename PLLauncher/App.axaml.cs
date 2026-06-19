@@ -524,6 +524,7 @@ public partial class App : Application
 
             // Apply saved settings on startup
             AnimationsEnabled = SettingsViewModel.EnableAnimations;
+            CurrentAccentColor = SettingsViewModel.AccentColor;
             SetTheme(SettingsViewModel.DarkMode);
             LocalizationService.Instance.LoadFromSettings(SettingsViewModel.Language);
             SystemTrayService.SetAutoStart(SettingsViewModel.LaunchOnStartup);

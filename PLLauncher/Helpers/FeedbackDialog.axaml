@@ -1,0 +1,91 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PLLauncher.Helpers.FeedbackDialog"
+        Title="Bugs &amp; Ideas"
+        Width="520" Height="520"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource BackgroundBrush}">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="16">
+            <Button x:Name="CancelBtn" Click="Cancel_Click" Content="Cancel" Width="90"
+                    Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+            <Button x:Name="SubmitBtn" Click="Submit_Click" Width="90" IsEnabled="False"
+                    Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" />
+        </StackPanel>
+        <ScrollViewer Padding="16,16,16,8">
+            <StackPanel Spacing="14">
+                <TextBlock x:Name="TitleLabel" Text="Submit Feedback" FontSize="18" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextPrimaryBrush}" />
+
+                <!-- Name -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Name (optional)" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TextBox x:Name="NameBox" Watermark="Your name or leave blank for Anonymous" FontSize="14"
+                             Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                             BorderBrush="{DynamicResource BorderBrush}" />
+                </StackPanel>
+
+                <!-- Title -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Title *" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TextBox x:Name="TitleBox" Watermark="Brief summary of your feedback" FontSize="14"
+                             Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                             BorderBrush="{DynamicResource BorderBrush}"
+                             TextChanged="TitleBox_TextChanged" />
+                </StackPanel>
+
+                <!-- Type -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Type *" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <ComboBox x:Name="TypeCombo" SelectedIndex="0" FontSize="14"
+                              Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                              BorderBrush="{DynamicResource BorderBrush}">
+                        <ComboBoxItem Content="Bug" />
+                        <ComboBoxItem Content="Suggestion" />
+                        <ComboBoxItem Content="Other" />
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Description -->
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Description *" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <TextBox x:Name="DescBox"
+                             Watermark="Describe your bug, suggestion, or feedback in detail..."
+                             FontSize="14" Height="120"
+                             AcceptsReturn="True" TextWrapping="Wrap"
+                             Background="{DynamicResource SurfaceBrush}" Foreground="{DynamicResource TextPrimaryBrush}"
+                             BorderBrush="{DynamicResource BorderBrush}"
+                             TextChanged="DescBox_TextChanged" />
+                </StackPanel>
+
+                <!-- Photo attachment -->
+                <StackPanel Spacing="6">
+                    <TextBlock Text="Screenshot (optional)" FontSize="13" Foreground="{DynamicResource TextSecondaryBrush}" />
+                    <Grid ColumnDefinitions="Auto,*">
+                        <Button x:Name="AttachPhotoBtn" Click="AttachPhoto_Click" Padding="12,6"
+                                Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}">
+                            <StackPanel Orientation="Horizontal" Spacing="6">
+                                <TextBlock Text="&#xE722;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                                <TextBlock Text="Attach photo" FontSize="13" />
+                            </StackPanel>
+                        </Button>
+                        <Border Grid.Column="1" Width="88" Height="88" Margin="8,0,0,0"
+                                CornerRadius="6" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                                HorizontalAlignment="Left" IsVisible="False">
+                            <Image x:Name="PhotoPreview" Stretch="UniformToFill" />
+                        </Border>
+                    </Grid>
+                    <Button x:Name="RemovePhotoBtn" Click="RemovePhoto_Click"
+                            Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource ErrorBrush}"
+                            Padding="8,4" IsVisible="False" HorizontalAlignment="Left" FontSize="12"
+                            Content="Remove photo" />
+                </StackPanel>
+
+                <!-- Status message -->
+                <TextBlock x:Name="StatusMsg" IsVisible="False" FontSize="13" TextWrapping="Wrap" />
+
+                <Rectangle Height="40" Fill="Transparent" />
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>

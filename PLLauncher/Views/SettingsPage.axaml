@@ -214,6 +214,27 @@
                     </Border>
                 </StackPanel>
 
+                <!-- Bugs & Ideas -->
+                <StackPanel Spacing="8">
+                    <TextBlock x:Name="FeedbackSectionTitle" Text="Feedback" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                    <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                            BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <StackPanel Spacing="2">
+                                <TextBlock x:Name="FeedbackLabel" Text="Bugs &amp; Ideas" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
+                                <TextBlock x:Name="FeedbackDesc" Text="Report a bug, suggest a feature, or send feedback" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" />
+                            </StackPanel>
+                            <Button x:Name="FeedbackBtn" Grid.Column="1" Click="FeedbackBtn_Click" CornerRadius="6"
+                                    Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" VerticalAlignment="Center" Padding="16,8">
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="&#xE72C;" FontFamily="Segoe MDL2 Assets" FontSize="14" />
+                                    <TextBlock x:Name="FeedbackBtnText" Text="Open" FontSize="13" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
                 <!-- About -->
                 <StackPanel Spacing="8">
                     <TextBlock x:Name="AboutSectionTitle" Text="About" FontSize="18" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />

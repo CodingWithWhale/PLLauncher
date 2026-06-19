@@ -67,6 +67,12 @@ public class SystemTrayService : IDisposable
         catch { }
     }
 
+    public void UpdateIcon(WindowIcon icon)
+    {
+        if (_trayIcon != null)
+            _trayIcon.Icon = icon;
+    }
+
     public void Dispose()
     {
         if (_disposed) return;

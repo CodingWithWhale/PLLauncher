@@ -3,10 +3,12 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using PLLauncher.Helpers;
 using PLLauncher.Services;
 using PLLauncher.ViewModels;
+using SkiaSharp;
 using System;
 using System.IO;
 using System.Threading;
@@ -56,6 +58,13 @@ public partial class App : Application
     // Settings cache
     public static bool AnimationsEnabled { get; set; } = true;
 
+    // Main window reference for dynamic icon updates
+    public static MainWindow? MainWindow { get; set; }
+
+    // Temp path for toast notification icon
+    private static readonly string GeneratedIconDir = Path.Combine(Path.GetTempPath(), "PLLauncher");
+    private static string GeneratedIconPath => Path.Combine(GeneratedIconDir, "appicon.ico");
+
     // Accent colour presets
     public static string CurrentAccentColor { get; set; } = "Blue";
 
@@ -81,12 +90,110 @@ public partial class App : Application
         r["AccentColorSecondary"] = colors.Secondary;
         r["AccentBrush"] = new SolidColorBrush(colors.Primary);
         r["AccentSecondaryBrush"] = new SolidColorBrush(colors.Secondary);
+
+        UpdateAppIcons(colors.Secondary);
     }
 
     public static void SetCustomAccentColor(Color primary, Color secondary)
     {
         AccentColors["Custom"] = (primary, secondary);
         SetAccentColor("Custom");
+    }
+
+    public static WindowIcon GenerateAppIcon(Color backgroundColor)
+    {
+        int size = 32;
+        using var surface = SKSurface.Create(new SKImageInfo(size, size));
+        var canvas = surface.Canvas;
+        canvas.Clear(SKColors.Transparent);
+
+        var bg = new SKColor(backgroundColor.R, backgroundColor.G, backgroundColor.B, backgroundColor.A);
+        using var bgPaint = new SKPaint { Color = bg, IsAntialias = true };
+        canvas.DrawRoundRect(new SKRoundRect(new SKRect(2, 2, size - 2, size - 2), 6), bgPaint);
+
+        using var typeface = SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
+        using var textPaint = new SKPaint
+        {
+            Color = SKColors.White,
+            IsAntialias = true,
+            TextAlign = SKTextAlign.Center,
+            Typeface = typeface,
+            TextSize = 18
+        };
+        float x = size / 2f;
+        float y = size / 2f + textPaint.TextSize / 3f;
+        canvas.DrawText("PL", x, y, textPaint);
+        canvas.Flush();
+
+        using var image = surface.Snapshot();
+        using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+        var ms = new MemoryStream(data.ToArray());
+        var bmp = new Bitmap(ms);
+        return new WindowIcon(bmp);
+    }
+
+    private static byte[] CreateIcoFromPng(byte[] pngData)
+    {
+        using var ms = new MemoryStream();
+        using var bw = new BinaryWriter(ms);
+        bw.Write((short)0);          // reserved
+        bw.Write((short)1);          // type = icon
+        bw.Write((short)1);          // count = 1
+        bw.Write((byte)32);          // width
+        bw.Write((byte)32);          // height
+        bw.Write((byte)0);           // color count
+        bw.Write((byte)0);           // reserved
+        bw.Write((short)1);          // planes
+        bw.Write((short)32);         // bit count
+        bw.Write(pngData.Length);    // size
+        bw.Write(22);                // offset = 6 + 16
+        bw.Write(pngData);
+        return ms.ToArray();
+    }
+
+    public static void UpdateAppIcons(Color secondaryColor)
+    {
+        try
+        {
+            var icon = GenerateAppIcon(secondaryColor);
+
+            if (MainWindow != null)
+                MainWindow.Icon = icon;
+
+            SystemTrayService?.UpdateIcon(icon);
+
+            // Write .ico file for toast notifications
+            try
+            {
+                Directory.CreateDirectory(GeneratedIconDir);
+                int size = 32;
+                using var surface = SKSurface.Create(new SKImageInfo(size, size));
+                var canvas = surface.Canvas;
+                canvas.Clear(SKColors.Transparent);
+                var bg = new SKColor(secondaryColor.R, secondaryColor.G, secondaryColor.B, secondaryColor.A);
+                using var bgPaint = new SKPaint { Color = bg, IsAntialias = true };
+                canvas.DrawRoundRect(new SKRoundRect(new SKRect(2, 2, size - 2, size - 2), 6), bgPaint);
+                using var typeface = SKTypeface.FromFamilyName("Arial", SKFontStyleWeight.Bold, SKFontStyleWidth.Normal, SKFontStyleSlant.Upright);
+                using var textPaint = new SKPaint
+                {
+                    Color = SKColors.White,
+                    IsAntialias = true,
+                    TextAlign = SKTextAlign.Center,
+                    Typeface = typeface,
+                    TextSize = 18
+                };
+                canvas.DrawText("PL", size / 2f, size / 2f + textPaint.TextSize / 3f, textPaint);
+                canvas.Flush();
+                using var image = surface.Snapshot();
+                using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+                var pngBytes = data.ToArray();
+                var icoBytes = CreateIcoFromPng(pngBytes);
+                File.WriteAllBytes(GeneratedIconPath, icoBytes);
+                ToastHelper.GeneratedIconPath = GeneratedIconPath;
+            }
+            catch { }
+        }
+        catch { }
     }
 
     public override void Initialize()
@@ -195,6 +302,7 @@ public partial class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow();
+            MainWindow = (MainWindow)desktop.MainWindow;
 
             // Must attach Opened handler BEFORE Show() — Opened fires synchronously during Show()
             desktop.MainWindow.Opened += async (_, _) =>
@@ -271,7 +379,7 @@ public partial class App : Application
     {
         try
         {
-            if (desktop.MainWindow is not MainWindow)
+            if (desktop.MainWindow is not PLLauncher.MainWindow)
             {
                 desktop.MainWindow?.Close();
                 desktop.MainWindow = new MainWindow();
@@ -280,12 +388,14 @@ public partial class App : Application
             w.Show();
             w.WindowState = WindowState.Normal;
             w.Activate();
+            MainWindow = w;
         }
         catch
         {
             desktop.MainWindow?.Close();
             desktop.MainWindow = new MainWindow();
             desktop.MainWindow.Show();
+            MainWindow = (MainWindow)desktop.MainWindow;
         }
     }
 

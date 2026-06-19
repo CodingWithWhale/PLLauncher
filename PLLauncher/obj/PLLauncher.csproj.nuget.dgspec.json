@@ -5,7 +5,7 @@
   },
   "projects": {
     "C:\\Documents Nikitas\\ProgrammingPractice\\app\\PLLauncher\\PLLauncher\\PLLauncher.csproj": {
-      "version": "2.6.38",
+      "version": "2.6.39",
       "restore": {
         "projectUniqueName": "C:\\Documents Nikitas\\ProgrammingPractice\\app\\PLLauncher\\PLLauncher\\PLLauncher.csproj",
         "projectName": "PLLauncher",
@@ -65,6 +65,10 @@
             "CommunityToolkit.Mvvm": {
               "target": "Package",
               "version": "[8.2.*, )"
+            },
+            "SkiaSharp": {
+              "target": "Package",
+              "version": "[2.88.*, )"
             }
           },
           "imports": [

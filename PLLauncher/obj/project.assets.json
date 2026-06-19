@@ -1763,14 +1763,15 @@
       "Avalonia.Desktop >= 11.2.*",
       "Avalonia.Fonts.Inter >= 11.2.*",
       "Avalonia.Themes.Fluent >= 11.2.*",
-      "CommunityToolkit.Mvvm >= 8.2.*"
+      "CommunityToolkit.Mvvm >= 8.2.*",
+      "SkiaSharp >= 2.88.*"
     ]
   },
   "packageFolders": {
     "C:\\Users\\Nikita\\.nuget\\packages\\": {}
   },
   "project": {
-    "version": "2.6.38",
+    "version": "2.6.39",
     "restore": {
       "projectUniqueName": "C:\\Documents Nikitas\\ProgrammingPractice\\app\\PLLauncher\\PLLauncher\\PLLauncher.csproj",
       "projectName": "PLLauncher",
@@ -1830,6 +1831,10 @@
           "CommunityToolkit.Mvvm": {
             "target": "Package",
             "version": "[8.2.*, )"
+          },
+          "SkiaSharp": {
+            "target": "Package",
+            "version": "[2.88.*, )"
           }
         },
         "imports": [

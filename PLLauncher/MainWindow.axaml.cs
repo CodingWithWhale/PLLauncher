@@ -2,6 +2,7 @@ using Avalonia;
 using Avalonia.Animation;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Styling;
 using Avalonia.VisualTree;
@@ -34,9 +35,9 @@ public partial class MainWindow : Window
         if (version != null)
             VersionText.Text = $"PLLauncher v{version.Major}.{version.Minor}.{version.Build}";
 
-        var iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icon.ico");
-        if (File.Exists(iconPath))
-            Icon = new WindowIcon(iconPath);
+        // Use dynamically generated icon matching current accent color
+        var accentSecondary = (Color)(App.Current?.Resources["AccentColorSecondary"] ?? Color.FromRgb(0x00, 0x78, 0xD4));
+        Icon = App.GenerateAppIcon(accentSecondary);
     }
 
     private void ApplySearchLocalization()

@@ -13,9 +13,9 @@
     <!-- Publish properties for standalone .exe (no .NET runtime required) -->
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
-    <Version>2.6.38.0</Version>
-    <FileVersion>2.6.38.0</FileVersion>
-    <AssemblyVersion>2.6.38.0</AssemblyVersion>
+    <Version>2.6.39.0</Version>
+    <FileVersion>2.6.39.0</FileVersion>
+    <AssemblyVersion>2.6.39.0</AssemblyVersion>
     <Description>PLLauncher - Windows Automation Launcher</Description>
     <Product>PLLauncher</Product>
     <Company>PLLauncher</Company>
@@ -28,6 +28,7 @@
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.*" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.*" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.*" />
+    <PackageReference Include="SkiaSharp" Version="2.88.*" />
   </ItemGroup>
 
   <ItemGroup>

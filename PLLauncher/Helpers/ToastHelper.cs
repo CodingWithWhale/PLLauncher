@@ -8,6 +8,7 @@ namespace PLLauncher.Helpers;
 public static class ToastHelper
 {
     public static IntPtr MainWindowHandle { get; set; }
+    public static string GeneratedIconPath { get; set; } = "";
     private static uint _uid;
     private static readonly object Lock = new();
 
@@ -59,7 +60,9 @@ public static class ToastHelper
     {
         try
         {
-            var iconPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icon.ico");
+            var iconPath = string.IsNullOrEmpty(GeneratedIconPath)
+                ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icon.ico")
+                : GeneratedIconPath;
             var hIcon = IntPtr.Zero;
             uint infoFlag = NIIF_INFO;
 

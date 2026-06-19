@@ -174,7 +174,7 @@ public partial class App : Application
                     try { _singleInstanceMutex?.ReleaseMutex(); _singleInstanceMutex?.Dispose(); } catch { }
                     _singleInstanceMutex = null;
                     desktop.MainWindow?.Close();
-                    _ = Task.Delay(2000).ContinueWith(_ => Environment.Exit(0));
+                    Environment.Exit(0);
                 }
             };
 

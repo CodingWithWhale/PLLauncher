@@ -86,16 +86,22 @@ public class UpdateService
                 await response.Content.CopyToAsync(fs);
             }
 
-            // Launch installer via cmd wrapper: wait for app to exit, install silently, then restart
+            // Write a batch file that waits for the app to exit, installs silently, then launches the new version
             var installDir = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\');
-            var args = $"/c timeout /t 1 /nobreak >nul & \"{installerPath}\" /SILENT & start \"\" \"{installDir}\\PLLauncher.exe\"";
+            var batchPath = Path.Combine(tempDir, "update.bat");
+            // In a .bat file: double-quote paths, use `start ""` for empty window title
+            var batchContent = $@"@echo off
+timeout /t 3 /nobreak >nul
+""{installerPath}"" /SILENT
+start """" ""{installDir}\PLLauncher.exe""
+";
+            await File.WriteAllTextAsync(batchPath, batchContent);
+
             Process.Start(new ProcessStartInfo
             {
-                FileName = "cmd.exe",
-                Arguments = args,
+                FileName = batchPath,
                 UseShellExecute = true,
                 WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow = true
             });
 
             return true;
@@ -132,7 +138,19 @@ public class UpdateService
 
         if (!confirmed) return false;
 
-        return await DownloadAndInstallAsync(update.DownloadUrl);
+        bool success = await DownloadAndInstallAsync(update.DownloadUrl);
+        if (!success)
+        {
+            await Helpers.DialogHelper.ShowConfirmAsync(
+                owner,
+                loc.Get("update.error"),
+                loc.Get("update.title"),
+                "OK",
+                "OK");
+            return false;
+        }
+
+        return true;
     }
 
     private static Version? ParseVersion(string versionString)

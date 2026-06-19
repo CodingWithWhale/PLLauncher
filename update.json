@@ -1,5 +1,5 @@
 {
-  "version": "2.6.30",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.30/PLLauncher_Setup_2.6.30.exe",
-  "changelog": "v2.6.30: Localized update dialog, export/import buttons, period descriptions. Added pick-what-to-export dialog. Added Check for Updates button. Speeded up startup/update delays. Fixed Export/Import file dialogs. Added more localization keys."
+  "version": "2.6.31",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.31/PLLauncher_Setup_2.6.31.exe",
+  "changelog": "v2.6.31: Fixed auto-update: batch file installer launch (reliable), error dialog on download failure, immediate app exit (no 2s delay), correct exit timing so installer doesn't race with running app."
 }

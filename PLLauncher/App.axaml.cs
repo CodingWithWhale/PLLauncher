@@ -146,9 +146,15 @@ public partial class App : Application
     private static extern IntPtr SendMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
     [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
     private static extern IntPtr LoadImage(IntPtr hInst, string lpszName, uint uType, int cxDesired, int cyDesired, uint fuLoad);
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern IntPtr SetClassLongPtr(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+    [DllImport("user32.dll", SetLastError = true)]
+    private static extern bool DestroyIcon(IntPtr hIcon);
     private const uint WM_SETICON = 0x0080;
     private const uint IMAGE_ICON = 1;
     private const uint LR_LOADFROMFILE = 0x00000010;
+    private const int GCLP_HICON = -14;
+    private const int GCLP_HICONSM = -34;
 
     internal static void ApplyWindowIcon(Window? window)
     {
@@ -157,10 +163,16 @@ public partial class App : Application
         {
             var hwnd = window.TryGetPlatformHandle()?.Handle;
             if (hwnd == null || hwnd.Value == IntPtr.Zero) return;
-            var hIcon = LoadImage(IntPtr.Zero, GeneratedIconPath, IMAGE_ICON, 0, 0, LR_LOADFROMFILE);
-            if (hIcon == IntPtr.Zero) return;
-            SendMessage(hwnd.Value, WM_SETICON, new IntPtr(0), hIcon); // ICON_SMALL
-            SendMessage(hwnd.Value, WM_SETICON, new IntPtr(1), hIcon); // ICON_BIG
+
+            var hIcon16 = LoadImage(IntPtr.Zero, GeneratedIconPath, IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
+            var hIcon32 = LoadImage(IntPtr.Zero, GeneratedIconPath, IMAGE_ICON, 32, 32, LR_LOADFROMFILE);
+
+            SendMessage(hwnd.Value, WM_SETICON, new IntPtr(0), hIcon16);
+            SendMessage(hwnd.Value, WM_SETICON, new IntPtr(1), hIcon32);
+            SetClassLongPtr(hwnd.Value, GCLP_HICONSM, hIcon16);
+            SetClassLongPtr(hwnd.Value, GCLP_HICON, hIcon32);
+
+            window.Icon = new WindowIcon(GeneratedIconPath);
         }
         catch { }
     }
@@ -172,7 +184,7 @@ public partial class App : Application
             Directory.CreateDirectory(GeneratedIconDir);
             var png32 = RenderPlPng(secondaryColor, 32, 18);
             var png16 = RenderPlPng(secondaryColor, 16, 9);
-            File.WriteAllBytes(GeneratedIconPath, BuildIco(new[] { png16, png32 }, new[] { 16, 32 }));
+            File.WriteAllBytes(GeneratedIconPath, BuildIco(new[] { png32, png16 }, new[] { 32, 16 }));
             ToastHelper.GeneratedIconPath = GeneratedIconPath;
 
             ApplyWindowIcon(MainWindow);
@@ -296,7 +308,7 @@ public partial class App : Application
                 var initSecondary = AccentColors.GetValueOrDefault("Blue").Secondary;
                 var p32 = RenderPlPng(initSecondary, 32, 18);
                 var p16 = RenderPlPng(initSecondary, 16, 9);
-                File.WriteAllBytes(GeneratedIconPath, BuildIco(new[] { p16, p32 }, new[] { 16, 32 }));
+                File.WriteAllBytes(GeneratedIconPath, BuildIco(new[] { p32, p16 }, new[] { 32, 16 }));
                 ToastHelper.GeneratedIconPath = GeneratedIconPath;
             }
             catch { }

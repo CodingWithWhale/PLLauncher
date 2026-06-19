@@ -1,5 +1,5 @@
 {
-  "version": "2.6.32",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.32/PLLauncher_Setup_2.6.32.exe",
-  "changelog": "v2.6.32: Added About section (moved Check for Updates out of Data Management), added button hover transitions, enhanced page transition animation, ToggleSwitch and nav item hover transitions."
+  "version": "2.6.33",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.33/PLLauncher_Setup_2.6.33.exe",
+  "changelog": "v2.6.33: Fixed misleading 'check internet' error message on update failure. Now shows a clearer message about possible causes."
 }

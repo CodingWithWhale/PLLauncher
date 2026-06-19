@@ -20,7 +20,6 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty] private bool _darkMode = true;
     [ObservableProperty] private bool _performanceMode;
     [ObservableProperty] private double _taskWarningMinutes = 1;
-    [ObservableProperty] private double _timeLimitCooldownHours = 12;
     [ObservableProperty] private bool _enableSoundEffects = true;
     [ObservableProperty] private bool _enableAnimations = true;
     [ObservableProperty] private string _language = "en-US";
@@ -37,7 +36,7 @@ public partial class SettingsViewModel : ObservableObject
         LaunchOnStartup = _settings.LaunchOnStartup; MinimizeToTray = _settings.MinimizeToTray;
         ShowNotifications = _settings.ShowNotifications; DarkMode = _settings.DarkMode;
         PerformanceMode = _settings.PerformanceMode; TaskWarningMinutes = _settings.TaskWarningMinutes;
-        TimeLimitCooldownHours = _settings.TimeLimitCooldownHours; EnableSoundEffects = _settings.EnableSoundEffects;
+        EnableSoundEffects = _settings.EnableSoundEffects;
         EnableAnimations = _settings.EnableAnimations; Language = _settings.Language;
         AccentColor = _settings.AccentColor;
         SearchHotkey = _settings.SearchHotkey;
@@ -49,7 +48,7 @@ public partial class SettingsViewModel : ObservableObject
         _settings.LaunchOnStartup = LaunchOnStartup; _settings.MinimizeToTray = MinimizeToTray;
         _settings.ShowNotifications = ShowNotifications; _settings.DarkMode = DarkMode;
         _settings.PerformanceMode = PerformanceMode; _settings.TaskWarningMinutes = TaskWarningMinutes;
-        _settings.TimeLimitCooldownHours = TimeLimitCooldownHours; _settings.EnableSoundEffects = EnableSoundEffects;
+        _settings.EnableSoundEffects = EnableSoundEffects;
         _settings.EnableAnimations = EnableAnimations; _settings.Language = Language;
         _settings.AccentColor = AccentColor;
         _settings.SearchHotkey = SearchHotkey;

@@ -2,15 +2,20 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using PLLauncher.Helpers;
+using PLLauncher.Models;
 using PLLauncher.Services;
 using PLLauncher.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PLLauncher.Views;
 
 public partial class DashboardPage : UserControl
 {
     private DispatcherTimer? _clockTimer;
+    private DispatcherTimer? _lockCountdownTimer;
+    private readonly List<TimeLimitItem> _lockedApps = new();
 
     public DashboardPage()
     {
@@ -19,6 +24,91 @@ public partial class DashboardPage : UserControl
         this.Unloaded += OnUnloaded;
         LocalizationService.Instance.LanguageChanged += (_, _) => ApplyLocalizedText();
         StartClock();
+        SubscribeToLockEvents();
+    }
+
+    private void SubscribeToLockEvents()
+    {
+        App.TimeTrackingService.AppLocked += OnAppLocked;
+        App.TimeTrackingService.CooldownStarted += OnCooldownStarted;
+    }
+
+    private void OnAppLocked(object? sender, TimeLimitItem item)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (!_lockedApps.Any(l => l.Id == item.Id))
+                _lockedApps.Add(item);
+            UpdateLockedBanner();
+        });
+    }
+
+    private void OnCooldownStarted(object? sender, TimeLimitItem item)
+    {
+        Dispatcher.UIThread.Post(() =>
+        {
+            if (!_lockedApps.Any(l => l.Id == item.Id))
+                _lockedApps.Add(item);
+            UpdateLockedBanner();
+        });
+    }
+
+    private void UpdateLockedBanner()
+    {
+        // Remove expired lock entries
+        _lockedApps.RemoveAll(l => !l.IsInCooldown || !l.CooldownEndAt.HasValue || DateTime.Now >= l.CooldownEndAt.Value);
+
+        if (_lockedApps.Count == 0)
+        {
+            LockedAppBanner.IsVisible = false;
+            _lockCountdownTimer?.Stop();
+            _lockCountdownTimer = null;
+            return;
+        }
+
+        LockedAppBanner.IsVisible = true;
+        var loc = LocalizationService.Instance;
+        var first = _lockedApps[0];
+        if (_lockedApps.Count == 1)
+        {
+            LockedTitle.Text = $"Time Limit for \"{first.AppName}\" Reached";
+            LockedDescription.Text = $"The app will be unlocked automatically when the lock period ends.";
+        }
+        else
+        {
+            LockedTitle.Text = $"{_lockedApps.Count} Apps Time Limit Reached";
+            LockedDescription.Text = string.Join(", ", _lockedApps.Select(l => $"\"{l.AppName}\""));
+        }
+
+        UpdateLockCountdown();
+
+        if (_lockCountdownTimer == null)
+        {
+            _lockCountdownTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
+            _lockCountdownTimer.Tick += (_, _) => UpdateLockCountdown();
+            _lockCountdownTimer.Start();
+        }
+    }
+
+    private void UpdateLockCountdown()
+    {
+        _lockedApps.RemoveAll(l => !l.IsInCooldown || !l.CooldownEndAt.HasValue || DateTime.Now >= l.CooldownEndAt.Value);
+
+        if (_lockedApps.Count == 0)
+        {
+            LockedAppBanner.IsVisible = false;
+            _lockCountdownTimer?.Stop();
+            _lockCountdownTimer = null;
+            return;
+        }
+
+        var remaining = _lockedApps[0].CooldownEndAt!.Value - DateTime.Now;
+        if (remaining.TotalSeconds <= 0)
+        {
+            LockedCountdown.Text = "Unlocking...";
+            return;
+        }
+        LockedCountdown.Text = $"{(int)remaining.TotalHours:D2}:{remaining.Minutes:D2}:{remaining.Seconds:D2}";
     }
 
     private void StartClock()
@@ -40,6 +130,10 @@ public partial class DashboardPage : UserControl
     {
         _clockTimer?.Stop();
         _clockTimer = null;
+        _lockCountdownTimer?.Stop();
+        _lockCountdownTimer = null;
+        App.TimeTrackingService.AppLocked -= OnAppLocked;
+        App.TimeTrackingService.CooldownStarted -= OnCooldownStarted;
     }
 
     private async void OnLoaded(object? sender, RoutedEventArgs e)

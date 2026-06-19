@@ -28,10 +28,19 @@ build_property.EnableCodeStyleSeverity =
 [C:/Documents Nikitas/ProgrammingPractice/app/PLLauncher/PLLauncher/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[C:/Documents Nikitas/ProgrammingPractice/app/PLLauncher/PLLauncher/Helpers/ColorPickerDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [C:/Documents Nikitas/ProgrammingPractice/app/PLLauncher/PLLauncher/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[C:/Documents Nikitas/ProgrammingPractice/app/PLLauncher/PLLauncher/SearchOverlayWindow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [C:/Documents Nikitas/ProgrammingPractice/app/PLLauncher/PLLauncher/Views/AppUsagePage.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[C:/Documents Nikitas/ProgrammingPractice/app/PLLauncher/PLLauncher/Views/ChecklistDialog.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [C:/Documents Nikitas/ProgrammingPractice/app/PLLauncher/PLLauncher/Views/ConfirmDialog.axaml]

@@ -24,9 +24,6 @@ public partial class AppSettings : ObservableObject
     private double _taskWarningMinutes = 1;
 
     [ObservableProperty]
-    private double _timeLimitCooldownHours = 12;
-
-    [ObservableProperty]
     private bool _enableSoundEffects = true;
 
     [ObservableProperty]

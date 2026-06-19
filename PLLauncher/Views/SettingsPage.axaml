@@ -93,7 +93,7 @@
                                              PointerPressed="SearchHotkeyBox_PointerPressed"
                                              Cursor="Hand" />
                                     <CheckBox x:Name="SearchHotkeyEnabled" IsChecked="True"
-                                              Content="Enabled" />
+                                              Content="Enabled" IsCheckedChanged="SearchHotkeyEnabled_Changed" />
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -135,6 +135,11 @@
                                             BorderThickness="2" PointerPressed="AccentColor_Click" Tag="Red" Cursor="Hand" />
                                     <Border x:Name="AccentCyan" Width="28" Height="28" CornerRadius="14" Background="#4DD0E1"
                                             BorderThickness="2" PointerPressed="AccentColor_Click" Tag="Cyan" Cursor="Hand" />
+                                    <Border Width="28" Height="28" CornerRadius="14" Background="#DDDDDD" BorderThickness="2"
+                                            PointerPressed="CustomAccentColor_Click" Tag="Custom" Cursor="Hand" Margin="8,0,0,0">
+                                        <TextBlock Text="&#xE710;" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                   Foreground="#333" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
                                 </StackPanel>
                             </StackPanel>
                         </StackPanel>
@@ -159,13 +164,6 @@
                                     <TextBlock x:Name="WarningDesc" Text="0 = no warning, else minutes before task to show popup" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
                                 <NumericUpDown x:Name="WarningTimeBox" Grid.Column="1" Value="1" Minimum="0" Maximum="30"
                                                ValueChanged="WarningTimeBox_Changed" />
-                            </Grid>
-                            <Border Height="1" Background="{DynamicResource BorderBrush}" />
-                            <Grid ColumnDefinitions="*,Auto">
-                                <StackPanel Spacing="2"><TextBlock x:Name="CooldownLabel" Text="Time Limit Cooldown (hours)" FontWeight="Medium" Foreground="{DynamicResource TextPrimaryBrush}" />
-                                    <TextBlock x:Name="CooldownDesc" Text="0 = instant unlock, else hours apps stay locked" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" /></StackPanel>
-                                <NumericUpDown x:Name="CooldownBox" Grid.Column="1" Value="12" Minimum="0" Maximum="48"
-                                               ValueChanged="CooldownBox_Changed" />
                             </Grid>
                         </StackPanel>
                     </Border>

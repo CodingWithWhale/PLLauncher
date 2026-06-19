@@ -21,6 +21,9 @@ public partial class TimeLimitsViewModel : ObservableObject
     [ObservableProperty] private string _newAppName = string.Empty;
     [ObservableProperty] private string _newProcessName = string.Empty;
     [ObservableProperty] private double _newDailyLimitMinutes = 120;
+    [ObservableProperty] private double _newLockDurationHours = 0;
+    [ObservableProperty] private int _newLockDurationMinutes = 30;
+    [ObservableProperty] private int _newLockDurationSeconds = 0;
     [ObservableProperty] private ObservableCollection<ProcessInfo> _runningProcesses = new();
 
     public TimeLimitsViewModel(DataService ds, TimeTrackingService tt, ProcessMonitorService pm)
@@ -44,11 +47,15 @@ public partial class TimeLimitsViewModel : ObservableObject
         if (string.IsNullOrWhiteSpace(NewAppName) || string.IsNullOrWhiteSpace(NewProcessName)) return;
         var processName = NormalizeProcessName(NewProcessName.Trim());
         var limit = new TimeLimitItem { AppName = NewAppName, ProcessName = processName,
-            DailyLimitMinutes = NewDailyLimitMinutes, IsEnabled = true, LastResetDate = DateTime.Today };
+            DailyLimitMinutes = NewDailyLimitMinutes, IsEnabled = true, LastResetDate = DateTime.Today,
+            LockDurationHours = NewLockDurationHours, LockDurationMinutes = NewLockDurationMinutes,
+            LockDurationSeconds = NewLockDurationSeconds };
         _timeTrackingService.AddTimeLimit(limit);
         TimeLimits.Add(limit);
         await _dataService.SaveTimeLimitsAsync(TimeLimits.ToList());
-        NewAppName = ""; NewProcessName = ""; NewDailyLimitMinutes = 120; IsAddingNew = false;
+        NewAppName = ""; NewProcessName = ""; NewDailyLimitMinutes = 120;
+        NewLockDurationHours = 0; NewLockDurationMinutes = 30; NewLockDurationSeconds = 0;
+        IsAddingNew = false;
     }
 
     [RelayCommand]

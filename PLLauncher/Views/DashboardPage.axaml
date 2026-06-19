@@ -94,6 +94,23 @@
                 </UniformGrid>
             </StackPanel>
 
+            <!-- Locked Apps Banner -->
+            <Border x:Name="LockedAppBanner" IsVisible="False"
+                    Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
+                    BorderBrush="{DynamicResource ErrorBrush}" BorderThickness="1">
+                <StackPanel Spacing="8">
+                    <Grid ColumnDefinitions="Auto,*">
+                        <TextBlock Text="&#xE72E;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="{DynamicResource ErrorBrush}" VerticalAlignment="Center" />
+                        <StackPanel Grid.Column="1" Spacing="2" Margin="12,0,0,0">
+                            <TextBlock x:Name="LockedTitle" Text="Time Limit Hit" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+                            <TextBlock x:Name="LockedDescription" Text="" FontSize="14" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </Grid>
+                    <TextBlock x:Name="LockedCountdown" Text="" FontSize="20" FontWeight="Bold"
+                               Foreground="{DynamicResource ErrorBrush}" HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+
             <!-- Next Scheduled Task -->
             <Border Background="{DynamicResource CardBackgroundBrush}" CornerRadius="8" Padding="16"
                     BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1">

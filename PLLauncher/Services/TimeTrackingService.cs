@@ -112,8 +112,12 @@ public class TimeTrackingService : IDisposable
                 continue;
 
             _lastNotificationTime[l.ProcessName] = now;
+            var remaining = l.CooldownEndAt.HasValue ? l.CooldownEndAt.Value - now : TimeSpan.Zero;
+            var timeStr = remaining > TimeSpan.Zero
+                ? $"Unlocked in {(int)remaining.TotalHours}h {remaining.Minutes}m {remaining.Seconds}s"
+                : "Locked indefinitely";
             _notificationService.ShowNotification("Time Limit Reached",
-                $"Your limit of {FormatLimit(l.DailyLimitMinutes)} is hit for {l.AppName}.");
+                $"{l.AppName}: limit of {FormatLimit(l.DailyLimitMinutes)} hit. {timeStr}.");
         }
     }
     public void AddTimeLimit(TimeLimitItem limit) { lock (_timeLimitsLock) { _timeLimits.Add(limit); } }
@@ -132,15 +136,11 @@ public class TimeTrackingService : IDisposable
         if (l == null) return;
         l.IsEnabled = false;
 
-        // Read the global cooldown setting from App.SettingsViewModel
-        double cooldownHours = App.SettingsViewModel.TimeLimitCooldownHours;
-        l.CooldownHours = cooldownHours;
-
         if (l.IsLocked)
         {
-            if (cooldownHours <= 0)
+            var duration = l.LockDuration;
+            if (duration <= TimeSpan.Zero)
             {
-                // Cooldown is 0 — unlock immediately, no cooldown period
                 l.IsInCooldown = false;
                 l.CooldownEndAt = null;
                 l.IsLocked = false;
@@ -148,15 +148,15 @@ public class TimeTrackingService : IDisposable
                 l.LastResetDate = DateTime.Today;
                 _processMonitor.UnlockApp(l.ProcessName);
                 _notificationService.ShowNotification("Time Limit Disabled",
-                    $"'{l.AppName}' unlocked immediately (cooldown = 0).");
+                    $"'{l.AppName}' unlocked immediately.");
             }
             else
             {
                 l.IsInCooldown = true;
-                l.CooldownEndAt = DateTime.Now.AddHours(cooldownHours);
+                l.CooldownEndAt = DateTime.Now.Add(duration);
                 CooldownStarted?.Invoke(this, l);
                 _notificationService.ShowNotification("Time Limit Disabled",
-                    $"Apps for '{l.AppName}' remain locked until cooldown at {l.CooldownEndAt:HH:mm}.");
+                    $"'{l.AppName}' remains locked until {l.CooldownEndAt:HH:mm}.");
                 _ = MonitorCooldownAsync(l);
             }
         }
@@ -233,12 +233,12 @@ public class TimeTrackingService : IDisposable
                     _notificationService.ShowNotification("Time Limit Reached",
                         $"Your limit of {FormatLimit(l.DailyLimitMinutes)} is hit for {l.AppName}.");
 
-                    // Start cooldown automatically
-                    double cooldownHours = App.SettingsViewModel.TimeLimitCooldownHours;
-                    if (cooldownHours <= 0) cooldownHours = 10.0 / 60.0; // default 10 min
-                    l.CooldownHours = cooldownHours;
+                    // Start lock cooldown automatically using per-limit lock duration
+                    var duration = l.LockDuration;
+                    if (duration <= TimeSpan.Zero)
+                        duration = TimeSpan.FromMinutes(10); // default 10 min
                     l.IsInCooldown = true;
-                    l.CooldownEndAt = DateTime.Now.AddHours(cooldownHours);
+                    l.CooldownEndAt = DateTime.Now.Add(duration);
                     CooldownStarted?.Invoke(this, l);
                     _ = MonitorCooldownAsync(l);
                 }

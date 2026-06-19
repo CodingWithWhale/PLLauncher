@@ -67,6 +67,7 @@ public partial class App : Application
         ["Orange"] = (Color.FromRgb(0xFF, 0xB7, 0x4D), Color.FromRgb(0xFF, 0x98, 0x00)),
         ["Red"]    = (Color.FromRgb(0xE5, 0x73, 0x73), Color.FromRgb(0xF4, 0x43, 0x36)),
         ["Cyan"]   = (Color.FromRgb(0x4D, 0xD0, 0xE1), Color.FromRgb(0x00, 0xBC, 0xD4)),
+        ["Custom"] = (Color.FromRgb(0x60, 0xCD, 0xFF), Color.FromRgb(0x00, 0x78, 0xD4)),
     };
 
     public static void SetAccentColor(string name)
@@ -80,6 +81,12 @@ public partial class App : Application
         r["AccentColorSecondary"] = colors.Secondary;
         r["AccentBrush"] = new SolidColorBrush(colors.Primary);
         r["AccentSecondaryBrush"] = new SolidColorBrush(colors.Secondary);
+    }
+
+    public static void SetCustomAccentColor(Color primary, Color secondary)
+    {
+        AccentColors["Custom"] = (primary, secondary);
+        SetAccentColor("Custom");
     }
 
     public override void Initialize()

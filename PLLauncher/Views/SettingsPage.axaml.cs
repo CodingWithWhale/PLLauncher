@@ -36,7 +36,7 @@ public partial class SettingsPage : UserControl
             AnimationsToggle.IsChecked = vm.EnableAnimations;
             PerformanceToggle.IsChecked = vm.PerformanceMode;
             WarningTimeBox.Value = (decimal)vm.TaskWarningMinutes;
-            CooldownBox.Value = (decimal)vm.TimeLimitCooldownHours;
+
 
             SelectLanguageCombo(vm.Language);
             LocalizationService.Instance.LoadFromSettings(vm.Language);
@@ -131,8 +131,7 @@ public partial class SettingsPage : UserControl
         PerformanceDesc.Text = loc.Get("settings.performance_desc");
         WarningLabel.Text = loc.Get("settings.warning_label");
         WarningDesc.Text = loc.Get("settings.warning_desc");
-        CooldownLabel.Text = loc.Get("settings.cooldown_label");
-        CooldownDesc.Text = loc.Get("settings.cooldown_desc");
+
         DataSectionTitle.Text = loc.Get("settings.data");
         ExportLabel.Text = loc.Get("settings.export_label");
         ExportDesc.Text = loc.Get("settings.export_desc");
@@ -178,8 +177,9 @@ public partial class SettingsPage : UserControl
     private void NotificationsToggle_Changed(object? sender, RoutedEventArgs e) => OnSettingChanged();
     private void PerformanceToggle_Changed(object? sender, RoutedEventArgs e) => OnSettingChanged();
     private void WarningTimeBox_Changed(object? sender, NumericUpDownValueChangedEventArgs e) => OnSettingChanged();
-    private void CooldownBox_Changed(object? sender, NumericUpDownValueChangedEventArgs e) => OnSettingChanged();
     private void LanguageCombo_SelectionChanged(object? sender, SelectionChangedEventArgs e) => OnSettingChanged();
+
+    private void SearchHotkeyEnabled_Changed(object? sender, RoutedEventArgs e) => OnSettingChanged();
 
     private void SearchHotkeyBox_PointerPressed(object? sender, Avalonia.Input.PointerPressedEventArgs e)
     {
@@ -213,6 +213,23 @@ public partial class SettingsPage : UserControl
         e.Handled = true;
     }
 
+    private async void CustomAccentColor_Click(object? sender, Avalonia.Input.PointerPressedEventArgs e)
+    {
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        if (owner == null) return;
+        var dialog = new Helpers.ColorPickerDialog();
+        await dialog.ShowDialog(owner);
+        if (!dialog.IsConfirmed) return;
+        var color = dialog.SelectedColor;
+        var secondary = Color.FromRgb(
+            (byte)Math.Max(0, color.R - 60),
+            (byte)Math.Max(0, color.G - 60),
+            (byte)Math.Max(0, color.B - 60));
+        App.SetCustomAccentColor(color, secondary);
+        HighlightSelectedAccent("Custom");
+        OnSettingChanged();
+    }
+
     private void AccentColor_Click(object? sender, Avalonia.Input.PointerPressedEventArgs e)
     {
         if (sender is Border b && b.Tag is string name)
@@ -235,10 +252,9 @@ public partial class SettingsPage : UserControl
             NotificationsToggle.IsChecked = vm.ShowNotifications;
             DarkModeToggle.IsChecked = vm.DarkMode;
             AnimationsToggle.IsChecked = vm.EnableAnimations;
-            PerformanceToggle.IsChecked = vm.PerformanceMode;
-            WarningTimeBox.Value = (decimal)vm.TaskWarningMinutes;
-            CooldownBox.Value = (decimal)vm.TimeLimitCooldownHours;
-            SelectLanguageCombo(vm.Language);
+        PerformanceToggle.IsChecked = vm.PerformanceMode;
+        WarningTimeBox.Value = (decimal)vm.TaskWarningMinutes;
+        SelectLanguageCombo(vm.Language);
             LocalizationService.Instance.LoadFromSettings(vm.Language);
             SearchHotkeyBox.Text = string.IsNullOrEmpty(vm.SearchHotkey) ? "" : vm.SearchHotkey;
             SearchHotkeyEnabled.IsChecked = !string.IsNullOrEmpty(vm.SearchHotkey);
@@ -266,7 +282,6 @@ public partial class SettingsPage : UserControl
             vm.EnableAnimations = AnimationsToggle.IsChecked ?? true;
             vm.PerformanceMode = PerformanceToggle.IsChecked ?? false;
             vm.TaskWarningMinutes = (double)(WarningTimeBox.Value ?? 0);
-            vm.TimeLimitCooldownHours = (double)(CooldownBox.Value ?? 0);
             vm.Language = GetSelectedLanguageCode();
             vm.AccentColor = GetSelectedAccentColor();
             var newHotkey = SearchHotkeyEnabled.IsChecked == true ? SearchHotkeyBox.Text?.Trim() ?? "Ctrl+K" : "";
@@ -402,7 +417,6 @@ public partial class SettingsPage : UserControl
         AnimationsToggle.IsChecked = vm.EnableAnimations;
         PerformanceToggle.IsChecked = vm.PerformanceMode;
         WarningTimeBox.Value = (decimal)vm.TaskWarningMinutes;
-        CooldownBox.Value = (decimal)vm.TimeLimitCooldownHours;
         SelectLanguageCombo(vm.Language);
         LocalizationService.Instance.LoadFromSettings(vm.Language);
         _isLoading = false;
@@ -464,7 +478,6 @@ public partial class SettingsPage : UserControl
         AnimationsToggle.IsChecked = vm.EnableAnimations;
         PerformanceToggle.IsChecked = vm.PerformanceMode;
         WarningTimeBox.Value = (decimal)vm.TaskWarningMinutes;
-        CooldownBox.Value = (decimal)vm.TimeLimitCooldownHours;
         SelectLanguageCombo(vm.Language);
         LocalizationService.Instance.LoadFromSettings(vm.Language);
         _isLoading = false;

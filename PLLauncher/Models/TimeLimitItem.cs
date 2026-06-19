@@ -43,14 +43,24 @@ public partial class TimeLimitItem : ObservableObject
     private bool _isInCooldown = false;
 
     [ObservableProperty]
-    private double _cooldownHours = 12;
+    private double _lockDurationHours = 0;
+
+    [ObservableProperty]
+    private int _lockDurationMinutes = 30;
+
+    [ObservableProperty]
+    private int _lockDurationSeconds = 0;
 
     [ObservableProperty]
     private string _appIconPath = string.Empty;
 
     public double RemainingMinutes => DailyLimitMinutes - UsedMinutesToday;
-    
+
     public double UsagePercentage => DailyLimitMinutes > 0 
         ? Math.Min(100, (UsedMinutesToday / DailyLimitMinutes) * 100) 
         : 0;
+
+    public TimeSpan LockDuration => TimeSpan.FromHours(LockDurationHours)
+        + TimeSpan.FromMinutes(LockDurationMinutes)
+        + TimeSpan.FromSeconds(LockDurationSeconds);
 }

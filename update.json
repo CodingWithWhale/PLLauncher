@@ -1,5 +1,5 @@
 {
-  "version": "2.6.37",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.37/PLLauncher_Setup_2.6.37.exe",
-  "changelog": "v2.6.37: Full-screen overlay window for system-wide Ctrl+K search (PLLauncher stays minimized), Open App mode now stays open instead of closing search, confirmation dialog when disabling search hotkey, improved keybind capture UX in Settings."
+  "version": "2.6.38",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.38/PLLauncher_Setup_2.6.38.exe",
+  "changelog": "v2.6.38: Save bar now appears on Search Hotkey toggle, per-limit lock duration (Hours/Minutes/Seconds) replaces global cooldown, live countdown on dashboard when apps are locked, custom accent color picker dialog, time limit hit notification with unlock countdown."
 }

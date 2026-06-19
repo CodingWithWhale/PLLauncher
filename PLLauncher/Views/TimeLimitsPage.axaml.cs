@@ -47,7 +47,7 @@ public partial class TimeLimitsPage : UserControl
         AppNameBox.Watermark = loc.Get("timelimits.app_name");
         ProcessNameBox.Watermark = loc.Get("timelimits.process_name");
         DailyLimitLabel.Text = loc.Get("timelimits.daily_limit");
-        CooldownWarningText.Text = loc.Get("timelimits.cooldown_warning");
+        LockDurationLabel.Text = loc.Get("timelimits.lock_duration");
         CancelBtn.Content = loc.Get("confirm.cancel");
         SaveLimitBtn.Content = loc.Get("timelimits.save_limit");
     }
@@ -98,6 +98,9 @@ public partial class TimeLimitsPage : UserControl
         var vm = App.TimeLimitsViewModel;
         vm.NewAppName = AppNameBox.Text ?? ""; vm.NewProcessName = ProcessNameBox.Text ?? "";
         vm.NewDailyLimitMinutes = (double)(DailyLimitBox.Value ?? 120);
+        vm.NewLockDurationHours = (double)(LockHoursBox.Value ?? 0);
+        vm.NewLockDurationMinutes = (int)(LockMinutesBox.Value ?? 30);
+        vm.NewLockDurationSeconds = (int)(LockSecondsBox.Value ?? 0);
         await vm.AddTimeLimitCommand.ExecuteAsync(null);
         AddLimitPanel.IsVisible = false;
         RefreshList();

@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="PLLauncher.Helpers.ColorPickerDialog"
+        Title="Choose Accent Color"
+        Width="420" Height="420"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource BackgroundBrush}">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="16">
+            <Button x:Name="CancelBtn" Click="Cancel_Click" Content="Cancel" Width="80"
+                    Background="{DynamicResource Surface2Brush}" Foreground="{DynamicResource TextPrimaryBrush}" />
+            <Button x:Name="OkBtn" Click="Ok_Click" Content="OK" Width="80"
+                    Background="{DynamicResource AccentSecondaryBrush}" Foreground="White" />
+        </StackPanel>
+        <StackPanel Spacing="12" Margin="16">
+            <TextBlock Text="Pick a custom accent color" FontSize="16" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimaryBrush}" />
+            <Border x:Name="ColorPreview" Width="120" Height="40" CornerRadius="6" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                    HorizontalAlignment="Center" />
+            <Canvas x:Name="ColorCanvas" Width="370" Height="200" Background="Transparent"
+                    PointerPressed="ColorCanvas_PointerPressed"
+                    PointerMoved="ColorCanvas_PointerMoved"
+                    PointerReleased="ColorCanvas_PointerReleased"
+                    Cursor="Cross" />
+            <StackPanel Spacing="4">
+                <TextBlock Text="Brightness" FontSize="12" Foreground="{DynamicResource TextSecondaryBrush}" />
+                <Slider x:Name="BrightnessSlider" Minimum="0" Maximum="1" Value="1" Width="370" HorizontalAlignment="Left"
+                        ValueChanged="BrightnessSlider_ValueChanged" />
+            </StackPanel>
+        </StackPanel>
+    </DockPanel>
+</Window>

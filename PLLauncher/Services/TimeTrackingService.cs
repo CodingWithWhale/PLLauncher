@@ -24,6 +24,7 @@ public class TimeTrackingService : IDisposable
 
     public event EventHandler<TimeLimitItem>? LimitReached;
     public event EventHandler<TimeLimitItem>? AppLocked;
+    public event EventHandler<TimeLimitItem>? LockedProcessReLaunched;
     public event EventHandler<TimeLimitItem>? CooldownStarted;
     public event EventHandler<TimeLimitItem>? CooldownEnded;
     public event EventHandler<TimeLimitItem>? UsageUpdated;
@@ -115,6 +116,13 @@ public class TimeTrackingService : IDisposable
             }
 
             if (!l.IsLocked) continue;
+
+            // If user dismissed the overlay and re-launched the app, re-show overlay
+            if (l.SuppressAutoLaunch)
+            {
+                l.SuppressAutoLaunch = false;
+                LockedProcessReLaunched?.Invoke(this, l);
+            }
 
             _processMonitor.TerminateProcess(l.ProcessName);
         }
@@ -328,9 +336,10 @@ public class TimeTrackingService : IDisposable
                 CooldownEnded?.Invoke(this, l);
                 _warningsSent.Remove($"{l.Id}_5min");
                 _warningsSent.Remove($"{l.Id}_1min");
-                // Re-launch the app if we have its path
-                if (!string.IsNullOrEmpty(l.AppExecutablePath))
+                // Re-launch the app if we have its path (skip if user dismissed)
+                if (!string.IsNullOrEmpty(l.AppExecutablePath) && !l.SuppressAutoLaunch)
                     _processMonitor.LaunchApp(l.AppExecutablePath);
+                l.SuppressAutoLaunch = false;
                 break;
             }
         }

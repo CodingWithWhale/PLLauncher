@@ -1,5 +1,5 @@
 {
-  "version": "2.6.50",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.50/PLLauncher_Setup_2.6.50.exe",
-  "changelog": "v2.6.50: Fixed foreground tracking not working (re-structured loop to measure full 10s intervals; added visible-window fallback when GetForegroundWindow fails)."
+  "version": "2.6.51",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.51/PLLauncher_Setup_2.6.51.exe",
+  "changelog": "v2.6.51: Fixed warning spam (each warning fires once per lock cycle via _warningsSent tracking); fixed app not locking after limit reached (added direct TerminateProcess call in lock block, epsilon-safe remaining check, detailed logging)."
 }

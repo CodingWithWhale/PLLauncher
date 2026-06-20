@@ -44,6 +44,32 @@ public class ProcessMonitorService : IDisposable
         catch (Exception ex) { Console.WriteLine($"[ProcessMonitor] GetForegroundProcessName error: {ex.Message}"); return null; }
     }
 
+    /// <summary>
+    /// Fallback: returns names of all processes that have a visible main window.
+    /// Used when GetForegroundProcessName returns null.
+    /// </summary>
+    public List<string> GetVisibleProcessNames()
+    {
+        var result = new List<string>();
+        try
+        {
+            foreach (var p in Process.GetProcesses())
+            {
+                try
+                {
+                    if (!string.IsNullOrEmpty(p.MainWindowTitle))
+                        result.Add(p.ProcessName);
+                }
+                catch { }
+                finally { p.Dispose(); }
+            }
+        }
+        catch { }
+        if (result.Count > 0)
+            Console.WriteLine($"[ProcessMonitor] Visible processes: {string.Join(", ", result.Distinct())}");
+        return result;
+    }
+
     public List<ProcessInfo> GetRunningProcesses()
     {
         var result = new List<ProcessInfo>();

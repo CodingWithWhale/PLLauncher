@@ -1,5 +1,5 @@
 {
-  "version": "2.6.49",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.49/PLLauncher_Setup_2.6.49.exe",
-  "changelog": "v2.6.49: Fixed lock overlay closing immediately (cooldown set before AppLocked event); fixed progress bar not filling up (10s delay before first tracking tick); added foreground process logging for diagnostics."
+  "version": "2.6.50",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.50/PLLauncher_Setup_2.6.50.exe",
+  "changelog": "v2.6.50: Fixed foreground tracking not working (re-structured loop to measure full 10s intervals; added visible-window fallback when GetForegroundWindow fails)."
 }

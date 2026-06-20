@@ -44,23 +44,22 @@ public class TimeTrackingService : IDisposable
         {
             var sw = new Stopwatch();
             sw.Start();
-            // Wait 10s before first measurement to avoid near-zero incrementMinutes
-            try { await Task.Delay(TimeSpan.FromSeconds(10), _cts.Token); }
-            catch (OperationCanceledException) { return; }
-            var lastTickElapsed = sw.Elapsed;
+            var lastTickElapsed = TimeSpan.Zero;
             while (!_cts.IsCancellationRequested)
             {
+                // Wait ~10s BEFORE each measurement so the first tick captures a full interval
                 var now = sw.Elapsed;
+                var toWait = TimeSpan.FromSeconds(10) - (now - lastTickElapsed);
+                if (toWait > TimeSpan.Zero)
+                    try { await Task.Delay(toWait, _cts.Token); }
+                    catch (OperationCanceledException) { break; }
+                    catch { }
+                now = sw.Elapsed;
                 var elapsedSinceLastTick = now - lastTickElapsed;
                 lastTickElapsed = now;
                 try { await TrackUsageAsync(elapsedSinceLastTick); }
                 catch (OperationCanceledException) { break; }
                 catch { }
-                var toWait = TimeSpan.FromSeconds(10) - (sw.Elapsed - now);
-                if (toWait > TimeSpan.Zero)
-                    try { await Task.Delay(toWait, _cts.Token); }
-                    catch (OperationCanceledException) { break; }
-                    catch { }
             }
         }, _cts.Token);
 
@@ -195,6 +194,15 @@ public class TimeTrackingService : IDisposable
         var foregroundProcess = _processMonitor.GetForegroundProcessName();
         Console.WriteLine($"[TimeTrack] FG={foregroundProcess ?? "(null)"}, elapsed={elapsedSinceLastTick.TotalSeconds:F1}s");
 
+        // Fallback: if foreground detection returns null, check all visible-window processes
+        List<string>? visibleProcesses = null;
+        if (foregroundProcess == null)
+        {
+            visibleProcesses = _processMonitor.GetVisibleProcessNames();
+            if (visibleProcesses.Count > 0)
+                Console.WriteLine($"[TimeTrack] Fallback: {visibleProcesses.Count} visible processes detected");
+        }
+
         List<TimeLimitItem> snapshot;
         lock (_timeLimitsLock) { snapshot = _timeLimits.ToList(); }
 
@@ -214,7 +222,13 @@ public class TimeTrackingService : IDisposable
         bool dirty = false;
         foreach (var l in snapshot.Where(l => l.IsEnabled && !l.IsLocked))
         {
-            if (string.Equals(foregroundProcess, l.ProcessName, StringComparison.OrdinalIgnoreCase))
+            bool isMatch = string.Equals(foregroundProcess, l.ProcessName, StringComparison.OrdinalIgnoreCase);
+
+            // Fallback: if foreground detection failed, match against any visible-window process
+            if (!isMatch && foregroundProcess == null && visibleProcesses != null)
+                isMatch = visibleProcesses.Any(vp => string.Equals(vp, l.ProcessName, StringComparison.OrdinalIgnoreCase));
+
+            if (isMatch)
             {
                 double newTotal = l.UsedMinutesToday + incrementMinutes;
                 Console.WriteLine($"[TimeTrack] MATCH {l.AppName}: +{incrementMinutes:F4}min (now={newTotal:F2}, limit={l.DailyLimitMinutes})");

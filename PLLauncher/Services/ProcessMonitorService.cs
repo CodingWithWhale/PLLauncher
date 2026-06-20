@@ -34,13 +34,14 @@ public class ProcessMonitorService : IDisposable
         try
         {
             var hwnd = NativeMethods.GetForegroundWindow();
-            if (hwnd == IntPtr.Zero) return null;
+            if (hwnd == IntPtr.Zero) { Console.WriteLine("[ProcessMonitor] GetForegroundWindow returned null"); return null; }
             NativeMethods.GetWindowThreadProcessId(hwnd, out var pid);
-            if (pid == 0) return null;
+            if (pid == 0) { Console.WriteLine("[ProcessMonitor] GetWindowThreadProcessId returned pid=0"); return null; }
             using var process = Process.GetProcessById((int)pid);
+            Console.WriteLine($"[ProcessMonitor] FG process: {process.ProcessName} (pid={pid})");
             return process.ProcessName;
         }
-        catch { return null; }
+        catch (Exception ex) { Console.WriteLine($"[ProcessMonitor] GetForegroundProcessName error: {ex.Message}"); return null; }
     }
 
     public List<ProcessInfo> GetRunningProcesses()

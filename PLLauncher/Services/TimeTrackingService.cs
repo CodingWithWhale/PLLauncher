@@ -44,7 +44,10 @@ public class TimeTrackingService : IDisposable
         {
             var sw = new Stopwatch();
             sw.Start();
-            var lastTickElapsed = TimeSpan.Zero;
+            // Wait 10s before first measurement to avoid near-zero incrementMinutes
+            try { await Task.Delay(TimeSpan.FromSeconds(10), _cts.Token); }
+            catch (OperationCanceledException) { return; }
+            var lastTickElapsed = sw.Elapsed;
             while (!_cts.IsCancellationRequested)
             {
                 var now = sw.Elapsed;
@@ -98,14 +101,14 @@ public class TimeTrackingService : IDisposable
                 if (!string.IsNullOrEmpty(exePath))
                     l.AppExecutablePath = exePath;
                 _processMonitor.LockApp(l.ProcessName);
-                AppLocked?.Invoke(this, l);
-                LimitReached?.Invoke(this, l);
-                // Start cooldown (same as TrackUsageAsync)
+                // Start cooldown BEFORE firing AppLocked so overlay sees it immediately
                 var duration = l.LockDuration;
                 if (duration <= TimeSpan.Zero)
                     duration = TimeSpan.FromMinutes(10);
                 l.IsInCooldown = true;
                 l.CooldownEndAt = DateTime.Now.Add(duration);
+                AppLocked?.Invoke(this, l);
+                LimitReached?.Invoke(this, l);
                 CooldownStarted?.Invoke(this, l);
                 _ = MonitorCooldownAsync(l);
             }
@@ -227,14 +230,13 @@ public class TimeTrackingService : IDisposable
                     if (!string.IsNullOrEmpty(exePath))
                         l.AppExecutablePath = exePath;
                     _processMonitor.LockApp(l.ProcessName);
-                    AppLocked?.Invoke(this, l); LimitReached?.Invoke(this, l);
-
-                    // Start lock cooldown automatically using per-limit lock duration
+                    // Start cooldown BEFORE firing AppLocked so overlay sees it immediately
                     var duration = l.LockDuration;
                     if (duration <= TimeSpan.Zero)
-                        duration = TimeSpan.FromMinutes(10); // default 10 min
+                        duration = TimeSpan.FromMinutes(10);
                     l.IsInCooldown = true;
                     l.CooldownEndAt = DateTime.Now.Add(duration);
+                    AppLocked?.Invoke(this, l); LimitReached?.Invoke(this, l);
                     CooldownStarted?.Invoke(this, l);
                     _ = MonitorCooldownAsync(l);
                 }

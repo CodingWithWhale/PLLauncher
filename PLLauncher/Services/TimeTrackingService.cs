@@ -234,9 +234,20 @@ public class TimeTrackingService : IDisposable
         {
             bool isMatch = string.Equals(foregroundProcess, l.ProcessName, StringComparison.OrdinalIgnoreCase);
 
-            // Fallback: if foreground detection failed, match against any visible-window process
+            // Fallback 1: if foreground detection failed, match against any visible-window process
             if (!isMatch && foregroundProcess == null && visibleProcesses != null)
                 isMatch = visibleProcesses.Any(vp => string.Equals(vp, l.ProcessName, StringComparison.OrdinalIgnoreCase));
+
+            // Fallback 2: if process is running AND user is actively using the computer, count it
+            if (!isMatch)
+            {
+                double idleSeconds = ProcessMonitorService.GetUserIdleSeconds();
+                if (idleSeconds >= 0 && idleSeconds < 60 && _processMonitor.IsProcessRunning(l.ProcessName))
+                {
+                    Console.WriteLine($"[TimeTrack] Active-user fallback: {l.AppName} is running, user idle={idleSeconds:F0}s");
+                    isMatch = true;
+                }
+            }
 
             if (isMatch)
             {

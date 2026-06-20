@@ -160,6 +160,23 @@ public class ProcessMonitorService : IDisposable
             if (IsProcessRunning(name)) TerminateProcess(name);
     }
 
+    /// <summary>
+    /// Returns the number of seconds since the user last provided input (keyboard/mouse).
+    /// Returns -1 on failure.
+    /// </summary>
+    public static double GetUserIdleSeconds()
+    {
+        try
+        {
+            var info = new NativeMethods.LASTINPUTINFO();
+            info.cbSize = (uint)System.Runtime.InteropServices.Marshal.SizeOf(info);
+            if (NativeMethods.GetLastInputInfo(ref info))
+                return (Environment.TickCount - info.dwTime) / 1000.0;
+        }
+        catch { }
+        return -1;
+    }
+
     public bool LaunchApp(string path)
     {
         try { Process.Start(new ProcessStartInfo(path) { UseShellExecute = true }); return true; }

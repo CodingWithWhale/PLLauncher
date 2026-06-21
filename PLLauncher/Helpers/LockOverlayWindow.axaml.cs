@@ -21,7 +21,11 @@ public partial class LockOverlayWindow : Window
         TitleText.Text = msg;
         MessageText.Text = $"\"{limit.AppName}\" is locked";
 
-        CloseBtn.Click += (_, _) => Close();
+        CloseBtn.Click += (_, _) =>
+        {
+            _limit.SuppressAutoLaunch = true;
+            Close();
+        };
         DismissBtn.Click += (_, _) =>
         {
             _limit.SuppressAutoLaunch = true;

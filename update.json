@@ -1,5 +1,5 @@
 {
-  "version": "2.6.55",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.55/PLLauncher_Setup_2.6.55.exe",
-  "changelog": "v2.6.55: Dismiss button now closes the overlay (app stays locked until cooldown ends)."
+  "version": "2.6.57",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.57/PLLauncher_Setup_2.6.57.exe",
+  "changelog": "v2.6.57: X button now also sets SuppressAutoLaunch so overlay reappears on re-launch (fixes X not triggering re-show)."
 }

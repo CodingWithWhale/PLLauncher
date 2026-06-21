@@ -13,15 +13,9 @@
         MaxWidth="500">
     <Border CornerRadius="12" Background="#E0000000" Margin="20" Padding="32">
         <StackPanel HorizontalAlignment="Center" Spacing="20">
-            <DockPanel HorizontalAlignment="Stretch">
-                <Button x:Name="CloseBtn" Content="✕" DockPanel.Dock="Right"
-                        Background="Transparent" Foreground="#888888" FontSize="16"
-                        BorderThickness="0" Cursor="Hand"
-                        Width="28" Height="28" />
-                <TextBlock x:Name="LockIcon" Text="&#xE72E;" FontFamily="Segoe MDL2 Assets"
-                           FontSize="48" Foreground="{DynamicResource ErrorBrush}"
-                           HorizontalAlignment="Center" />
-            </DockPanel>
+            <TextBlock x:Name="LockIcon" Text="&#xE72E;" FontFamily="Segoe MDL2 Assets"
+                       FontSize="48" Foreground="{DynamicResource ErrorBrush}"
+                       HorizontalAlignment="Center" />
             <TextBlock x:Name="TitleText" Text="Time Limit Reached"
                        Foreground="White" FontSize="22" FontWeight="Bold"
                        HorizontalAlignment="Center" TextWrapping="Wrap"
@@ -33,15 +27,10 @@
             <TextBlock x:Name="CountdownText" Text=""
                        Foreground="{DynamicResource ErrorBrush}" FontSize="28" FontWeight="Bold"
                        HorizontalAlignment="Center" />
-            <TextBlock x:Name="AutoLaunchHint" Text="(the app will open automatically when time is up)"
+            <TextBlock Text="(the app will open automatically when time is up)"
                        Foreground="#888888" FontSize="12"
                        HorizontalAlignment="Center" TextWrapping="Wrap"
                        TextAlignment="Center" />
-            <Button x:Name="DismissBtn" Content="Dismiss — don't reopen after cooldown"
-                    Background="Transparent" Foreground="#AAAAAA" FontSize="13"
-                    BorderThickness="1" BorderBrush="#555555" CornerRadius="6"
-                    Cursor="Hand" Padding="16,8"
-                    HorizontalAlignment="Center" />
         </StackPanel>
     </Border>
 </Window>

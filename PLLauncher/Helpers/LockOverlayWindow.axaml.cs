@@ -8,7 +8,6 @@ namespace PLLauncher.Helpers;
 public partial class LockOverlayWindow : Window
 {
     public bool IsClosed { get; private set; }
-    public bool DismissedByUser { get; private set; }
     private readonly DispatcherTimer _countdownTimer;
     private readonly TimeLimitItem _limit;
 
@@ -20,16 +19,6 @@ public partial class LockOverlayWindow : Window
         var msg = $"The limit for \"{limit.AppName}\" of {FormatLimit(limit.DailyLimitMinutes)} is hit.";
         TitleText.Text = msg;
         MessageText.Text = $"\"{limit.AppName}\" is locked";
-
-        CloseBtn.Click += (_, _) => Close();
-        DismissBtn.Click += (_, _) =>
-        {
-            _limit.SuppressAutoLaunch = true;
-            DismissedByUser = true;
-            AutoLaunchHint.Text = "(app will NOT reopen after cooldown)";
-            DismissBtn.IsVisible = false;
-            CloseBtn.IsVisible = false;
-        };
 
         _countdownTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _countdownTimer.Tick += OnCountdownTick;

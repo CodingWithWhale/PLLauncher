@@ -1,5 +1,5 @@
 {
-  "version": "2.6.54",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.54/PLLauncher_Setup_2.6.54.exe",
-  "changelog": "v2.6.54: Lock overlay now has a Dismiss button to close without auto-reopening the app after cooldown; if user tries to re-launch the locked app, the overlay reappears."
+  "version": "2.6.55",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.55/PLLauncher_Setup_2.6.55.exe",
+  "changelog": "v2.6.55: Dismiss button now closes the overlay (app stays locked until cooldown ends)."
 }

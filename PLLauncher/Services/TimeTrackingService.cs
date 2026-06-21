@@ -82,12 +82,24 @@ public class TimeTrackingService : IDisposable
 
     private void EnforceLockedProcesses()
     {
-        // Also enforce via ProcessMonitorService (terminates processes in _lockedProcesses)
-        _processMonitor.EnforceLockedProcesses();
-
+        // Take snapshot of limits
         List<TimeLimitItem> active;
         lock (_timeLimitsLock) { active = _timeLimits.ToList(); }
 
+        // First pass: fire re-launch events for dismissed locked processes that are running
+        // (do this before terminating so IsProcessRunning returns true)
+        foreach (var l in active)
+        {
+            if (string.IsNullOrWhiteSpace(l.ProcessName)) continue;
+            if (!l.IsLocked || !l.SuppressAutoLaunch) continue;
+            if (!_processMonitor.IsProcessRunning(l.ProcessName)) continue;
+            LockedProcessReLaunched?.Invoke(this, l);
+        }
+
+        // Now enforce (terminates all locked processes)
+        _processMonitor.EnforceLockedProcesses();
+
+        // Second pass: check for newly-reached limits
         foreach (var l in active)
         {
             if (string.IsNullOrWhiteSpace(l.ProcessName)) continue;
@@ -116,10 +128,6 @@ public class TimeTrackingService : IDisposable
             }
 
             if (!l.IsLocked) continue;
-
-            // If user dismissed overlay and re-launched the app, re-show overlay
-            if (l.SuppressAutoLaunch)
-                LockedProcessReLaunched?.Invoke(this, l);
 
             _processMonitor.TerminateProcess(l.ProcessName);
         }

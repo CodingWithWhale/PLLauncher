@@ -57,6 +57,9 @@ public partial class TimeLimitItem : ObservableObject
     [ObservableProperty]
     private string _appExecutablePath = string.Empty;
 
+    [ObservableProperty]
+    private bool _suppressAutoLaunch = false;
+
     public double RemainingMinutes => DailyLimitMinutes - UsedMinutesToday;
 
     public double UsagePercentage => DailyLimitMinutes > 0 

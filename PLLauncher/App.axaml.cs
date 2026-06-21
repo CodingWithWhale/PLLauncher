@@ -369,6 +369,20 @@ internal static Helpers.LockOverlayWindow? CurrentLockOverlay { get; set; }
                             });
                         };
 
+                        // Re-show overlay if user re-launches a dismissed locked app
+                        TimeTrackingService.LockedProcessReLaunched += (_, limit) =>
+                        {
+                            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                            {
+                                if (CurrentLockOverlay == null || CurrentLockOverlay.IsClosed)
+                                {
+                                    var overlay = new Helpers.LockOverlayWindow(limit);
+                                    CurrentLockOverlay = overlay;
+                                    overlay.Show();
+                                }
+                            });
+                        };
+
                         // Start background services
                         TaskSchedulerService?.Start();
                         TimeTrackingService?.Start();

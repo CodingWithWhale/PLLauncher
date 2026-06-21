@@ -1,5 +1,5 @@
 {
-  "version": "2.6.52",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.52/PLLauncher_Setup_2.6.52.exe",
-  "changelog": "v2.6.52: Added active-user fallback detection — if the limited app is running and the user has provided mouse/keyboard input within 60s, usage is counted."
+  "version": "2.6.54",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.54/PLLauncher_Setup_2.6.54.exe",
+  "changelog": "v2.6.54: Lock overlay now has a Dismiss button to close without auto-reopening the app after cooldown; if user tries to re-launch the locked app, the overlay reappears."
 }

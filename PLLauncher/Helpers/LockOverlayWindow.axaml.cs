@@ -26,7 +26,9 @@ public partial class LockOverlayWindow : Window
         {
             _limit.SuppressAutoLaunch = true;
             DismissedByUser = true;
-            Close();
+            AutoLaunchHint.Text = "(app will NOT reopen after cooldown)";
+            DismissBtn.IsVisible = false;
+            CloseBtn.IsVisible = false;
         };
 
         _countdownTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };

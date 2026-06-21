@@ -1,5 +1,5 @@
 {
-  "version": "2.6.58",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.58/PLLauncher_Setup_2.6.58.exe",
-  "changelog": "v2.6.58: Re-launch detection now fires BEFORE process termination so overlay reappears on re-launch."
+  "version": "2.6.59",
+  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.59/PLLauncher_Setup_2.6.59.exe",
+  "changelog": "v2.6.59: App now re-launches after cooldown expires regardless of whether overlay was dismissed."
 }

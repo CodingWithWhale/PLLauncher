@@ -268,6 +268,13 @@ public class TimeTrackingService : IDisposable
                 double newTotal = l.UsedMinutesToday + incrementMinutes;
                 Console.WriteLine($"[TimeTrack] MATCH {l.AppName}: +{incrementMinutes:F4}min (now={newTotal:F2}, limit={l.DailyLimitMinutes})");
                 l.UsedMinutesToday = newTotal;
+                // Store executable path early (before lock) so we always have it for re-launch later
+                if (string.IsNullOrEmpty(l.AppExecutablePath))
+                {
+                    var foundPath = _processMonitor.GetProcessPath(l.ProcessName);
+                    if (!string.IsNullOrEmpty(foundPath))
+                        l.AppExecutablePath = foundPath;
+                }
                 dirty = true;
                 UsageUpdated?.Invoke(this, l);
                 double remaining = l.RemainingMinutes;
@@ -341,9 +348,12 @@ public class TimeTrackingService : IDisposable
                 CooldownEnded?.Invoke(this, l);
                 _warningsSent.Remove($"{l.Id}_5min");
                 _warningsSent.Remove($"{l.Id}_1min");
-                // Re-launch the app if we have its path (skip if user dismissed)
-                if (!string.IsNullOrEmpty(l.AppExecutablePath) && !l.SuppressAutoLaunch)
-                    _processMonitor.LaunchApp(l.AppExecutablePath);
+                // Re-launch the app (always, regardless of SuppressAutoLaunch)
+                var launchPath = l.AppExecutablePath;
+                if (string.IsNullOrEmpty(launchPath))
+                    launchPath = _processMonitor.GetProcessPath(l.ProcessName);
+                if (!string.IsNullOrEmpty(launchPath))
+                    _processMonitor.LaunchApp(launchPath);
                 l.SuppressAutoLaunch = false;
                 break;
             }

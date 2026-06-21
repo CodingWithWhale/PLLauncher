@@ -117,9 +117,8 @@ public class TimeTrackingService : IDisposable
 
             if (!l.IsLocked) continue;
 
-            // If user dismissed overlay and re-launched the app, re-show overlay
-            if (l.SuppressAutoLaunch)
-                LockedProcessReLaunched?.Invoke(this, l);
+            // If user re-launches a locked app, re-show overlay
+            LockedProcessReLaunched?.Invoke(this, l);
 
             _processMonitor.TerminateProcess(l.ProcessName);
         }

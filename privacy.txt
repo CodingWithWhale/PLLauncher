@@ -1,0 +1,17 @@
+PLLauncher — PRIVACY POLICY
+Version 1.0 - August 2026
+
+1. NO DATA COLLECTION
+PLLauncher does not collect, store, upload, or sell any personal data. There are no analytics, no telemetry, and no tracking.
+
+2. LOCAL STORAGE ONLY
+All of your settings, keybinds, tasks, schedules, time limits, and usage statistics are stored only in local files on your own computer. This data never leaves your device.
+
+3. INTERNET ACTIVITY
+The only internet activity is an optional check for updates against the PLLauncher GitHub repository. You can decline any update, and the software keeps working offline.
+
+4. THIRD PARTIES
+PLLauncher does not share data with any third party. The update check and download use GitHub (owned by Microsoft).
+
+5. CHANGES
+This policy may be updated from time to time. Any changes will be reflected in this document.

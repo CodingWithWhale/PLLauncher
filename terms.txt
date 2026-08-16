@@ -1,0 +1,34 @@
+PLLauncher - TERMS & CONDITIONS
+Version 1.0 - August 2026
+
+PLLauncher is a personal Windows productivity and automation tool. By installing and using PLLauncher you agree to the following terms.
+
+1. ACCEPTANCE
+By installing or using PLLauncher you confirm that you have read, understood, and agree to these Terms. If you do not agree, do not install or use the software.
+
+2. USE AT YOUR OWN RISK
+PLLauncher is provided "as is", without warranties of any kind. The software performs powerful actions that you configure yourself, including but not limited to: shutting down, restarting, sleeping, or locking your PC; launching or forcefully closing applications; and enforcing daily time limits that terminate running programs.
+
+3. DATA LOSS & INTERRUPTION
+Forced closing of applications (including the TerminateProcess fallback), scheduled shutdowns or restarts, and time-limit enforcement can cause UNSAVED DATA LOSS and may interrupt work, school, or deadlines. Always save your work and review your settings carefully. You are solely responsible for any data loss or interruption caused by the software.
+
+4. NO DATA IS COLLECTED - PRIVACY
+PLLauncher does not collect, store, upload, or sell any personal data. All of your settings, keybinds, schedules, time limits, and usage statistics are stored ONLY in local files on your own computer. No analytics, no telemetry, no tracking. The only internet activity is an OPTIONAL check for updates against the PLLauncher GitHub repository; you may decline any update and the software continues to work offline.
+
+5. SYSTEM CHANGES & MISCONFIGURATION
+PLLauncher performs exactly what you configure, including registering global hotkeys, modifying the Windows registry (for example, launch-on-startup), and controlling processes. Incorrect settings can cause unintended shutdowns, lockouts, or closed applications. Use PLLauncher only on computers you own or are allowed to manage. You accept all consequences of your configuration.
+
+6. NO MALICIOUS USE
+You must not use PLLauncher to bypass security, spy on other people, disrupt systems you do not own, or prevent anyone else from using a device. This is a personal productivity and self-discipline tool.
+
+7. UPDATES
+PLLauncher may check its GitHub repository for a newer version. If an update is available and you confirm, it downloads and installs it silently, then relaunches the application. You may decline updates at any time.
+
+8. LIMITATION OF LIABILITY
+To the maximum extent permitted by law, the author of PLLauncher shall not be liable for any direct or indirect damages, lost data, missed deadlines, or losses arising from the use or misuse of the software.
+
+9. LICENSE
+PLLauncher is free for personal use. You may not resell, redistribute, or claim it as your own. You may stop using and uninstall PLLauncher at any time.
+
+10. CHANGES TO THESE TERMS
+These Terms may be updated from time to time. Continuing to use PLLauncher after changes means you accept the updated Terms.

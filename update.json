@@ -1,5 +1,5 @@
 {
-  "version": "2.6.59",
-  "downloadUrl": "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.6.59/PLLauncher_Setup_2.6.59.exe",
-  "changelog": "v2.6.59: App now re-launches after cooldown expires regardless of whether overlay was dismissed."
+    "version":  "2.7.0",
+    "downloadUrl":  "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.7.0/PLLauncher_Setup_2.7.0.exe",
+    "changelog":  "v2.7.0: Added Terms & Conditions and Privacy Policy to the app (Settings, 4 languages) and a Terms acceptance page to the installer."
 }

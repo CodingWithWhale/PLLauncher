@@ -1,0 +1,34 @@
+PLLauncher — TÉRMINOS Y CONDICIONES
+Versión 1.0 — agosto de 2026
+
+PLLauncher es una herramienta personal de automatización y productividad para Windows. Al instalar y usar PLLauncher, usted acepta los siguientes términos.
+
+1. ACEPTACIÓN
+Al instalar o usar PLLauncher, usted confirma que ha leído, comprendido y acepta estos Términos. Si no está de acuerdo, no instale ni use el software.
+
+2. USO BAJO SU PROPIO RIESGO
+PLLauncher se proporciona "tal cual", sin garantías de ningún tipo. El software realiza acciones potentes que usted mismo configura, incluidas, entre otras: apagar, reiniciar, poner en suspensión o bloquear su PC; iniciar o cerrar aplicaciones de forma forzosa; y aplicar límites diarios de tiempo que finalizan programas en ejecución.
+
+3. PÉRDIDA DE DATOS E INTERRUPCIONES
+El cierre forzoso de aplicaciones (incluido el mecanismo de respaldo TerminateProcess), los apagados o reinicios programados y la aplicación de límites de tiempo pueden provocar la PÉRDIDA DE DATOS NO GUARDADOS y pueden interrumpir el trabajo, los estudios o los plazos. Guarde siempre su trabajo y revise sus ajustes con atención. Usted es el único responsable de cualquier pérdida de datos o interrupción causada por el software.
+
+4. NO SE RECOPILAN DATOS — PRIVACIDAD
+PLLauncher no recopila, almacena, sube ni vende ningún dato personal. Todos sus ajustes, métodos abreviados, horarios, límites de tiempo y estadísticas de uso se guardan SOLO en archivos locales de su propio equipo. Sin analíticas, sin telemetría, sin seguimiento. La única actividad en internet es una comprobación OPCIONAL de actualizaciones en el repositorio de GitHub de PLLauncher; puede rechazar cualquier actualización y el software seguirá funcionando sin conexión.
+
+5. CAMBIOS DEL SISTEMA Y MALA CONFIGURACIÓN
+PLLauncher ejecuta exactamente lo que usted configura, incluido el registro de métodos abreviados globales, la modificación del registro de Windows (por ejemplo, el inicio automático) y el control de procesos. Una configuración incorrecta puede provocar apagados, bloqueos o cierres de aplicaciones no deseados. Use PLLauncher únicamente en equipos que sean suyos o sobre los que tenga permiso para administrar. Usted acepta todas las consecuencias de su configuración.
+
+6. PROHIBIDO EL USO MALICIOSO
+No debe usar PLLauncher para eludir la seguridad, espiar a otras personas, interferir con sistemas que no le pertenecen ni impedir que otras personas usen un dispositivo. Es una herramienta personal de productividad y autodisciplina.
+
+7. ACTUALIZACIONES
+PLLauncher puede comprobar si hay una versión más reciente en su repositorio de GitHub. Si hay una actualización disponible y usted lo confirma, se descarga e instala en silencio y la aplicación se reinicia. Puede rechazar las actualizaciones en cualquier momento.
+
+8. LIMITACIÓN DE RESPONSABILIDAD
+En la máxima medida permitida por la ley, el autor de PLLauncher no será responsable de ningún daño directo o indirecto, pérdida de datos, plazos incumplidos o pérdidas derivadas del uso o mal uso del software.
+
+9. LICENCIA
+PLLauncher es gratuito para uso personal. No puede revenderlo, redistribuirlo ni atribuírselo como propio. Puede dejar de usarlo y desinstalarlo en cualquier momento.
+
+10. CAMBIOS EN ESTOS TÉRMINOS
+Estos Términos pueden actualizarse periódicamente. Seguir usando PLLauncher después de los cambios significa que acepta los Términos actualizados.

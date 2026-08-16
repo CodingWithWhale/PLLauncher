@@ -147,6 +147,8 @@ public partial class SettingsPage : UserControl
         VersionLabel.Text = string.Format(loc.Get("settings.version"), version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "?");
         VersionDesc.Text = loc.Get("settings.about");
         CheckUpdatesBtnText.Text = loc.Get("settings.check_updates");
+        TermsButtonText.Text = loc.Get("settings.terms");
+        PrivacyButtonText.Text = loc.Get("settings.privacy");
         AccentLabel.Text = loc.Get("settings.accent_label");
         SearchHotkeyLabel.Text = loc.Get("settings.search_hotkey");
         SearchHotkeyDesc.Text = loc.Get("settings.search_hotkey_desc");
@@ -426,6 +428,22 @@ public partial class SettingsPage : UserControl
         StatusMsg.Text = App.SettingsViewModel.StatusMessage;
         StatusMsg.IsVisible = true;
         MarkUnsaved(false);
+    }
+
+    private async void Terms_Click(object? sender, RoutedEventArgs e)
+    {
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        if (owner == null) return;
+        var dialog = new Views.DocumentDialog("terms", "terms.title");
+        await dialog.ShowDialog(owner);
+    }
+
+    private async void Privacy_Click(object? sender, RoutedEventArgs e)
+    {
+        var owner = TopLevel.GetTopLevel(this) as Window;
+        if (owner == null) return;
+        var dialog = new Views.DocumentDialog("privacy", "privacy.title");
+        await dialog.ShowDialog(owner);
     }
 
     private async void CheckUpdates_Click(object? s, RoutedEventArgs e)

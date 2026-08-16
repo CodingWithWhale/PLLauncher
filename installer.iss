@@ -2,7 +2,7 @@
 ; Requires Inno Setup 6+ (https://jrsoftware.org/isdl.php)
 
 #define MyAppName "PLLauncher"
-#define MyAppVersion "2.6.59"
+#define MyAppVersion "2.7.0"
 #define MyAppPublisher "PLLauncher"
 #define MyAppURL "https://github.com/CodingWithWhale/PLLauncher"
 #define MyAppExeName "PLLauncher.exe"
@@ -41,6 +41,7 @@ Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription
 [Files]
 Source: "dist\publish\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dist\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "terms.txt"; Flags: dontcopy
 
 [UninstallDelete]
 ; Force-delete the app directory and any runtime-created files
@@ -62,14 +63,68 @@ Filename: "{app}\{#MyAppExeName}"; Description: "Launch {#MyAppName}"; Flags: no
 var
   DataDirPage: TInputDirWizardPage;
   SavedDataDir: String;
+  TermsPage: TWizardPage;
+  TermsMemo: TNewMemo;
+  AcceptCheck: TNewCheckBox;
+  TermsButton: TNewButton;
 
 function GetDataDir(Param: string): string;
 begin
   Result := DataDirPage.Values[0];
 end;
 
+procedure TermsButtonClick(Sender: TObject);
+var
+  TermsPath: String;
+  ResultCode: Integer;
+begin
+  ExtractTemporaryFile('terms.txt');
+  TermsPath := ExpandConstant('{tmp}\terms.txt');
+  ShellExec('open', TermsPath, '', '', SW_SHOWNORMAL, ewNoWait, ResultCode);
+end;
+
 procedure InitializeWizard;
 begin
+  // Terms & Conditions page (shown right after Welcome)
+  TermsPage := CreateCustomPage(wpWelcome, 'Terms & Conditions',
+    'Please read the Terms & Conditions before installing PLLauncher.');
+
+  TermsMemo := TNewMemo.Create(TermsPage);
+  TermsMemo.Parent := TermsPage.Surface;
+  TermsMemo.Left := ScaleX(8);
+  TermsMemo.Top := ScaleY(8);
+  TermsMemo.Width := TermsPage.SurfaceWidth - ScaleX(16);
+  TermsMemo.Height := TermsPage.SurfaceHeight - ScaleY(60);
+  TermsMemo.ReadOnly := True;
+  TermsMemo.ScrollBars := ssVertical;
+  TermsMemo.TabOrder := 0;
+  TermsMemo.Anchors := [akLeft, akTop, akRight, akBottom];
+  ExtractTemporaryFile('terms.txt');
+  TermsMemo.Lines.LoadFromFile(ExpandConstant('{tmp}\terms.txt'));
+
+  AcceptCheck := TNewCheckBox.Create(TermsPage);
+  AcceptCheck.Parent := TermsPage.Surface;
+  AcceptCheck.Caption := 'I accept the Terms & Conditions';
+  AcceptCheck.Checked := False;
+  AcceptCheck.Left := TermsMemo.Left;
+  AcceptCheck.Top := TermsMemo.Top + TermsMemo.Height + ScaleY(10);
+  AcceptCheck.Width := ScaleX(260);
+  AcceptCheck.Height := ScaleY(17);
+  AcceptCheck.TabOrder := 1;
+  AcceptCheck.Anchors := [akLeft, akBottom];
+
+  TermsButton := TNewButton.Create(TermsPage);
+  TermsButton.Parent := TermsPage.Surface;
+  TermsButton.Caption := 'See Terms & Conditions';
+  TermsButton.Left := TermsPage.SurfaceWidth - ScaleX(150);
+  TermsButton.Top := AcceptCheck.Top - ScaleY(3);
+  TermsButton.Width := ScaleX(142);
+  TermsButton.Height := ScaleY(23);
+  TermsButton.TabOrder := 2;
+  TermsButton.Anchors := [akRight, akBottom];
+  TermsButton.OnClick := @TermsButtonClick;
+
+  // Data Location page
   DataDirPage := CreateInputDirPage(
     wpSelectDir,
     'Data Location',
@@ -80,6 +135,19 @@ begin
     'PLLauncherData');
   DataDirPage.Add('');
   DataDirPage.Values[0] := ExpandConstant('{localappdata}\PLLauncher');
+end;
+
+function NextButtonClick(CurPageID: Integer): Boolean;
+begin
+  Result := True;
+  if CurPageID = TermsPage.ID then
+  begin
+    if not AcceptCheck.Checked then
+    begin
+      MsgBox('Please read and accept the Terms & Conditions to continue.', mbInformation, MB_OK);
+      Result := False;
+    end;
+  end;
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);

@@ -1,0 +1,17 @@
+PLLauncher — POLÍTICA DE PRIVACIDAD
+Versión 1.0 — agosto de 2026
+
+1. NO SE RECOPILAN DATOS
+PLLauncher no recopila, almacena, sube ni vende ningún dato personal. Sin analíticas, sin telemetría, sin seguimiento.
+
+2. SOLO ALMACENAMIENTO LOCAL
+Todos sus ajustes, métodos abreviados, tareas, horarios, límites de tiempo y estadísticas de uso se guardan solo en archivos locales de su propio equipo. Estos datos nunca salen de su dispositivo.
+
+3. ACTIVIDAD EN INTERNET
+La única actividad en internet es una comprobación opcional de actualizaciones en el repositorio de GitHub de PLLauncher. Puede rechazar cualquier actualización y el software seguirá funcionando sin conexión.
+
+4. TERCEROS
+PLLauncher no comparte datos con ningún tercero. La comprobación y descarga de actualizaciones usan GitHub (propiedad de Microsoft).
+
+5. CAMBIOS
+Esta política puede actualizarse periódicamente. Cualquier cambio se reflejará en este documento.

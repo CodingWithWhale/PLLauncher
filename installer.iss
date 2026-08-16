@@ -2,7 +2,7 @@
 ; Requires Inno Setup 6+ (https://jrsoftware.org/isdl.php)
 
 #define MyAppName "PLLauncher"
-#define MyAppVersion "2.7.0"
+#define MyAppVersion "2.7.1"
 #define MyAppPublisher "PLLauncher"
 #define MyAppURL "https://github.com/CodingWithWhale/PLLauncher"
 #define MyAppExeName "PLLauncher.exe"
@@ -39,9 +39,9 @@ Name: "starticon"; Description: "Pin to &Start Menu"; GroupDescription: "Additio
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Additional shortcuts:"; Flags: checkedonce
 
 [Files]
+Source: "terms.txt"; Flags: dontcopy
 Source: "dist\publish\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "dist\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-Source: "terms.txt"; Flags: dontcopy
 
 [UninstallDelete]
 ; Force-delete the app directory and any runtime-created files
@@ -142,7 +142,13 @@ begin
   Result := True;
   if CurPageID = TermsPage.ID then
   begin
-    if not AcceptCheck.Checked then
+    if WizardSilent then
+    begin
+      // Silent install (auto-update): accept terms automatically so the
+      // update is not blocked by a hidden checkbox that can't be ticked.
+      AcceptCheck.Checked := True;
+    end
+    else if not AcceptCheck.Checked then
     begin
       MsgBox('Please read and accept the Terms & Conditions to continue.', mbInformation, MB_OK);
       Result := False;

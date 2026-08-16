@@ -1,5 +1,5 @@
 {
-    "version":  "2.7.0",
-    "downloadUrl":  "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.7.0/PLLauncher_Setup_2.7.0.exe",
-    "changelog":  "v2.7.0: Added Terms & Conditions and Privacy Policy to the app (Settings, 4 languages) and a Terms acceptance page to the installer."
+    "version":  "2.7.1",
+    "downloadUrl":  "https://github.com/CodingWithWhale/PLLauncher/releases/download/v2.7.1/PLLauncher_Setup_2.7.1.exe",
+    "changelog":  "v2.7.1: Fixed installer update bug where silent updates were blocked by the Terms acceptance checkbox; update now installs correctly."
 }
